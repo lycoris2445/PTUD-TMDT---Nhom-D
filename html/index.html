@@ -3,328 +3,371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeautiFa - Trang chủ</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-    <link rel="stylesheet" href="style.css">
+    <title>Trang chủ - Darling</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Tiêu đề chung cho các mục */
+        .section-title {
+            text-align: center;
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #000;
+        }
+        
+        /* Khoảng cách chuẩn giữa các khung */
+        main section {
+            margin-bottom: 40px;
+        }
+
+        /* === 1. HEADER === */
+        header {
+            background-color: #ffffff;
+            padding: 20px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000000;
+            text-decoration: none; 
+        }
+
+        /* === 2. MENU === */
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        nav li { margin-left: 20px; }
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        nav a.active, nav a:hover { text-decoration: underline; }
+
+        /* === 3. MAIN (Nội dung chính) === */
+        main {
+            padding-top: 40px; /* Thêm padding ở trên */
+        }
+        
+        /* Khung 1: Hero Banner */
+        .hero-section {
+            background-color: #e9e9e9; /* Màu nền xám giả lập banner */
+            min-height: 300px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Khung 2: Sản phẩm nổi bật */
+        .product-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .product-card {
+            width: 23%;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+        .product-image-placeholder {
+            width: 100%;
+            height: 180px;
+            background-color: #f0f0f0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* Khung 3: MUA SẮM THEO DANH MỤC */
+        .category-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .category-card {
+            width: 31%; /* Chia 3 cột */
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .category-image-placeholder {
+            width: 100%;
+            height: 250px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #888;
+        }
+        .category-card h3 {
+            margin: 15px;
+        }
+
+        /* Khung 4: BANNER KHUYẾN MÃI */
+        .cta-section { /* CTA = Call to Action */
+            background-color: #e9e9e9;
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        /* Khung 5: ĐÁNH GIÁ CỦA KHÁCH HÀNG */
+        .testimonials-grid {
+            display: flex;
+            gap: 20px;
+        }
+        .testimonial-card {
+            width: 31%; /* Chia 3 cột */
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 20px;
+        }
+        .testimonial-card p {
+            font-style: italic; /* In nghiêng */
+        }
+        .testimonial-card h5 {
+            text-align: right; /* Tên người đánh giá */
+            margin: 10px 0 0 0;
+        }
+
+        /* === THAY ĐỔI CSS Ở ĐÂY === */
+        /* Khung 6: Nội dung (Về thương hiệu) */
+        /* (Đã xóa background, border, padding khỏi .content-section) */
+        .content-box {
+            background-color: #ffffff;
+            padding: 30px;
+            border: 1px solid #ddd;
+        }
+        
+        /* Khung 7: ĐĂNG KÝ NHẬN TIN */
+        /* (Đã xóa background, border, padding, text-align khỏi .newsletter-section) */
+        .newsletter-box {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .newsletter-form {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        /* Giả lập khung input và button */
+        .newsletter-form-input {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #f9f9f9;
+            text-align: left;
+            color: #888;
+        }
+        .newsletter-form-button {
+            padding: 10px 20px;
+            border: 1px solid #888;
+            background: #e0e0e0;
+            color: #000;
+        }
+
+
+        /* === 4. FOOTER === */
+        footer {
+            background-color: #ffffff;
+            color: #555;
+            padding: 30px 0;
+            margin-top: 40px;
+            border-top: 1px solid #ddd;
+        }
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-content h4 { color: #000; }
+        .footer-content ul { list-style: none; padding: 0; }
+        .footer-content li { margin-bottom: 10px; }
+        .footer-content a { text-decoration: none; color: #555; }
+        .footer-content a:hover { text-decoration: underline; }
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
 </head>
 <body>
 
     <header>
-        <nav class="navbar navbar-expand-lg bg-light shadow-sm fixed-top">
-            <div class="container">
-                <a class="navbar-brand beautifa-brand" href="index.html">BeautiFa</a> 
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
-                <div class="collapse navbar-collapse justify-content-center" id="mainNav"> 
-                    <ul class="navbar-nav mb-2 mb-lg-0"> 
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="index.html">Trang chủ</a> 
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="gioi-thieu.html">Giới thiệu</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="san-pham.html">Sản phẩm</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="chinh-sach.html">Chính sách</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="lien-he.html">Liên hệ</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="gio-hang.html">Giỏ hàng</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="thanh-toan.html">Thanh toán</a>
-                        </li>
-                    </ul>
-                </div>
-                
-                <ul class="navbar-nav ms-auto d-none d-lg-flex"> 
-                    <li class="nav-item">
-                        <a class="nav-link" href="gio-hang.html">
-                            <i class="bi bi-bag fs-5"></i>
-                        </a>
-                    </li>
+        <div class="container">
+            <a href="trang-chu.html" class="logo">Darling</a>
+            <nav>
+                <ul>
+                    <li><a href="trang-chu.html" class="active">Trang chủ</a></li>
+                    <li><a href="gioi-thieu.html">Giới thiệu</a></li>
+                    <li><a href="san-pham.html">Sản phẩm</a></li>
+                    <li><a href="gio-hang.html">Giỏ hàng</a></li>
+                    <li><a href="thanh-toan.html">Thanh toán</a></li>
+                    <li><a href="chinh-sach.html">Chính sách</a></li>
+                    <li><a href="lien-he.html">Liên hệ</a></li>
                 </ul>
-                
-            </div>
-        </nav>
+            </nav>
+        </div>
     </header>
 
     <main>
-        <div class="main-content-top">
-            <section id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">               
-        <div class="carousel-indicators">
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
-                </div>
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="images/banner1.jpg" class="d-block w-100" alt="Banner 1">
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5>Khám phá vẻ đẹp tiềm ẩn của bạn</h5>
-                            <p>Tự tin tỏa sáng với phong cách riêng.</p>
-                            <a href="san-pham.html" class="btn btn-primary btn-lg">Mua sắm ngay</a>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <img src="images/banner2.jpg" class="d-block w-100" alt="Banner 2">
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5>Sản phẩm chất lượng, an toàn tuyệt đối</h5>
-                            <p>Chọn lọc từ những thương hiệu hàng đầu.</p>
-                            <a href="san-pham.html" class="btn btn-primary btn-lg">Xem thêm</a>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <img src="images/banner3.png" class="d-block w-100" alt="Banner 3">
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5>Màu sắc trendy, phù hợp mọi phong cách</h5>
-                            <p>Nâng tầm vẻ đẹp tự nhiên của bạn.</p>
-                            <a href="san-pham.html" class="btn btn-primary btn-lg">Tìm hiểu</a>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <img src="images/banner4.jpg" class="d-block w-100" alt="Banner 4">
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5>Chính sách ưu đãi đặc biệt</h5>
-                            <p>Mua sắm thông minh, nhận quà hấp dẫn.</p>
-                            <a href="san-pham.html" class="btn btn-primary btn-lg">Ưu đãi</a>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <img src="images/banner5.png" class="d-block w-100" alt="Banner 5">
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5>Đội ngũ tư vấn chuyên nghiệp</h5>
-                            <p>Luôn sẵn sàng hỗ trợ bạn chọn sản phẩm ưng ý.</p>
-                            <a href="san-pham.html" class="btn btn-primary btn-lg">Liên hệ ngay</a>
-                        </div>
-                    </div>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </section>
-            
-<section class="container my-5 trust-bar">
-            <div class="row text-center">
-                
-                <div class="col-md-3 col-6 mb-3 mb-md-0">
-                    <div class="trust-item">
-                        <i class="bi bi-truck fs-2"></i> <h5>Giao hàng miễn phí</h5>
-                        <p>Cho đơn hàng trên 500k</p>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 col-6 mb-3 mb-md-0">
-                    <div class="trust-item">
-                        <i class="bi bi-patch-check-fill fs-2"></i>
-                        <h5>100% Chính hãng</h5>
-                        <p>Cam kết chất lượng</p>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 col-6 mb-3 mb-md-0">
-                    <div class="trust-item">
-                        <i class="bi bi-shield-lock-fill fs-2"></i>
-                        <h5>Thanh toán an toàn</h5>
-                        <p>Bảo mật thông tin</p>
-                    </div>
-                </div>
-                
-                <div class="col-md-3 col-6 mb-3 mb-md-0">
-                    <div class="trust-item">
-                        <i class="bi bi-arrow-counterclockwise fs-2"></i>
-                        <h5>Đổi trả dễ dàng</h5>
-                        <p>Trong vòng 7 ngày</p>
-                    </div>
-                </div>
-                
+
+        <section class="hero-section">
+            <div class="container">
+                <h1>Khung Banner/Hero</h1>
+                <p>Nơi để đặt hình ảnh quảng cáo lớn.</p>
             </div>
-            
-            <hr class="mt-4">
-            
         </section>
 
-            <section class="container my-5 featured-product-section">
-                <h2 class="text-center mb-4" id="featured-title">Sản Phẩm Nổi Bật</h2>            
-            <div class="row">
-                <div class="col-12 col-md-4 mb-3">
-                    <div class="card h-100">
-                        <img src="images/cos1.jpg" class="card-img-top" alt="Mỹ phẩm 1">
-                        <div class="card-body text-center"> <h5 class="card-title">Son môi Nude</h5>
-                            
-                            <div class="product-rating">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                            </div>
-                            
-                            </div>
-                    </div>
+        <section class="featured-products container">
+            <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-image-placeholder">(Khung ảnh)</div>
+                    <h4>Khung sản phẩm 1</h4>
+                    <p>Giá: ...</p>
                 </div>
-                
-                <div class="col-12 col-md-4 mb-3">
-                    <div class="card h-100 middle-product-card">
-                        <img src="images/cos2.jpg" class="card-img-top" alt="Mỹ phẩm 2">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Kem nền</h5>
-                            
-                            <div class="product-rating">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                            </div>
-                            
-                            </div>
-                    </div>
+                <div class="product-card">
+                    <div class="product-image-placeholder">(Khung ảnh)</div>
+                    <h4>Khung sản phẩm 2</h4>
+                    <p>Giá: ...</p>
                 </div>
-                
-                <div class="col-12 col-md-4 mb-3">
-                    <div class="card h-100">
-                        <img src="images/cos3.png" class="card-img-top" alt="Mỹ phẩm 3">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Mascara</h5>
-                            
-                            <div class="product-rating">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                            </div>
-                            
-                            </div>
-                    </div>
+                <div class="product-card">
+                    <div class="product-image-placeholder">(Khung ảnh)</div>
+                    <h4>Khung sản phẩm 3</h4>
+                    <p>Giá: ...</p>
+                </div>
+                <div class="product-card">
+                    <div class="product-image-placeholder">(Khung ảnh)</div>
+                    <h4>Khung sản phẩm 4</h4>
+                    <p>Giá: ...</p>
                 </div>
             </div>
         </section>
-            <section class="container my-5 category-section">
-            <h2 class="text-center mb-4" id="category-title">Mua Sắm Theo Danh Mục</h2>
-            <div class="row g-4"> <div class="col-md-4">
-                    <div class="category-card">
-                        <img src="images/cat1.jpg" alt="Sản phẩm Môi">
-                        <div class="category-card-content">
-                            <h3>Sản phẩm Môi</h3>
-                            <a href="san-pham.html" class="btn btn-outline-light">Xem ngay</a>
-                        </div>
-                    </div>
+        
+        <section class="categories-section container">
+            <h2 class="section-title">Mua Sắm Theo Danh Mục</h2>
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-image-placeholder">(Khung ảnh Danh mục)</div>
+                    <h3>Chăm sóc da</h3>
                 </div>
-                
-                <div class="col-md-4">
-                    <div class="category-card">
-                        <img src="images/cat2.jpg" alt="Sản phẩm Da">
-                        <div class="category-card-content">
-                            <h3>Sản phẩm Da</h3>
-                            <a href="san-pham.html" class="btn btn-outline-light">Xem ngay</a>
-                        </div>
-                    </div>
+                <div class="category-card">
+                    <div class="category-image-placeholder">(Khung ảnh Danh mục)</div>
+                    <h3>Trang điểm</h3>
                 </div>
-                
-                <div class="col-md-4">
-                    <div class="category-card">
-                        <img src="images/cat3.jpg" alt="Sản phẩm Mắt">
-                        <div class="category-card-content">
-                            <h3>Sản phẩm Mắt</h3>
-                            <a href="san-pham.html" class="btn btn-outline-light">Xem ngay</a>
-                        </div>
-                    </div>
-                </div>
-                
-                </div>
-        </section>
-        </div> 
-        <section class="container-fluid newsletter-section py-5">
-        <div class="container text-center">
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-lg-6">
-                    <i class="bi bi-envelope-paper-heart fs-1"></i> <h2 class="mb-3">Đăng ký nhận tin</h2>
-                    <p class="mb-4">Đừng bỏ lỡ các sản phẩm mới và chương trình khuyến mãi hấp dẫn từ BeautiFa!</p>
-                    
-                    <form class="d-flex">
-                        <input type="email" class="form-control form-control-lg me-2" placeholder="Nhập email của bạn...">
-                        <button type="submit" class="btn btn-primary btn-lg">Đăng ký</button>
-                    </form>
-                    
+                <div class="category-card">
+                    <div class="category-image-placeholder">(Khung ảnh Danh mục)</div>
+                    <h3>Chăm sóc cơ thể</h3>
                 </div>
             </div>
-        </div>
-    </section>
-    </main> 
- 
+        </section>
 
-    <footer class="bg-light pt-5 pb-4 footer">
-        <div class="container text-center text-md-start">
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <h5>BeautiFa</h5>
-                    <p>Chăm sóc vẻ đẹp của bạn.</p>
+        <section class="cta-section">
+            <div class="container">
+                <h2>Khung Banner Khuyến Mãi (CTA)</h2>
+                <p>Nơi để thông tin giảm giá 30%, hoặc bộ sưu tập mới.</p>
+            </div>
+        </section>
+        
+        <section class="testimonials-section container">
+            <h2 class="section-title">Khách Hàng Nói Gì Về Darling</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p>"Khung nội dung đánh giá của khách hàng. Sản phẩm rất tốt..."</p>
+                    <h5>- Nguyễn Văn A</h5>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <h5>Trang</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="gioi-thieu.html" class="text-decoration-none">Giới thiệu</a></li>
-                        <li><a href="chinh-sach.html" class="text-decoration-none">Chính sách đổi trả</a></li>
-                        <li><a href="lien-he.html" class="text-decoration-none">Liên hệ</a></li>
+                <div class="testimonial-card">
+                    <p>"Khung nội dung đánh giá của khách hàng. Giao hàng nhanh..."</p>
+                    <h5>- Trần Thị B</h5>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Khung nội dung đánh giá của khách hàng. Sẽ tiếp tục ủng hộ..."</p>
+                    <h5>- Lê Văn C</h5>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section container">
+            <h2 class="section-title">Về Thương Hiệu Darling</h2>
+            <div class="content-box">
+                <p>Đây là khu vực nội dung bổ sung về câu chuyện thương hiệu, giá trị cốt lõi, hoặc cam kết (ví dụ: không thử nghiệm trên động vật).</p>
+            </div>
+        </section>
+        
+        <section class="newsletter-section container">
+            <h2 class="section-title">Đăng Ký Nhận Tin</h2>
+            <div class="newsletter-box">
+                <p>Để nhận thông tin về sản phẩm mới và các chương trình khuyến mãi.</p>
+                <div class="newsletter-form">
+                    <div class="newsletter-form-input">(Khung Nhập Email)</div>
+                    <div class="newsletter-form-button">(Khung Nút Gửi)</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <h4>Về Darling</h4>
+                    <p>Mô tả ngắn về công ty.</p>
+                </div>
+                <div>
+                    <h4>Chính sách</h4>
+                    <ul>
+                        <li><a href="chinh-sach.html">Chính sách</a></li>
+                        <li><a href="thanh-toan.html">Thanh toán</a></li>
                     </ul>
                 </div>
-
-                <div class="col-md-4 mb-3">
-                    <h5>Liên hệ</h5>
-                    <p><i class="bi bi-geo-alt-fill"></i> 90A/22 Âu dương lân, Q8, TP.HCM</p>
-                    <p><i class="bi bi-telephone-fill"></i> 0909.123.456</p>
+                <div>
+                    <h4>Liên hệ</h4>
+                    <ul>
+                        <li><a href="lien-he.html">Thông tin liên hệ</a></li>
+                    </ul>
                 </div>
             </div>
-            <hr>
-            <p class="text-center">&copy; 2025 BeautiFa. All rights reserved.</p>
+            
+            <div class="copyright">
+                &copy; 2025 Darling.
+            </div>
         </div>
     </footer>
 
-
-    <div class="modal fade" id="productDetailModal">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Thông tin Chi tiết Sản phẩm</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <img src="https://via.placeholder.com/400x400.png?text=Product+Image" class="img-fluid" alt="Ảnh SP">                        </div>
-                        <div class="col-md-6">
-                            <h3>Tên sản phẩm (ví dụ: Son môi Nude)</h3>
-                            <h4>350,000 đ</h4>
-                            <p>Mô tả chi tiết về sản phẩm, thành phần, cách sử dụng...</p>
-                            <button class="btn btn-primary">Thêm vào giỏ</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
