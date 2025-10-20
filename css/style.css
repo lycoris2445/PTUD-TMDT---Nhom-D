@@ -1,0 +1,708 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+
+/* ---- Tùy chỉnh màu sắc (theme) cho BeautiFa ---- */
+:root {
+    --bs-primary: #D58A94; /* Màu hồng đậm cho nút bấm */
+    --bs-secondary: #F0D9E7; /* Màu hồng nhạt (nude/blush) */
+    --bs-light: #FDFBFC; /* Màu nền sáng (hơi ngả hồng) */
+    --bs-dark: #4B4453; /* Màu chữ tối (tím than) */
+}
+
+/* ---- Ghi đè chung Bootstrap ---- */
+.btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+.btn-primary:hover {
+    background-color: #B2707C; /* Màu đậm hơn khi hover */
+    border-color: #B2707C;
+}
+
+.btn-outline-primary {
+    color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+.btn-outline-primary:hover {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+.bg-light {
+    background-color: var(--bs-light) !important; 
+}
+
+/* ---- Tùy chỉnh Header (Menu) ---- */
+.navbar-brand {
+    font-weight: bold;
+    color: var(--bs-primary) !important;
+}
+
+.beautifa-brand {
+    font-family: 'Playfair Display', serif; 
+    font-size: 2.2rem; 
+    font-weight: 700;
+    letter-spacing: 2px; 
+}
+
+.nav-link {
+    color: var(--bs-dark) !important;
+    font-family: 'Quicksand', sans-serif; 
+    font-weight: 500;
+    margin: 0 10px; 
+    transition: color 0.3s ease-in-out; 
+}
+.nav-link:hover {
+    color: var(--bs-primary) !important; 
+}
+.nav-link.active {
+    color: var(--bs-primary) !important;
+    font-weight: 700; 
+    border-bottom: 2px solid var(--bs-primary); 
+    padding-bottom: 3px; 
+}
+
+a.nav-link i.bi-bag {
+    color: var(--bs-dark) !important;
+    transition: color 0.3s ease-in-out;
+}
+a.nav-link:hover i.bi-bag {
+    color: var(--bs-primary) !important;
+}
+
+/* ---- Các style riêng cho Trang ---- */
+.main-content-top {
+    padding-top: 56px; 
+}
+
+/* ---- Tùy chỉnh Carousel (Banner) ---- */
+#heroCarousel {
+    max-height: 500px; 
+    overflow: hidden; 
+    margin-bottom: 50px; 
+}
+
+#heroCarousel .carousel-item {
+    height: 500px; 
+    background-color: var(--bs-secondary); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+
+#heroCarousel .carousel-item img {
+    object-fit: cover; 
+    width: 100%; 
+    height: 100%; 
+    filter: brightness(70%); 
+}
+
+#heroCarousel .carousel-caption {
+    background-color: rgba(0, 0, 0, 0.4); 
+    padding: 25px 30px; 
+    border-radius: 8px;
+    max-width: 60%; 
+    
+    /* Căn giữa */
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    bottom: auto; 
+}
+
+#heroCarousel .carousel-caption h5,
+#heroCarousel .carousel-caption p {
+    color: white; 
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); 
+}
+
+#heroCarousel .carousel-caption h5 {
+    font-size: 2.2rem; 
+    font-weight: 700;
+    font-family: 'Playfair Display', serif; 
+}
+
+#heroCarousel .carousel-caption p {
+    font-size: 1.2rem; 
+    font-family: 'Quicksand', sans-serif; 
+}
+
+#heroCarousel .carousel-control-prev,
+#heroCarousel .carousel-control-next {
+    width: 5%; 
+    opacity: 0.8; 
+}
+#heroCarousel .carousel-control-prev:hover,
+#heroCarousel .carousel-control-next:hover {
+    opacity: 1; 
+}
+
+/* ---- Tùy chỉnh Card sản phẩm ---- */
+.card-title {
+    color: var(--bs-dark);
+}
+/* THÊM MỚI: Style cho 5 sao rating */
+.product-rating {
+    color: #FFC107; /* Màu vàng của sao */
+    margin: 5px 0 10px 0; /* Thêm khoảng cách */
+}
+
+
+/* THÊM MỚI: Style cho khu vực Sản phẩm nổi bật */
+.featured-product-section {
+    padding-top: 30px; /* Thêm khoảng đệm ở trên... */
+    padding-bottom: 30px; /* ...và ở dưới để card ở giữa có không gian "lớn lên" */
+    overflow-x: clip; /* Đảm bảo không bị tràn thanh cuộn ngang */
+}
+
+
+/* ---- THÊM MỚI: Định nghĩa hiệu ứng đổi màu ---- */
+@keyframes color-cycle {
+    0%   { color: var(--bs-primary); } /* Bắt đầu với màu hồng */
+    33%  { color: var(--bs-dark); }    /* Chuyển sang màu tím than */
+    66%  { color: #FFC107; }         /* Chuyển sang màu vàng (màu của sao) */
+    100% { color: var(--bs-primary); } /* Quay lại màu hồng */
+}
+
+/* ---- THÊM MỚI: Áp dụng hiệu ứng đổi màu cho tiêu đề ---- */
+#featured-title {
+    /* Dùng font chữ đẹp giống logo */
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 2.5rem; /* Cho chữ to và nổi bật hơn */
+    
+    /* Gọi hiệu ứng đổi màu */
+    animation: color-cycle 5s infinite linear; 
+    /* - color-cycle: Tên hiệu ứng
+       - 5s: Thời gian hoàn thành 1 vòng là 5 giây
+       - infinite: Lặp lại mãi mãi
+       - linear: Đổi màu đều, không nhanh không chậm
+    */
+}
+
+/* ---- THÊM MỚI: Hiệu ứng Zoom cho TẤT CẢ card ---- */
+
+/* 1. Thêm độ mượt (transition) cho tất cả card */
+.featured-product-section .card {
+    transition: all 0.3s ease-in-out;
+    border: 1px solid #f0f0f0; /* Thêm viền mờ cho đẹp */
+}
+
+/* 2. Khi di chuột (hover) vào BẤT KỲ card nào */
+.featured-product-section .card:hover {
+    transform: scale(1.05); /* Phóng to lên 5% */
+    z-index: 10; /* Đảm bảo nó nổi lên trên 2 card còn lại */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Thêm bóng đổ */
+    border-color: var(--bs-primary); /* Đổi viền sang màu hồng */
+}
+/* ---- THÊM MỚI: Tùy chỉnh Footer ---- */
+
+/* Ghi đè màu chữ tiêu đề h5 trong footer */
+.footer h5 {
+    color: var(--bs-primary); /* Màu hồng đậm */
+    font-weight: 600;
+    font-family: 'Playfair Display', serif; /* Dùng font đẹp */
+}
+
+/* Ghi đè màu của các link trong footer */
+.footer .list-unstyled a {
+    color: var(--bs-dark); /* Màu chữ tối */
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.footer .list-unstyled a:hover {
+    color: var(--bs-primary); /* Đổi sang hồng khi hover */
+    padding-left: 5px; /* Hiệu ứng thụt vào khi hover */
+}
+
+/* Ghi đè màu của chữ và icon liên hệ */
+.footer p {
+    color: var(--bs-dark);
+}
+.footer p i {
+    color: var(--bs-primary); /* Màu hồng cho icon (điện thoại, địa chỉ) */
+    margin-right: 8px; /* Khoảng cách giữa icon và chữ */
+}
+
+/* Căn chỉnh dòng Copyright */
+.footer hr {
+    border-color: var(--bs-secondary);
+}
+.footer .text-center {
+    color: var(--bs-dark);
+    font-size: 0.9rem;
+}
+/* ---- THÊM MỚI: Style cho Tiêu đề Danh mục (giống tiêu đề SP Nổi bật) ---- */
+#category-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    
+    /* Dùng chung hiệu ứng đổi màu đã có */
+    animation: color-cycle 5s infinite linear; 
+}
+
+/* ---- THÊM MỚI: Style cho Card Danh mục ---- */
+.category-card {
+    position: relative; /* Bắt buộc để căn chữ đè lên ảnh */
+    overflow: hidden; /* Ẩn phần ảnh bị zoom thừa */
+    border-radius: 15px; /* Bo góc */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.category-card img {
+    width: 100%;
+    display: block;
+    transition: transform 0.4s ease; /* Hiệu ứng zoom mượt */
+}
+
+/* Nội dung chữ đè lên ảnh */
+.category-card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    color: white;
+    /* Lớp phủ màu đen mờ (từ dưới lên) */
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+    transition: background 0.4s ease;
+}
+
+.category-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+}
+
+/* Hiệu ứng khi di chuột */
+.category-card:hover img {
+    transform: scale(1.1); /* Zoom ảnh lên 10% */
+}
+
+.category-card:hover .category-card-content {
+    /* Lớp phủ đậm hơn khi hover */
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.1) 100%);
+}
+/* ---- THÊM MỚI: Style cho Thanh Lợi ích (Trust Bar) ---- */
+.trust-bar .trust-item i {
+    color: var(--bs-primary); /* Dùng màu hồng chủ đạo cho icon */
+    margin-bottom: 10px;
+    display: inline-block;
+    transition: transform 0.3s ease; /* Thêm hiệu ứng mượt */
+}
+
+/* Thêm hiệu ứng "nảy" lên khi di chuột */
+.trust-bar .trust-item:hover i {
+    transform: scale(1.1) translateY(-5px);
+}
+
+.trust-bar .trust-item h5 {
+    color: var(--bs-dark); /* Dùng màu chữ tối */
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: 'Quicksand', sans-serif; /* Dùng font phụ */
+}
+
+.trust-bar .trust-item p {
+    color: #777; /* Màu xám nhạt cho chữ phụ */
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+/* Định dạng đường kẻ ngang */
+.trust-bar hr {
+    border-top: 2px solid var(--bs-secondary); /* Dùng màu hồng nhạt */
+    opacity: 0.7;
+}
+/* ---- THÊM MỚI: Style cho khu vực Đăng ký nhận tin (Newsletter) ---- */
+
+.newsletter-section {
+    background-color: var(--bs-secondary); /* Dùng màu hồng nhạt (nude) làm nền */
+}
+
+.newsletter-section i {
+    color: var(--bs-primary); /* Màu hồng đậm cho icon */
+}
+
+.newsletter-section h2 {
+    font-family: 'Playfair Display', serif; /* Dùng font đẹp */
+    color: var(--bs-dark);
+    font-weight: 700;
+}
+
+.newsletter-section p {
+    color: var(--bs-dark);
+    font-size: 1.1rem;
+    font-family: 'Quicksand', sans-serif;
+}
+
+/* Tùy chỉnh ô input email */
+.newsletter-section .form-control {
+    border: 2px solid var(--bs-light);
+    box-shadow: none; /* Bỏ bóng đổ mặc định */
+}
+.newsletter-section .form-control:focus {
+    border-color: var(--bs-primary); /* Đổi viền sang hồng khi gõ */
+    box-shadow: 0 0 0 0.25rem rgba(213, 138, 148, 0.25); /* Thêm viền mờ khi gõ */
+}
+
+/* Nút đăng ký đã tự nhận style .btn-primary, không cần thêm */
+
+
+/* ---- THÊM MỚI: Style cho trang Giới thiệu ---- */
+
+/* Tiêu đề đầu trang (Banner hồng nhạt) */
+.page-title-section {
+    background-color: var(--bs-secondary); 
+    padding: 40px 0;
+    margin-bottom: 30px; 
+    text-align: center; /* <-- THÊM DÒNG NÀY --> */
+}
+.page-title-section h1 {
+    color: var(--bs-primary); 
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+}
+.page-title-section p {
+    color: var(--bs-dark); 
+    font-size: 1.1rem;
+    margin-bottom: 0;
+}
+
+/* Tiêu đề chung cho các mục */
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--bs-dark);
+}
+
+/* Mục Giá trị cốt lõi */
+./* Style cho mục Giá trị (Value Card) - ĐÃ CẬP NHẬT */
+.value-card {
+    padding: 30px 20px;
+    background-color: var(--bs-light); /* Dùng nền hồng siêu nhạt */
+    border-radius: 10px;
+    height: 100%;
+    
+    /* Thay viền đứt bằng bóng đổ (shadow) */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+    
+    /* Thêm hiệu ứng mượt khi di chuột */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Thêm hiệu ứng hover */
+.value-card:hover {
+    transform: translateY(-5px); /* Nhấc card lên 1 chút */
+    box-shadow: 0 8px 25px rgba(213, 138, 148, 0.15); /* Bóng đổ màu hồng */
+}
+
+.value-card i {
+    color: var(--bs-primary); /* Icon màu hồng đậm */
+    margin-bottom: 15px;
+}
+.value-card h5 {
+    font-weight: 600;
+    color: var(--bs-dark);
+
+}
+
+/* Mục Đánh giá (Testimonials) */
+.testimonial-section {
+    background-color: var(--bs-dark); 
+}
+
+.section-title-light {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: white; 
+}
+
+.testimonial-card {
+    background-color: white; 
+    border-radius: 10px;
+    padding: 25px;
+    height: 100%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    /* THÊM DÒNG NÀY: Thêm hiệu ứng chuyển động mượt */
+    transition: all 0.3s ease-in-out;
+}
+/* THÊM MỚI: Hiệu ứng zoom khi di chuột */
+.testimonial-card:hover {
+    transform: scale(1.03) translateY(-5px); /* Phóng to và nhấc lên */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* Bóng đổ đậm hơn */
+}
+.testimonial-quote {
+    font-style: italic; 
+    color: #555;
+    min-height: 120px; 
+    margin-bottom: 15px; /* Thêm khoảng cách với khối author */
+}
+/* THÊM MỚI: Khối thông tin tác giả (avatar, tên, sao) */
+.testimonial-author {
+    display: flex;
+    align-items: center; /* Căn avatar và chữ/sao ngang hàng */
+}
+
+/* THÊM MỚI: Style cho ảnh avatar */
+.testimonial-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%; /* Bo tròn ảnh */
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    margin-right: 15px; /* Khoảng cách với tên */
+    border: 2px solid var(--bs-secondary); /* Viền hồng nhạt */
+}
+.testimonial-name {
+    font-weight: 700;
+    color: var(--bs-primary);
+    margin-top: 0; /* Xóa margin cũ */
+    margin-bottom: 5px; /* Thêm margin dưới */
+}
+
+.testimonial-card .product-rating {
+    text-align: left;
+    margin-top: 0; /* Xóa margin cũ */
+}
+/* ---- HIỆU ỨNG ĐỔI MÀU ---- */
+
+/* 1. Hiệu ứng cho chữ trên NỀN SÁNG (Giống trang chủ) */
+@keyframes color-cycle {
+    0%   { color: var(--bs-primary); } /* Hồng đậm */
+    33%  { color: var(--bs-dark); }    /* Tím than */
+    66%  { color: #FFC107; }         /* Vàng */
+    100% { color: var(--bs-primary); } /* Quay lại Hồng */
+}
+
+/* 2. HIỆU ỨNG MỚI: Cho chữ trên NỀN TỐI */
+@keyframes color-cycle-light {
+    0%   { color: #FFFFFF; }         /* Trắng */
+    33%  { color: var(--bs-primary); } /* Hồng đậm */
+    66%  { color: #FFC107; }         /* Vàng */
+    100% { color: #FFFFFF; }         /* Quay lại Trắng */
+}
+
+/* 3. Áp dụng hiệu ứng cho các tiêu đề */
+.animated-title-1 {
+    /* Dùng hiệu ứng 1 (cho nền sáng) */
+    animation: color-cycle 5s infinite linear;
+}
+
+.animated-title-2 {
+    /* Dùng hiệu ứng 2 (cho nền tối) */
+    animation: color-cycle-light 5s infinite linear;
+}
+
+/* ---- THÊM MỚI: Style cho mục Meet the Team ---- */
+.team-card {
+    background-color: #fff; /* Nền trắng */
+    padding: 30px 20px;
+    border-radius: 10px;
+    height: 100%;
+    /* Dùng lại style bóng đổ của value-card */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease-in-out;
+}
+.team-card:hover {
+    /* Dùng lại hiệu ứng hover của value-card */
+    transform: translateY(-5px); 
+    box-shadow: 0 8px 25px rgba(213, 138, 148, 0.15); 
+}
+.team-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%; /* Bo tròn ảnh */
+    object-fit: cover;
+    border: 4px solid var(--bs-secondary); /* Viền hồng nhạt */
+}
+.team-card h5 {
+    font-weight: 700;
+    color: var(--bs-dark);
+}
+.team-title {
+    font-weight: 600;
+    color: var(--bs-primary); /* Màu hồng đậm cho chức vụ */
+    margin-bottom: 10px;
+}
+.team-bio {
+    font-size: 0.9rem;
+    color: #555;
+    font-style: italic; /* Chữ nghiêng cho mô tả */
+}
+/* ---- THÊM MỚI: Style cho Dòng thời gian (Timeline) ---- */
+
+.timeline-wrapper {
+    position: relative; /* Là cha của đường kẻ dọc */
+    max-width: 700px; /* Giới hạn chiều rộng cho đẹp */
+    margin: 0 auto; /* Căn giữa */
+}
+
+/* Đường kẻ dọc màu hồng nhạt */
+.timeline-wrapper::before {
+    content: '';
+    position: absolute;
+    left: 20px; /* Cách lề trái 20px */
+    top: 0;
+    bottom: 0;
+    width: 4px; /* Độ dày của đường kẻ */
+    background: var(--bs-secondary); /* Màu hồng nhạt */
+    border-radius: 2px;
+}
+
+.timeline-item {
+    position: relative; /* Là cha của icon */
+    padding-left: 60px; /* Tạo không gian bên trái cho icon và đường kẻ */
+    margin-bottom: 40px; /* Khoảng cách giữa các cột mốc */
+}
+
+/* Icon (cái chấm tròn) trên đường kẻ */
+.timeline-icon {
+    position: absolute;
+    left: 4px; /* (20px của đường kẻ) - (34px/2 của icon) + 4px viền = 4px */
+    top: 0;
+    
+    /* Style cái vòng tròn */
+    width: 34px;
+    height: 34px;
+    background: var(--bs-primary); /* Nền hồng đậm */
+    color: white; /* Icon màu trắng */
+    border-radius: 50%;
+    
+    /* Viền ngoài màu sáng */
+    border: 4px solid var(--bs-light); 
+    
+    /* Căn giữa icon (bi-...) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Khung nội dung (năm, tiêu đề, mô tả) */
+.timeline-content {
+    background: var(--bs-light); /* Nền hồng siêu nhạt */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    position: relative; /* Để tạo mũi tên */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Mũi tên nhỏ chĩa vào đường kẻ */
+.timeline-content::before {
+    content: '';
+    position: absolute;
+    left: -10px; /* Chĩa ra ngoài */
+    top: 10px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid var(--bs-light); /* Cùng màu với nền content */
+}
+
+.timeline-year {
+    font-weight: 700;
+    color: var(--bs-primary); /* Màu hồng đậm */
+    font-size: 1.1rem;
+}
+.timeline-content h6 {
+    font-weight: 700;
+    color: var(--bs-dark); /* Màu chữ tối */
+}
+.timeline-content p {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0;
+}
+/* Khi di chuột vào 1 mục trong timeline... */
+.timeline-item:hover .timeline-icon {
+    transform: scale(1.1); /* Phóng to icon 10% */
+    background-color: #B2707C; /* Màu hồng đậm hơn (màu hover của nút) */
+    box-shadow: 0 0 15px var(--bs-primary); /* Tỏa sáng màu hồng */
+}
+
+.timeline-item:hover .timeline-content {
+    transform: translateY(-5px); /* Nhấc card lên 5px */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1); /* Bóng đổ đậm hơn */
+}
+/* ---- THÊM MỚI: Style cho Thư viện ảnh (Gallery) ---- */
+
+.gallery-item {
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    cursor: pointer; /* Biến con trỏ thành bàn tay */
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 180px; /* Đặt chiều cao cố định cho các ảnh thumb */
+    object-fit: cover; /* Đảm bảo ảnh vừa khung, không méo */
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1); /* Hiệu ứng zoom khi di chuột */
+}
+
+/* Style cho Modal của Gallery */
+#galleryModal .modal-content {
+    background-color: transparent; /* Nền trong suốt */
+    border: none;
+}
+#galleryModal .modal-body {
+    padding: 0;
+    border-radius: 10px;
+    overflow: hidden; /* Bo góc cho ảnh */
+}
+
+
+/* ---- THÊM MỚI: Style cho FAQ (Accordion) ---- */
+
+/* ---- CẬP NHẬT: Style cho FAQ (Accordion) ---- */
+
+.accordion-item {
+    border: none;
+    border-radius: 8px !important; /* Bo góc cho cả khối */
+    margin-bottom: 10px;
+    background-color: white; /* ĐỔI SANG NỀN TRẮNG */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Thêm bóng đổ nhẹ */
+    overflow: hidden; /* Bắt buộc để bo góc hoạt động */
+}
+
+.accordion-header {
+    border-radius: 0 !important; /* Bỏ bo góc ở header */
+}
+
+.accordion-button {
+    /* Nút khi ĐÓNG: nền hồng nhạt */
+    background-color: var(--bs-light); 
+    color: var(--bs-dark); 
+    font-weight: 600;
+    font-family: 'Quicksand', sans-serif;
+    border-radius: 0 !important;
+    box-shadow: none !important; 
+}
+
+/* Nút khi MỞ (giống trong hình của bạn) */
+.accordion-button:not(.collapsed) {
+    background-color: var(--bs-primary); /* Nền hồng đậm */
+    color: white; 
+}
+
+/* Bỏ icon +/– mặc định của Bootstrap */
+.accordion-button::after {
+    display: none; 
+}
+
+.accordion-body {
+    background-color: white; /* Nền trắng cho câu trả lời */
+    color: #555; /* Màu chữ xám cho dễ đọc */
+    /* Chúng ta không cần bo góc ở đây nữa vì 
+       .accordion-item (thẻ cha) đã có overflow:hidden 
+    */
+}
