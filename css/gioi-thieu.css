@@ -1,0 +1,73 @@
+
+ /* === 3. MAIN (CSS MỚI CHO TRANG GIỚI THIỆU) === */
+        main {
+            padding-top: 40px;
+        }
+
+        /* Khung 2 cột (Text-Image) */
+        .about-frame {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 30px;
+        }
+        .about-frame .about-text {
+            flex: 1; 
+            line-height: 1.7;
+            text-align: justify;
+        }
+        .about-frame .about-text h3 {
+            margin-top: 0;
+        }
+        .about-frame .about-image-placeholder {
+            flex: 1; 
+            height: 300px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 16px;
+        }
+
+        /* Khung 3 cột (Giá trị cốt lõi) */
+        .values-section {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 30px;
+        }
+        .values-section h3 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .values-section .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .values-grid {
+            display: flex;
+            gap: 20px;
+        }
+        .value-card {
+            flex: 1; /* Chia 3 cột đều */
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #eee;
+            background: #f9f9f9;
+        }
+        .value-card h4 {
+            margin-top: 0;
+            color: #000;
+        }
+
+        /* Khung Cam kết (Tái sử dụng style từ trang chủ) */
+        .content-box {
+            background-color: #ffffff;
+            padding: 30px;
+            border: 1px solid #ddd;
+            line-height: 1.7;
+        }
+        

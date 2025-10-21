@@ -1,0 +1,48 @@
+     
+        /* === 3. NỘI DUNG CHÍNH PHẦN CHÍNH SÁCH === */
+        main {
+            padding: 60px 0;
+        }
+
+        section.policy-block {
+            background-color: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        section.policy-block h3 {
+            font-size: 20px;
+            margin: 0;
+            padding: 18px 25px;
+            color: #111;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            position: relative;
+        }
+
+        section.policy-block h3::after {
+            content: '+';
+            position: absolute;
+            right: 25px;
+            font-weight: bold;
+        }
+
+        section.policy-block.active h3::after {
+            content: '−';
+        }
+
+        section.policy-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        padding: 0 25px;
+        line-height: 1.7;
+        }
+
+        section.policy-block.active .policy-content {
+        padding: 20px 25px;
+        }
+
