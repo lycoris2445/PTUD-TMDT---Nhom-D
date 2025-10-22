@@ -1,0 +1,184 @@
+/* === BANNER TRANG SẢN PHẨM === */
+.product-banner {
+  background-color: #eaeaea;
+  text-align: center;
+  padding: 60px 20px;
+  margin-bottom: 30px;
+}
+.product-banner h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #000;
+}
+.product-banner p {
+  font-size: 16px;
+  color: #555;
+}
+
+/* === THANH FILTER === */
+.filter-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+.filter-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* === DANH SÁCH SẢN PHẨM === */
+.product-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+.product-card {
+    width: 23%;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    text-align: center;
+    }
+.product-image-placeholder {
+    width: 100%;
+    height: 180px;
+    background-color: #f0f0f0;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #888;
+}
+
+/* === POPUP TOÀN MÀN HÌNH === */
+.product-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: none; /* ẩn mặc định */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* === KHUNG NỘI DUNG POPUP === */
+.popup-content {
+  background-color: #fff;
+  width: 80%;
+  max-width: 1000px;
+  max-height: 90%;
+  border-radius: 8px;
+  overflow-y: auto; /* thanh cuộn dọc */
+  display: flex;
+  gap: 30px;
+  padding: 30px;
+  position: relative;
+}
+
+/* === NÚT QUAY LẠI === */
+.popup-back {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: #eee;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.popup-back:hover {
+  background: #ddd;
+}
+
+/* === BỐ CỤC 2 CỘT === */
+.popup-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.popup-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* === HÌNH ẢNH SẢN PHẨM === */
+.popup-image {
+  background-color: #f5f5f5;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  color: #777;
+}
+
+/* === PHẦN REVIEW === */
+.popup-review {
+  background-color: #fafafa;
+  border: 1px solid #eee;
+  padding: 15px;
+  border-radius: 6px;
+  color: #555;
+  font-size: 14px;
+}
+
+/* === PHẦN THÔNG TIN CHI TIẾT === */
+.popup-category {
+  font-size: 14px;
+  color: #777;
+}
+
+.popup-title {
+  font-size: 22px;
+  color: #000;
+  margin: 0;
+}
+
+.popup-rating {
+  color: #f5a623;
+  font-size: 16px;
+}
+
+.popup-details {
+  background-color: #fafafa;
+  border: 1px solid #eee;
+  padding: 15px;
+  border-radius: 6px;
+  font-size: 15px;
+  color: #444;
+  line-height: 1.5;
+}
+
+/* === NÚT THÊM VÀO GIỎ === */
+.add-to-cart {
+  margin-top: 10px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.add-to-cart:hover {
+  background-color: #333;
+}
+
