@@ -6,7 +6,8 @@
   <title>Sản phẩm - Darling</title>
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/san-pham.css">
-  <script src="../js/san-pham.js"></script>
+  <script src="../js/san-pham.js" defer></script>
+  <script src="../js/cart.js" defer></script>
 </head>
 
 <body>
@@ -16,11 +17,11 @@
     <div class="container">
       <a href="index.html" class="logo">Darling</a>
       <nav>
-        <ul>
+                <ul>
           <li><a href="index.html">Trang chủ</a></li>
           <li><a href="gioi-thieu.html">Giới thiệu</a></li>
           <li><a href="san-pham.html" class="active">Sản phẩm</a></li>
-          <li><a href="gio-hang.html">Giỏ hàng</a></li>
+          <li><a href="gio-hang.html">Giỏ hàng <span id="cart-count" class="cart-count">0</span></a></li>
           <li><a href="thanh-toan.html">Thanh toán</a></li>
           <li><a href="chinh-sach.html">Chính sách</a></li>
           <li><a href="lien-he.html">Liên hệ</a></li>
@@ -48,26 +49,50 @@
 
     <section class="product-list">
       <h3 class="section-title">Tất cả sản phẩm</h3>
-      <div class="product-grid">
+          <div class="product-grid">
             <div class="product-card">
                 <div class="product-image-placeholder">(Khung ảnh)</div>
-                <h4>Khung sản phẩm 1</h4>
-                <p>Giá: ...</p>
+                <h4>Kem dưỡng da mặt</h4>
+                <p>Giá: 250,000₫</p>
+                <button class="btn add-to-cart" data-add-to-cart 
+                        data-id="1" 
+                        data-name="Kem dưỡng da mặt" 
+                        data-price="250000">
+                    Thêm vào giỏ
+                </button>
             </div>
             <div class="product-card">
                 <div class="product-image-placeholder">(Khung ảnh)</div>
-                <h4>Khung sản phẩm 2</h4>
-                <p>Giá: ...</p>
+                <h4>Son môi tự nhiên</h4>
+                <p>Giá: 180,000₫</p>
+                <button class="btn add-to-cart" data-add-to-cart 
+                        data-id="2" 
+                        data-name="Son môi tự nhiên" 
+                        data-price="180000">
+                    Thêm vào giỏ
+                </button>
             </div>
             <div class="product-card">
                 <div class="product-image-placeholder">(Khung ảnh)</div>
-                <h4>Khung sản phẩm 3</h4>
-                <p>Giá: ...</p>
+                <h4>Sữa rửa mặt organic</h4>
+                <p>Giá: 120,000₫</p>
+                <button class="btn add-to-cart" data-add-to-cart 
+                        data-id="3" 
+                        data-name="Sữa rửa mặt organic" 
+                        data-price="120000">
+                    Thêm vào giỏ
+                </button>
             </div>
             <div class="product-card">
                 <div class="product-image-placeholder">(Khung ảnh)</div>
-                <h4>Khung sản phẩm 4</h4>
-                <p>Giá: ...</p>
+                <h4>Tinh chất vitamin C</h4>
+                <p>Giá: 320,000₫</p>
+                <button class="btn add-to-cart" data-add-to-cart 
+                        data-id="4" 
+                        data-name="Tinh chất vitamin C" 
+                        data-price="320000">
+                    Thêm vào giỏ
+                </button>
             </div>
         </div>
     </section>
@@ -135,4 +160,5 @@
   </footer>
 
 </body>
+<script src="../js/cart.js" defer></script>
 </html>
