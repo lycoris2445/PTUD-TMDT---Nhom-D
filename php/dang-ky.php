@@ -1,3 +1,6 @@
+<?php
+// Tệp PHP
+?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -19,7 +22,7 @@
                 
                 <h1>Tạo tài khoản</h1>
                 <p class="subtitle">
-                    Đã có tài khoản? <a href="dang-nhap.html">Đăng nhập ngay</a>
+                    Đã có tài khoản? <a href="dang-nhap.php">Đăng nhập ngay</a>
                 </p>
 
                 <form class="auth-form" action="process_register.php" method="POST">
