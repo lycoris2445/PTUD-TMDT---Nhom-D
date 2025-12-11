@@ -1,48 +1,36 @@
-     
-        /* === 3. NỘI DUNG CHÍNH PHẦN CHÍNH SÁCH === */
-        main {
-            padding: 60px 0;
-        }
+/* === CHÍNH SÁCH PAGE: Đã tối giản hóa và sử dụng Bootstrap classes === */
+/* Style chung đã được định nghĩa trong styles.css, chỉ cần tùy chỉnh nhỏ */
 
-        section.policy-block {
-            background-color: #fafafa;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            padding: 0;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
+main {
+    padding: 60px 0; /* Giữ padding cho main */
+    background-color: #f4f4f4; /* Giữ màu nền */
+}
 
-        section.policy-block h3 {
-            font-size: 20px;
-            margin: 0;
-            padding: 18px 25px;
-            color: #111;
-            background-color: #f0f0f0;
-            cursor: pointer;
-            position: relative;
-        }
+.accordion-button:not(.collapsed) {
+    color: #fff; /* Màu chữ khi active */
+    background-color: #000; /* Màu nền khi active */
+    box-shadow: none;
+}
 
-        section.policy-block h3::after {
-            content: '+';
-            position: absolute;
-            right: 25px;
-            font-weight: bold;
-        }
+.accordion-button:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.1);
+}
 
-        section.policy-block.active h3::after {
-            content: '−';
-        }
+.accordion-header .accordion-button {
+    background-color: #ffffff; /* Nền của header khi chưa active */
+    color: #333; /* Màu chữ khi chưa active */
+}
 
-        section.policy-content {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-        padding: 0 25px;
-        line-height: 1.7;
-        }
+.accordion-body {
+    line-height: 1.7;
+    background-color: #fafafa;
+}
 
-        section.policy-block.active .policy-content {
-        padding: 20px 25px;
-        }
-
+.section-title {
+    text-align: center;
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 30px;
+    color: #000;
+}

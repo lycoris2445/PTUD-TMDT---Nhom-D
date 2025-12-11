@@ -1,0 +1,282 @@
+/* --- New Global Overrides for Auth Pages --- */
+/* Auth pages should center the content and have a light gray background */
+.auth-page-body {
+    background-color: #f0f2f5; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+
+/* --- Main Authentication Container (Login/Register Box) --- */
+.auth-container {
+    display: flex;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    width: 90%;
+    min-height: 580px;
+    overflow: hidden;
+    margin: 40px auto; /* Add margin for non-full-screen viewing */
+}
+
+/* --- Left Column: Form Section --- */
+.auth-form-column {
+    flex: 1; /* Takes up 50% of the space */
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.logo-auth { /* Renamed from .logo to avoid conflict with existing .logo */
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
+}
+.logo-icon {
+    width: 24px;
+    height: 24px;
+    background-color: #3D021E; /* Dark green icon color */
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.auth-form-column h1 {
+    font-size: 30px;
+    margin-bottom: 5px;
+}
+
+.auth-form-column p.subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 30px;
+}
+.auth-form-column p.subtitle a {
+    color: #3D021E;
+    text-decoration: none;
+    font-weight: bold;
+}
+.auth-form-column p.subtitle a:hover {
+    text-decoration: underline;
+}
+
+/* Form Styles */
+.auth-form label {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="password"],
+.auth-form input[type="email"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.auth-form input::placeholder {
+    color: #aaa;
+}
+
+/* Remember Me & Forgot Password */
+.checkbox-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+.checkbox-row label {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    color: #666;
+}
+.checkbox-row input[type="checkbox"] {
+    margin-right: 5px;
+}
+.checkbox-row a {
+    color: #3D021E;
+    text-decoration: none;
+}
+.checkbox-row a:hover {
+    text-decoration: underline;
+}
+
+/* Primary Button */
+.auth-form button.primary-btn {
+    width: 100%;
+    background-color: #3D021E; /* Dark green color from the image */
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.2s;
+    margin-bottom: 25px;
+}
+.auth-form button.primary-btn:hover {
+    background-color: #58032b; 
+}
+
+/* Separator */
+.separator {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #999;
+    font-size: 14px;
+}
+.separator::before,
+.separator::after {
+    content: '';
+    display: inline-block;
+    width: 37%;
+    height: 1px;
+    background: #eee;
+    vertical-align: middle;
+    margin: 0 10px;
+}
+
+/* Social Buttons */
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.social-btn:hover {
+    background-color: #f7f7f7;
+    border-color: #ccc;
+}
+.social-btn i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+/* --- Right Column: Feature/Promo Section --- */
+.auth-promo-column {
+    flex: 1; /* Takes up 50% of the space */
+    background-color: #3D021E; /* Dark green background */
+    color: #fff;
+    padding: 40px;
+    position: relative;
+    min-width: 300px;
+}
+
+.promo-support {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.promo-support a {
+    color: #fff;
+    text-decoration: none;
+}
+.promo-support a:hover {
+    text-decoration: underline;
+}
+
+.promo-content {
+    margin-top: 40px;
+}
+
+.promo-content h2 {
+    font-size: 32px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.promo-content p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 30px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.promo-content button {
+    background-color: #ec7db3; 
+    color: #fff;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.promo-content button:hover {
+    background-color: #FA58A6;
+}
+
+/* New Features section - bottom right */
+.new-features {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    right: 40px;
+}
+
+.new-features h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.new-features p {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Specific style for standalone register page container */
+.register-container-single {
+    max-width: 480px; 
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 50px;
+    margin: 80px auto;
+}
+.register-container-single .logo-auth {
+    margin-bottom: 25px;
+}
+.register-container-single h1 {
+    font-size: 30px;
+    margin-bottom: 5px;
+}
+.register-container-single p.subtitle {
+    margin-bottom: 30px;
+}

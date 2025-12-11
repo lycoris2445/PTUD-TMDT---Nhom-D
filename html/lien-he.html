@@ -4,119 +4,217 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Liên hệ - Darling</title>
+
+  <!-- Main CSS -->
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="../css/lien-he.css">
+
+  <!-- Bootstrap 5.3.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
 
   <!-- === HEADER === -->
   <header>
-    <div class="container">
-      <a href="trang-chu.html" class="logo">Darling</a>
-      <nav>
-        <ul>
-          <li><a href="index.html">Trang chủ</a></li>
-          <li><a href="gioi-thieu.html">Giới thiệu</a></li>
-          <li><a href="san-pham.html">Sản phẩm</a></li>
-          <li><a href="gio-hang.html">Giỏ hàng</a></li>
-          <li><a href="thanh-toan.html">Thanh toán</a></li>
-          <li><a href="chinh-sach.html">Chính sách</a></li>
-          <li><a href="lien-he.html" class="active">Liên hệ</a></li>
-          <li><a href="dang-nhap.html" class="login-icon" title="Đăng nhập">Đăng nhập</a></li>
-        </ul>
-      </nav>
-    </div>
+      <div class="container">
+        <a href="index.html" class="logo">Darling</a>
+        <nav>
+          <ul>
+            <li><a href="index.html">Trang chủ</a></li>
+            <li><a href="gioi-thieu.html">Giới thiệu</a></li>
+            <li><a href="san-pham.html">Sản phẩm</a></li>
+            <li><a href="gio-hang.html">Giỏ hàng</a></li>
+            <li><a href="thanh-toan.html">Thanh toán</a></li>
+            <li><a href="chinh-sach.html">Chính sách</a></li>
+            <li><a href="lien-he.html" class="active">Liên hệ</a></li>
+            <li><a href="dang-nhap.html" class="login-icon" title="Đăng nhập">Đăng nhập</a></li>
+          </ul>
+        </nav>
+      </div>
   </header>
 
   <!-- === MAIN === -->
   <main>
-    <div class="container">
-      <h2 class="section-title">Liên hệ với Darling</h2>
+    <div class="container-xl pt-5 pb-5">
 
-      <!-- Giới thiệu ngắn -->
-      <section class="contact-intro">
-        <p>Chúng tôi luôn sẵn sàng hỗ trợ bạn. Vui lòng điền thông tin hoặc liên hệ qua các kênh sau.</p>
-      </section>
+      <!-- Title -->
+      <h1 class="fw-bold mb-3">Contact Us</h1>
 
-      <!-- Thông tin liên hệ -->
-      <section class="contact-info">
-        <div class="info-item">
-          <h3>📍 Địa chỉ</h3>
-          <p>123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh</p>
-        </div>
-        <div class="info-item">
-          <h3>📞 Điện thoại</h3>
-          <p>0123 456 789</p>
-        </div>
-        <div class="info-item">
-          <h3>📧 Email</h3>
-          <p>support@darling.vn</p>
-        </div>
-        <div class="info-item">
-          <h3>⏰ Giờ làm việc</h3>
-          <p>Thứ 2 – Thứ 7: 8:00 – 17:00</p>
-        </div>
-      </section>
+      <p class="text-secondary mb-5">
+        Trung tâm Dịch vụ Khách hàng Darling rất hân hạnh được hỗ trợ bạn giải đáp mọi thắc mắc về sản phẩm và thông tin doanh nghiệp của chúng tôi.
+         Vui lòng liên hệ với chúng tôi qua điện thoại: <b>1-800-123-4567</b> từ thứ Hai đến thứ Sáu, 9 giờ sáng đến 9 giờ tối, và thứ Bảy - Chủ nhật, 9
+          giờ sáng đến 6 giờ chiều hoặc điền vào biểu mẫu bên dưới để gửi email cho chúng tôi.
+        <br>
+        <small class="text-dark">
+        Vui lòng điền vào biểu mẫu này để gửi yêu cầu của bạn. Chúng tôi rất sẵn lòng hỗ trợ và sẽ trả lời bạn trong thời gian sớm nhất.</small>
+      </p>
 
-      <!-- Form liên hệ -->
-      <section class="contact-form">
-        <h3>Gửi tin nhắn cho chúng tôi</h3>
-        <form action="#" method="post">
-          <div class="form-group">
-            <label for="name">Họ và tên</label>
-            <input type="text" id="name" name="name" placeholder="Nhập họ và tên" required>
+      <!-- Write Us Form -->
+      <div class="row mb-5">
+        <div class="col-12">
+          <div class="card p-4 p-md-5 border-0 shadow-sm">
+
+            <h5 class="card-title mb-4 fw-bold">
+              <i class="bi bi-pencil-square me-2"></i> Liên hệ chúng tôi
+            </h5>
+
+            <form action="#" method="post">
+
+              <!-- Your Information -->
+              <h6 class="mb-3 fw-bold">Thông tin của quý khách</h6>
+
+              <div class="row g-3 mb-4">
+
+                <div class="col-md-6">
+                  <select class="form-select">
+                    <option selected>Chức danh</option>
+                    <option>Ông</option>
+                    <option>Bà</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <input type="text" class="form-control" placeholder="Tên">
+                </div>
+
+                <div class="col-md-6">
+                  <input type="text" class="form-control" placeholder="Họ">
+                </div>
+
+                <div class="col-md-6">
+                  <select class="form-select">
+                    <option selected>Quốc gia/Vùng lãnh thổ</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <select class="form-select">
+                    <option selected>Ngôn ngữ</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <input type="email" class="form-control" placeholder="Email Address">
+                </div>
+
+                <div class="col-md-6">
+                  <input type="tel" class="form-control" placeholder="Phone Number">
+                </div>
+              </div>
+
+              <!-- Your Request -->
+              <h6 class="mb-3 fw-bold">Yêu cầu của quý khách</h6>
+
+              <div class="mb-4">
+
+                <input type="text" class="form-control mb-3" placeholder="Subject">
+
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                  <span class="badge text-bg-light border text-dark">Loại da</span>
+                  <span class="badge text-bg-light border text-dark">Ưu đãi</span>
+                  <span class="badge text-bg-light border text-dark">Hoàn trả</span>
+                  <span class="badge text-bg-danger text-white">Sản phẩm</span>
+                </div>
+
+                <textarea class="form-control" rows="4" placeholder="Your Text"></textarea>
+                <div class="form-text text-end">0/500</div>
+
+              </div>
+
+              <!-- Policy -->
+              <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="policyCheck">
+                <label class="form-check-label" for="policyCheck">
+                 Tôi đã đọc và đồng ý với chính sách quyền riêng tư của Darling
+                </label>
+              </div>
+
+              <!-- Send Button -->
+              <div class="text-end">
+                <button type="submit" class="btn btn-primary px-4 rounded-pill">Gửi</button>
+              </div>
+
+            </form>
           </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Nhập email" required>
-          </div>
-          <div class="form-group">
-            <label for="message">Nội dung</label>
-            <textarea id="message" name="message" rows="5" placeholder="Nhập nội dung liên hệ" required></textarea>
-          </div>
-          <button type="submit">Gửi ngay</button>
-        </form>
-      </section>
+        </div>
+      </div>
 
-      <!-- Bản đồ -->
-      <section class="contact-map">
-        <h3>Bản đồ</h3>
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.502066188437!2d106.7004239748558!3d10.772216859276212!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f3b5eeb9a3f%3A0x1bcbecf91ac7b437!2zTmd1eeG7hW4gSMawxqFuZyBOZ3V54buFbiBIdeG6v3Q!5e0!3m2!1svi!2s!4v1696440000000!5m2!1svi!2s"
-          width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy">
-        </iframe>
-      </section>
+      <!-- Cards: Chat - Call - Instant Message -->
+      <div class="row g-4 mb-5">
+
+        <div class="col-md-4">
+          <div class="card text-center h-100 p-3 border-0 shadow-sm">
+            <div class="card-body">
+              <i class="bi bi-chat-dots-fill display-5 mb-3"></i>
+              <h5 class="card-title fw-bold">CHAT ONLINE</h5>
+              <p class="card-text mb-3">Tùy chọn bên dưới sẽ cung cấp cho bạn lời khuyên tốt nhất chỉ trong vài giây thông qua chatbot của chúng tôi.</p>
+              <button class="btn btn-outline-danger btn-sm rounded-pill px-3">Tìm hiểu thêm</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card text-center h-100 p-3 border-0 shadow-sm">
+            <div class="card-body">
+              <i class="bi bi-telephone-fill display-5 mb-3"></i>
+              <h5 class="card-title fw-bold">CALL US</h5>
+              <p class="card-text mb-3">Các cố vấn khách hàng của chúng tôi rất hân hạnh được hỗ trợ bạn. Dịch vụ hoạt động từ thứ Hai đến thứ Sáu, từ 8 giờ sáng đến 5 giờ chiều, và thứ Bảy từ 9 giờ sáng đến 1 giờ chiều.</p>
+              <button class="btn btn-outline-danger btn-sm rounded-pill px-3">Tìm hiểu thêm</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card text-center h-100 p-3 border-0 shadow-sm">
+            <div class="card-body">
+              <i class="bi bi-envelope-fill display-5 mb-3"></i>
+              <h5 class="card-title fw-bold">INSTANT MESSAGE</h5>
+              <p class="card-text mb-3">Bạn muốn liên hệ với chúng tôi qua ứng dụng nhắn tin tức thời? Các cố vấn khách hàng của chúng tôi sẵn sàng hỗ trợ bạn ngay bây giờ.</p>
+              <button class="btn btn-outline-danger btn-sm rounded-pill px-3">Tìm hiểu thêm</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Icons Section -->
+      <div class="d-flex flex-wrap justify-content-between text-center py-4 mb-5 border-top border-bottom bottom-icons">
+        <div class="p-2">
+          <i class="bi bi-emoji-heart-eyes-fill"></i>
+          <p class="mt-2 small">Không thử nghiệm trên động vật</p>
+        </div>
+        <div class="p-2">
+          <i class="bi bi-chat-left-text-fill"></i>
+          <p class="mt-2 small">Không sử dụng nguyên liệu nguồn gốc động vật</p>
+        </div>
+        <div class="p-2">
+          <i class="bi bi-shield-check"></i>
+          <p class="mt-2 small">Không chứa gluten hay sản phẩm từ gluten</p>
+        </div>
+        <div class="p-2">
+          <i class="bi bi-recycle"></i>
+          <p class="mt-2 small">Bao bì tái sử dụng</p>
+        </div>
+      </div>
+
     </div>
   </main>
 
   <!-- === FOOTER === -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div>
-                    <h4>Về Darling</h4>
-                    <p>Mô tả ngắn về công ty.</p>
-                </div>
-                <div>
-                    <h4>Chính sách</h4>
-                    <ul>
-                        <li><a href="chinh-sach.html">Chính sách</a></li>
-                        <li><a href="thanh-toan.html">Thanh toán</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4>Liên hệ</h4>
-                    <ul>
-                        <li><a href="lien-he.html">Thông tin liên hệ</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="copyright">
-                &copy; 2025 Darling.
-            </div>
-        </div>
-    </footer>
+  <footer>
+      <div class="container">
+          <div class="footer-content"></div>
+          <div class="copyright">
+              © 2025 Darling.
+          </div>
+      </div>
+  </footer>
 
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
