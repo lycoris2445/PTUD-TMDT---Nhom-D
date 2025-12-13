@@ -1,0 +1,81 @@
+body {
+    margin: 0;
+    background: #f5f7fb;
+    font-family: Inter, system-ui, sans-serif;
+}
+
+/* Layout */
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    background: #111827;
+    color: #fff;
+    padding: 20px;
+}
+
+.sidebar-logo {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    padding: 12px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #d1d5db;
+}
+
+.sidebar-menu li.active,
+.sidebar-menu li:hover {
+    background: #1f2937;
+    color: #fff;
+}
+
+/* Content */
+.content {
+    flex: 1;
+    padding: 24px;
+}
+
+.page-title {
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Card */
+.customers-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.06);
+}
+
+/* Table */
+.customers-table thead th {
+    background: #f9fafb;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.customers-table tbody tr:hover {
+    background: #f3f4f6;
+}
+
+.customers-table a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.search-input {
+    width: 260px;
+}
