@@ -1,0 +1,104 @@
+<?php
+$pageTitle = 'Trang chủ - Darling';
+$pageCss   = '../css/trang-chu.css'; // Gọi file css giao diện trang chủ
+include 'header.php';
+?>
+
+<main>
+
+    <section class="hero-section">
+        <div class="container">
+            <h1>Khung Banner/Hero</h1>
+            <p>Nơi để đặt hình ảnh quảng cáo lớn.</p>
+        </div>
+    </section>
+
+    <section class="featured-products container">
+        <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-image-placeholder">(Khung ảnh)</div>
+                <h4>Khung sản phẩm 1</h4>
+                <p>Giá: ...</p>
+            </div>
+            <div class="product-card">
+                <div class="product-image-placeholder">(Khung ảnh)</div>
+                <h4>Khung sản phẩm 2</h4>
+                <p>Giá: ...</p>
+            </div>
+            <div class="product-card">
+                <div class="product-image-placeholder">(Khung ảnh)</div>
+                <h4>Khung sản phẩm 3</h4>
+                <p>Giá: ...</p>
+            </div>
+            <div class="product-card">
+                <div class="product-image-placeholder">(Khung ảnh)</div>
+                <h4>Khung sản phẩm 4</h4>
+                <p>Giá: ...</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="categories-section container">
+        <h2 class="section-title">Mua Sắm Theo Danh Mục</h2>
+        <div class="category-grid">
+            <div class="category-card">
+                <div class="category-image-placeholder">(Khung ảnh Danh mục)</div>
+                <h3>Chăm sóc da</h3>
+            </div>
+            <div class="category-card">
+                <div class="category-image-placeholder">(Khung ảnh Danh mục)</div>
+                <h3>Trang điểm</h3>
+            </div>
+            <div class="category-card">
+                <div class="category-image-placeholder">(Khung ảnh Danh mục)</div>
+                <h3>Chăm sóc cơ thể</h3>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Khung Banner Khuyến Mãi (CTA)</h2>
+            <p>Nơi để thông tin giảm giá 30%, hoặc bộ sưu tập mới.</p>
+        </div>
+    </section>
+    
+    <section class="testimonials-section container">
+        <h2 class="section-title">Khách Hàng Nói Gì Về Darling</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <p>"Khung nội dung đánh giá của khách hàng. Sản phẩm rất tốt..."</p>
+                <h5>- Nguyễn Văn A</h5>
+            </div>
+            <div class="testimonial-card">
+                <p>"Khung nội dung đánh giá của khách hàng. Giao hàng nhanh..."</p>
+                <h5>- Trần Thị B</h5>
+            </div>
+            <div class="testimonial-card">
+                <p>"Khung nội dung đánh giá của khách hàng. Sẽ tiếp tục ủng hộ..."</p>
+                <h5>- Lê Văn C</h5>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section container">
+        <h2 class="section-title">Về Thương Hiệu Darling</h2>
+        <div class="content-box">
+            <p>Đây là khu vực nội dung bổ sung về câu chuyện thương hiệu, giá trị cốt lõi, hoặc cam kết (ví dụ: không thử nghiệm trên động vật).</p>
+        </div>
+    </section>
+    
+    <section class="newsletter-section container">
+        <h2 class="section-title">Đăng Ký Nhận Tin</h2>
+        <div class="newsletter-box">
+            <p>Để nhận thông tin về sản phẩm mới và các chương trình khuyến mãi.</p>
+            <div class="newsletter-form">
+                <div class="newsletter-form-input">(Khung Nhập Email)</div>
+                <div class="newsletter-form-button">(Khung Nút Gửi)</div>
+            </div>
+        </div>
+    </section>
+
+</main>
+<?php include 'footer.php'; ?>

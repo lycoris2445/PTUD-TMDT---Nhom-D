@@ -1,0 +1,76 @@
+<?php
+$pageTitle = 'Giới thiệu - Darling';
+$pageCss   = '../css/gioi-thieu.css'; // Gọi file css giao diện giới thiệu
+include 'header.php';
+?>
+
+<main>
+    <div class="container">
+        <h2 class="section-title">Về Darling</h2>
+
+        <section class="about-frame">
+            <div class="about-text">
+                <h3>Câu Chuyện Thương Hiệu</h3>
+                <p>Khung nội dung cho câu chuyện thương hiệu. Darling được thành lập vào năm 2025...</p>
+            </div>
+            <div class="about-image-placeholder">
+                (Khung ảnh minh họa 1)
+            </div>
+        </section>
+        
+        <section class="about-frame">
+            <div class="about-image-placeholder">
+                (Khung ảnh minh họa 2)
+            </div>
+            <div class="about-text">
+                <h3>Sứ Mệnh & Tầm Nhìn</h3>
+                <p>Khung nội dung cho sứ mệnh. Sứ mệnh của chúng tôi là... Tầm nhìn của chúng tôi là...</p>
+            </div>
+        </section>
+
+        <section class="values-section">
+            <h3>Giá Trị Cốt Lõi</h3>
+            <p class="subtitle">Khung nội dung cho giá trị cốt lõi. Chúng tôi cam kết:</p>
+            
+            <div class="values-grid">
+                <div class="value-card">
+                    <h4>Chất lượng</h4>
+                    <p>Khung mô tả giá trị chất lượng.</p>
+                </div>
+                <div class="value-card">
+                    <h4>An toàn</h4>
+                    <p>Khung mô tả giá trị an toàn.</p>
+                </div>
+                <div class="value-card">
+                    <h4>Khách hàng</h4>
+                    <p>Khung mô tả giá trị khách hàng.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="about-frame">
+            <div class="about-text">
+                <h3>Gặp gỡ Người Sáng Lập</h3>
+                <p>Khung nội dung giới thiệu về người sáng lập. Tên người sáng lập, lý do họ bắt đầu... "Tôi tin rằng vẻ đẹp..."</p>
+                <p>Một chút tiểu sử cá nhân hoặc chuyên môn để tạo sự tin tưởng.</p>
+            </div>
+            <div class="about-image-placeholder">
+                (Khung ảnh Chân dung người sáng lập)
+            </div>
+        </section>
+        
+        <section class="commitment-section">
+            <h2 class="section-title">Cam Kết Của Darling</h2>
+            
+            <div class="content-box">
+                <p>Khung nội dung cho các cam kết. Tại Darling, chúng tôi cam kết:</p>
+                <ul>
+                    <li><b>100% Cruelty-Free:</b> Khung mô tả (Chúng tôi không bao giờ thử nghiệm trên động vật).</li>
+                    <li><b>Thành phần sạch:</b> Khung mô tả (Không paraben, không sulfates...).</li>
+                    <li><b>Bền vững:</b> Khung mô tả (Sử dụng bao bì tái chế...).</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</main>
+<?php include 'footer.php'; ?>
