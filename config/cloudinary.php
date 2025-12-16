@@ -1,20 +1,35 @@
 <?php
 /**
  * Cloudinary Configuration & Helper Functions
- * 
- * Cách lấy thông tin:
- * 1. Đăng ký tài khoản tại https://cloudinary.com
- * 2. Vào Dashboard để lấy Cloud Name, API Key, API Secret
- * 3. Thay thế các giá trị bên dưới
+ * Sử dụng Cloudinary PHP SDK v3
  */
 
+// Load Composer autoload
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Cloudinary\Cloudinary;
+use Cloudinary\Configuration\Configuration;
+
 // ============================================
-// CLOUDINARY CREDENTIALS - THAY ĐỔI Ở ĐÂY
+// LOAD .ENV FILE
 // ============================================
-define('CLOUDINARY_CLOUD_NAME', 'YOUR_CLOUD_NAME');
-define('CLOUDINARY_API_KEY', 'YOUR_API_KEY');
-define('CLOUDINARY_API_SECRET', 'YOUR_API_SECRET');
-define('CLOUDINARY_UPLOAD_PRESET', 'darling_products'); // Unsigned upload preset (tạo trong Settings > Upload)
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos($line, '=') !== false && strpos($line, '#') !== 0) {
+            list($key, $value) = explode('=', $line, 2);
+            $_ENV[trim($key)] = trim($value);
+        }
+    }
+}
+
+// ============================================
+// CLOUDINARY CREDENTIALS FROM .ENV
+// ============================================
+define('CLOUDINARY_CLOUD_NAME', $_ENV['CLOUDINARY_CLOUD_NAME'] ?? 'YOUR_CLOUD_NAME');
+define('CLOUDINARY_API_KEY', $_ENV['CLOUDINARY_API_KEY'] ?? 'YOUR_API_KEY');
+define('CLOUDINARY_API_SECRET', $_ENV['CLOUDINARY_API_SECRET'] ?? 'YOUR_API_SECRET');
 
 // ============================================
 // DATABASE CONNECTION
@@ -40,60 +55,40 @@ function getDBConnection() {
 }
 
 /**
- * Upload ảnh lên Cloudinary bằng cURL (không cần SDK)
+ * Lấy instance Cloudinary SDK
+ */
+function getCloudinary() {
+    static $cloudinary = null;
+    if ($cloudinary === null) {
+        $cloudinary = new Cloudinary([
+            'cloud' => [
+                'cloud_name' => CLOUDINARY_CLOUD_NAME,
+                'api_key'    => CLOUDINARY_API_KEY,
+                'api_secret' => CLOUDINARY_API_SECRET,
+            ],
+            'url' => [
+                'secure' => true
+            ]
+        ]);
+    }
+    return $cloudinary;
+}
+
+/**
+ * Upload ảnh lên Cloudinary bằng SDK
  * 
  * @param string $filePath Đường dẫn file tạm từ $_FILES['file']['tmp_name']
  * @param string $folder Thư mục trên Cloudinary (vd: 'products')
  * @return array ['success' => bool, 'url' => string, 'public_id' => string, 'error' => string]
  */
-function uploadToCloudinary($filePath, $folder = 'products') {
-    $timestamp = time();
-    
-    // Tạo signature cho signed upload
-    $params = [
-        'folder' => $folder,
-        'timestamp' => $timestamp
-    ];
-    ksort($params);
-    
-    $signatureString = '';
-    foreach ($params as $key => $value) {
-        $signatureString .= $key . '=' . $value . '&';
-    }
-    $signatureString = rtrim($signatureString, '&') . CLOUDINARY_API_SECRET;
-    $signature = sha1($signatureString);
-    
-    // Chuẩn bị request
-    $uploadUrl = 'https://api.cloudinary.com/v1_1/' . CLOUDINARY_CLOUD_NAME . '/image/upload';
-    
-    $postFields = [
-        'file' => new CURLFile($filePath),
-        'api_key' => CLOUDINARY_API_KEY,
-        'timestamp' => $timestamp,
-        'signature' => $signature,
-        'folder' => $folder
-    ];
-    
-    // Gửi request
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $uploadUrl);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlError = curl_error($ch);
-    curl_close($ch);
-    
-    if ($curlError) {
-        return ['success' => false, 'error' => 'cURL Error: ' . $curlError];
-    }
-    
-    $result = json_decode($response, true);
-    
-    if ($httpCode === 200 && isset($result['secure_url'])) {
+function uploadToCloudinary($filePath, $folder = 'darling/products') {
+    try {
+        $cloudinary = getCloudinary();
+        $result = $cloudinary->uploadApi()->upload($filePath, [
+            'folder' => $folder,
+            'resource_type' => 'image'
+        ]);
+        
         return [
             'success' => true,
             'url' => $result['secure_url'],
@@ -101,12 +96,12 @@ function uploadToCloudinary($filePath, $folder = 'products') {
             'width' => $result['width'] ?? 0,
             'height' => $result['height'] ?? 0
         ];
+    } catch (Exception $e) {
+        return [
+            'success' => false,
+            'error' => $e->getMessage()
+        ];
     }
-    
-    return [
-        'success' => false,
-        'error' => $result['error']['message'] ?? 'Upload thất bại'
-    ];
 }
 
 /**
@@ -116,77 +111,47 @@ function uploadToCloudinary($filePath, $folder = 'products') {
  * @return array ['success' => bool, 'error' => string]
  */
 function deleteFromCloudinary($publicId) {
-    $timestamp = time();
-    
-    $signatureString = 'public_id=' . $publicId . '&timestamp=' . $timestamp . CLOUDINARY_API_SECRET;
-    $signature = sha1($signatureString);
-    
-    $destroyUrl = 'https://api.cloudinary.com/v1_1/' . CLOUDINARY_CLOUD_NAME . '/image/destroy';
-    
-    $postFields = [
-        'public_id' => $publicId,
-        'api_key' => CLOUDINARY_API_KEY,
-        'timestamp' => $timestamp,
-        'signature' => $signature
-    ];
-    
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $destroyUrl);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    
-    $response = curl_exec($ch);
-    curl_close($ch);
-    
-    $result = json_decode($response, true);
-    
-    if (isset($result['result']) && $result['result'] === 'ok') {
-        return ['success' => true];
+    try {
+        $cloudinary = getCloudinary();
+        $result = $cloudinary->uploadApi()->destroy($publicId);
+        
+        if ($result['result'] === 'ok') {
+            return ['success' => true];
+        }
+        return ['success' => false, 'error' => 'Delete failed'];
+    } catch (Exception $e) {
+        return ['success' => false, 'error' => $e->getMessage()];
     }
-    
-    return ['success' => false, 'error' => $result['error']['message'] ?? 'Xóa thất bại'];
 }
 
 /**
  * Tạo URL ảnh với transformation (resize, crop, etc.)
  * 
- * @param string $url URL gốc từ Cloudinary
+ * @param string $publicId Public ID của ảnh
  * @param array $options ['width' => 300, 'height' => 300, 'crop' => 'fill']
  * @return string URL đã transform
  */
-function cloudinaryTransform($url, $options = []) {
-    if (empty($url) || strpos($url, 'cloudinary.com') === false) {
-        return $url;
+function cloudinaryTransform($publicId, $options = []) {
+    try {
+        $cloudinary = getCloudinary();
+        $transformation = [];
+        
+        if (!empty($options['width'])) {
+            $transformation['width'] = $options['width'];
+        }
+        if (!empty($options['height'])) {
+            $transformation['height'] = $options['height'];
+        }
+        if (!empty($options['crop'])) {
+            $transformation['crop'] = $options['crop'];
+        }
+        if (!empty($options['quality'])) {
+            $transformation['quality'] = $options['quality'];
+        }
+        
+        return (string) $cloudinary->image($publicId)->toUrl($transformation);
+    } catch (Exception $e) {
+        return '';
     }
-    
-    $transforms = [];
-    
-    if (!empty($options['width'])) {
-        $transforms[] = 'w_' . $options['width'];
-    }
-    if (!empty($options['height'])) {
-        $transforms[] = 'h_' . $options['height'];
-    }
-    if (!empty($options['crop'])) {
-        $transforms[] = 'c_' . $options['crop'];
-    }
-    if (!empty($options['quality'])) {
-        $transforms[] = 'q_' . $options['quality'];
-    }
-    
-    if (empty($transforms)) {
-        return $url;
-    }
-    
-    $transformString = implode(',', $transforms);
-    
-    // Insert transformation vào URL
-    return preg_replace(
-        '/(\/upload\/)/',
-        '/upload/' . $transformString . '/',
-        $url
-    );
 }
 ?>
