@@ -25,18 +25,25 @@
   <div class="header-inner">
 
     <!-- LOGO -->
-    <a href="index.php">
+    <a href="index.php" class="logo-link" aria-label="Darling home">
       <img src="../icons/logo_darling.svg" class="site-logo" alt="Darling">
     </a>
 
+    <!-- MOBILE TOGGLE -->
+    <button class="nav-toggle" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="primary-nav">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
     <!-- NAV -->
-    <nav>
+    <nav id="primary-nav">
       <ul class="nav-menu">
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About Us</a></li>
         <li><a href="store.php">Store</a></li>
-        <li><a href="cart.html">Cart</a></li>
-        <li><a href="order.html">Order</a></li>
+        <li><a href="cart.php">Cart</a></li>
+        <li><a href="order.php">Order</a></li>
         <li><a href="policy.php">Policy</a></li>
         <li><a href="contact.php">Contact</a></li>
         <li>

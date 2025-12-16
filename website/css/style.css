@@ -71,6 +71,53 @@
   color: #fff;
 }
 
+/* === MOBILE NAV TOGGLE === */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.nav-toggle span {
+  display: block;
+  height: 2px;
+  background: #333;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+body.nav-open .nav-toggle span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+body.nav-open .nav-toggle span:nth-child(2) {
+  opacity: 0;
+}
+
+body.nav-open .nav-toggle span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* === Buttons / pills === */
+.btn-darling {
+  background: var(--darling-color);
+  color: #fff;
+  border: 1px solid var(--darling-color);
+}
+
+.btn-darling:hover {
+  color: #fff;
+  background: #850442;
+  border-color: #850442;
+}
+
 /* ====Header của phần About trong footer==== */
 .footer-about-header {
   display: flex;
@@ -81,6 +128,58 @@
 @media (max-width: 768px) {
   .site-logo {
     width: 28px;        /* RESPONSIVE nhỏ hơn trên mobile */
+  }
+}
+
+/* === RESPONSIVE NAV === */
+@media (max-width: 900px) {
+  .header-inner {
+    position: relative;
+    padding: 12px 16px;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .nav-menu {
+    position: absolute;
+    top: 64px;
+    right: 16px;
+    left: 16px;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.06);
+    display: none;
+    z-index: 20;
+  }
+
+  body.nav-open .nav-menu {
+    display: flex;
+  }
+
+  .nav-menu li {
+    width: 100%;
+  }
+
+  .nav-menu li a {
+    display: block;
+    width: 100%;
+    padding: 6px 0;
+  }
+
+  .login-btn {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  body.nav-open {
+    overflow: hidden;
   }
 }
 

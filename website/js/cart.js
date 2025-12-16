@@ -102,29 +102,36 @@
     tbody.innerHTML = "";
 
     if (!cart.length) {
-      if (tableWrap) tableWrap.style.display = "none";
-      if (emptyBox) emptyBox.style.display = "block";
+      if (tableWrap) tableWrap.classList.add("d-none");
+      if (emptyBox) emptyBox.classList.remove("d-none");
     } else {
-      if (tableWrap) tableWrap.style.display = "block";
-      if (emptyBox) emptyBox.style.display = "none";
+      if (tableWrap) tableWrap.classList.remove("d-none");
+      if (emptyBox) emptyBox.classList.add("d-none");
 
       for (const item of cart) {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td class="prod">
-            <img src="${item.image || ""}" alt="${item.name}" onerror="this.style.display='none'"/>
-            <span>${item.name}</span>
-          </td>
-          <td>${fmtCurrency(item.price)}</td>
           <td>
-            <div class="qty">
-              <button class="dec" data-action="dec" data-id="${item.id}">-</button>
-              <input type="number" min="1" value="${item.qty}" data-id="${item.id}"/>
-              <button class="inc" data-action="inc" data-id="${item.id}">+</button>
+            <div class="d-flex align-items-center gap-3">
+              <img src="${item.image || ""}" alt="${item.name}" onerror="this.style.display='none'" class="rounded" />
+              <div>
+                <div class="fw-semibold">${item.name}</div>
+                <div class="text-muted small">Mã: ${item.id}</div>
+              </div>
             </div>
           </td>
-          <td class="line-total">${fmtCurrency(item.price * item.qty)}</td>
-          <td><button class="remove" data-action="remove" data-id="${item.id}">×</button></td>
+          <td class="text-end">${fmtCurrency(item.price)}</td>
+          <td class="text-center">
+            <div class="qty-control">
+              <button class="btn btn-outline-secondary btn-sm" data-action="dec" data-id="${item.id}">-</button>
+              <input class="form-control form-control-sm text-center" type="number" min="1" value="${item.qty}" data-id="${item.id}"/>
+              <button class="btn btn-outline-secondary btn-sm" data-action="inc" data-id="${item.id}">+</button>
+            </div>
+          </td>
+          <td class="text-end fw-semibold">${fmtCurrency(item.price * item.qty)}</td>
+          <td class="text-center">
+            <button class="btn btn-link text-danger p-0" data-action="remove" data-id="${item.id}" aria-label="Xóa">×</button>
+          </td>
         `;
         tbody.appendChild(tr);
       }
@@ -157,7 +164,7 @@
       renderCartTable();
     });
 
-    tbody.addEventListener("change", (e) => {
+    tbody.addEventListener("input", (e) => {
       const input = e.target.closest("input[type=number]");
       if (!input) return;
       const id = input.getAttribute("data-id");
@@ -194,19 +201,19 @@
 
     list.innerHTML = "";
     if (!cart.length) {
-      if (wrap) wrap.style.display = "none";
-      if (empty) empty.style.display = "block";
+      if (wrap) wrap.classList.add("d-none");
+      if (empty) empty.classList.remove("d-none");
       return;
     }
-    if (wrap) wrap.style.display = "block";
-    if (empty) empty.style.display = "none";
+    if (wrap) wrap.classList.remove("d-none");
+    if (empty) empty.classList.add("d-none");
 
     for (const it of cart) {
       const li = document.createElement("li");
-      li.className = "checkout-item";
+      li.className = "checkout-item list-group-item d-flex justify-content-between align-items-center";
       li.innerHTML = `
         <span class="name">${it.name} × ${it.qty}</span>
-        <span class="price">${fmtCurrency(it.price * it.qty)}</span>
+        <span class="price fw-semibold">${fmtCurrency(it.price * it.qty)}</span>
       `;
       list.appendChild(li);
     }
