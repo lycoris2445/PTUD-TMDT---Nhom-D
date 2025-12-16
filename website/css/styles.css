@@ -1,4 +1,4 @@
- /* === CSS CHUNG === */
+ /* === CSS CHUNG css cũ === */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -79,5 +79,25 @@
             padding-top: 20px;
             border-top: 1px solid #eee;
         }
+/* === PHÍA TRÊN LÀ CODE HỒI CÒN HTML CHUYỂN SANG PHP CÓ DÙNG BOOTSTRAP THÌ ANH THY CÓ CÁC CSS DƯỚI NÀY === */   
 
-        
+/* ===SITE LOGO (GLOBAL)=== */
+.site-logo {
+  width: 36px;          /* kích thước chuẩn desktop */
+  height: auto;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* ====Header của phần About trong footer==== */
+.footer-about-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;            
+}
+
+@media (max-width: 768px) {
+  .site-logo {
+    width: 28px;        /* RESPONSIVE nhỏ hơn trên mobile */
+  }
+}

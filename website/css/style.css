@@ -1,0 +1,85 @@
+:root {
+  --darling-color: #A10550;
+}
+
+.text-darling {
+  color: var(--darling-color);
+}
+
+/* ===SITE LOGO (GLOBAL)=== */
+.site-logo {
+  width: 80px;          
+  height: auto;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* ================= HEADER ================= */
+
+.site-header {
+  border-bottom: 1px solid #e5e5e5;
+  background-color: #fff;
+}
+
+/* wrapper */
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0px 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 72px;   /* CHIỀU CAO HEADER */
+}
+
+/* === MAIN NAV MENU === */
+.nav-menu {
+  display: flex;    
+  list-style: none;
+  gap: 24px;
+}
+
+.nav-menu li a {
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+}
+
+.nav-menu li a:hover {
+  color: var(--darling-color);
+  text-decoration: underline;
+}
+
+/* === LOGIN BUTTON ở HEADER === */
+.login-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--darling-color);
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--darling-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  background-color: var(--darling-color);
+  color: #fff;
+}
+
+/* ====Header của phần About trong footer==== */
+.footer-about-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;            
+}
+
+@media (max-width: 768px) {
+  .site-logo {
+    width: 28px;        /* RESPONSIVE nhỏ hơn trên mobile */
+  }
+}
+
