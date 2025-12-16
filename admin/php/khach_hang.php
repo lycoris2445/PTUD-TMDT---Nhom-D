@@ -46,6 +46,7 @@ function sortLink($column, $label, $currentSort, $currentOrder) {
     <meta charset="UTF-8">
     <title>Customers</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/admin.css">
     <link rel="stylesheet" href="../css/khach_hang.css">
 </head>
 <body>
