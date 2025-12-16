@@ -44,12 +44,6 @@ CREATE TABLE addresses (
 -- MODULE: PRODUCTS
 -- ==========================================
 
-CREATE TABLE brands (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    logo_url TEXT
-);
-
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     parent_id INT,

@@ -1,24 +1,29 @@
 <?php
 // ==================================================
-// (1) KẾT NỐI DATABASE (CHƯA DÙNG – ĐỂ SAU)
+// (1) KẾT NỐI DATABASE
 // ==================================================
-// Sau này dùng database thì:
-// $conn = new mysqli("localhost", "root", "", "darling_db");
+require_once __DIR__ . '/../../config/cloudinary.php';
+
+$conn = getDBConnection();
 
 // ==================================================
-// (2) DỮ LIỆU GIẢ LẬP – THAY THẾ DATABASE
+// (2) LẤY DỮ LIỆU TỪ DATABASE
 // ==================================================
 
-// Category filter (sau này lấy từ bảng categories)
-$categories = [
-  'Cleanser',
-  'Toner',
-  'Serum',
-  'Moisturizer',
-  'Sunscreen'
-];
+// Lấy danh sách categories
+$categories = [];
+$catResult = $conn->query("SELECT DISTINCT name FROM categories ORDER BY name");
+if ($catResult) {
+    while ($row = $catResult->fetch_assoc()) {
+        $categories[] = $row['name'];
+    }
+}
+// Fallback nếu chưa có categories trong DB
+if (empty($categories)) {
+    $categories = ['Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen'];
+}
 
-// Skin condition filter
+// Skin condition filter (giữ tĩnh vì chưa có trong DB)
 $skinConditions = [
   'Acne',
   'Sensitive Skin',
@@ -33,51 +38,11 @@ $featuredOptions = [
   'On Sale'
 ];
 
-// Price filter
+// Price filter (VND)
 $priceRanges = [
-  'Under $30',
-  '$30 - $50',
-  'Above $50'
-];
-
-// Product list (sau này là bảng products)
-$products = [
-  [
-    'id' => 1,
-    'name' => 'Beauty La Mousse Off/On',
-    'desc' => 'Refreshing cleanser for daily skincare.',
-    'price' => 52,
-    'category' => 'Cleanser',
-    'condition' => 'Sensitive Skin',
-    'featured' => 'Best Seller'
-  ],
-  [
-    'id' => 2,    
-    'name' => 'Hydrating Serum',
-    'desc' => 'Deep hydration for sensitive skin.',
-    'price' => 68,
-    'category' => 'Serum',
-    'condition' => 'Dry Skin',
-    'featured' => 'New Arrival'
-  ],
-  [
-    'id' => 3,
-    'name' => 'Vitamin C Essence',
-    'desc' => 'Brightening and smoothing skin tone.',
-    'price' => 72,
-    'category' => 'Serum',
-    'condition' => 'Oily Skin',
-    'featured' => 'On Sale'
-  ],
-  [
-    'id' => 4,
-    'name' => 'Moisturizing Cream',
-    'desc' => 'Locks in moisture all day.',
-    'price' => 60,
-    'category' => 'Moisturizer',
-    'condition' => 'Dry Skin',
-    'featured' => 'Best Seller'
-  ]
+  'Dưới 500K',
+  '500K - 1 triệu',
+  'Trên 1 triệu'
 ];
 
 // ==================================================
@@ -89,39 +54,120 @@ $selectedFeatured   = $_GET['featured'] ?? [];
 $selectedPrices     = $_GET['price'] ?? [];
 
 // ==================================================
-// (4) LỌC SẢN PHẨM (GIẢ LẬP – SAU NÀY ĐỔI THÀNH SQL)
+// (4) TRUY VẤN SẢN PHẨM TỪ DATABASE
 // ==================================================
-$filteredProducts = array_filter($products, function ($p) use (
-  $selectedCategories,
-  $selectedConditions,
-  $selectedFeatured,
-  $selectedPrices
-) {
-  if ($selectedCategories && !in_array($p['category'], $selectedCategories)) {
-    return false;
-  }
+$sql = "
+    SELECT 
+        p.id,
+        p.name,
+        p.description AS `desc`,
+        COALESCE(pv.price, p.base_price) AS price,
+        c.name AS category,
+        pv.image_url,
+        pv.id AS variant_id,
+        pv.sku_code
+    FROM products p
+    LEFT JOIN categories c ON p.category_id = c.id
+    LEFT JOIN product_variants pv ON pv.product_id = p.id
+    WHERE p.status = 'ACTIVE'
+";
 
-  if ($selectedConditions && !in_array($p['condition'], $selectedConditions)) {
-    return false;
-  }
+// Build WHERE conditions
+$whereConditions = [];
+$params = [];
+$types = '';
 
-  if ($selectedFeatured && !in_array($p['featured'], $selectedFeatured)) {
-    return false;
-  }
-
-  if ($selectedPrices) {
-    $match = false;
-    foreach ($selectedPrices as $range) {
-      if ($range === 'Under $30' && $p['price'] < 30) $match = true;
-      if ($range === '$30 - $50' && $p['price'] >= 30 && $p['price'] <= 50) $match = true;
-      if ($range === 'Above $50' && $p['price'] > 50) $match = true;
+if (!empty($selectedCategories)) {
+    $placeholders = implode(',', array_fill(0, count($selectedCategories), '?'));
+    $whereConditions[] = "c.name IN ($placeholders)";
+    foreach ($selectedCategories as $cat) {
+        $params[] = $cat;
+        $types .= 's';
     }
-    if (!$match) return false;
-  }
+}
 
-  return true;
-});
-$pageCss   = '../css/store.css';
+if (!empty($selectedPrices)) {
+    $priceConditions = [];
+    foreach ($selectedPrices as $range) {
+        if ($range === 'Dưới 500K') {
+            $priceConditions[] = "COALESCE(pv.price, p.base_price) < 500000";
+        } elseif ($range === '500K - 1 triệu') {
+            $priceConditions[] = "(COALESCE(pv.price, p.base_price) >= 500000 AND COALESCE(pv.price, p.base_price) <= 1000000)";
+        } elseif ($range === 'Trên 1 triệu') {
+            $priceConditions[] = "COALESCE(pv.price, p.base_price) > 1000000";
+        }
+    }
+    if ($priceConditions) {
+        $whereConditions[] = '(' . implode(' OR ', $priceConditions) . ')';
+    }
+}
+
+if ($whereConditions) {
+    $sql .= ' AND ' . implode(' AND ', $whereConditions);
+}
+
+$sql .= " GROUP BY p.id ORDER BY p.created_at DESC";
+
+// Execute query
+$products = [];
+if ($params) {
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    $result = $conn->query($sql);
+}
+
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $products[] = $row;
+    }
+}
+
+// Fallback: nếu không có sản phẩm trong DB, dùng dữ liệu mẫu
+if (empty($products)) {
+    $products = [
+        [
+            'id' => 1,
+            'name' => 'Beauty La Mousse Off/On',
+            'desc' => 'Refreshing cleanser for daily skincare.',
+            'price' => 520000,
+            'category' => 'Cleanser',
+            'image_url' => ''
+        ],
+        [
+            'id' => 2,
+            'name' => 'Hydrating Serum',
+            'desc' => 'Deep hydration for sensitive skin.',
+            'price' => 680000,
+            'category' => 'Serum',
+            'image_url' => ''
+        ],
+        [
+            'id' => 3,
+            'name' => 'Vitamin C Essence',
+            'desc' => 'Brightening and smoothing skin tone.',
+            'price' => 720000,
+            'category' => 'Serum',
+            'image_url' => ''
+        ],
+        [
+            'id' => 4,
+            'name' => 'Moisturizing Cream',
+            'desc' => 'Locks in moisture all day.',
+            'price' => 600000,
+            'category' => 'Moisturizer',
+            'image_url' => ''
+        ]
+    ];
+}
+
+// Dùng $products trực tiếp, không cần filter thêm
+$filteredProducts = $products;
+
+$pageTitle = "Store - Darling";
+$pageCss = "../css/san-pham.css";
 include 'header.php';
 ?>
 
@@ -210,25 +256,34 @@ include 'header.php';
         <?php endif; ?>
 
         <?php foreach ($filteredProducts as $product): ?>
-          <!--
-            (5) RENDER PRODUCT
-            Sau này thay bằng:
-            while ($row = mysqli_fetch_assoc($result)) { ... }
-          -->
           <div class="col-md-4">
-            <a href="product.php?id=<?= $product['id'] ?>" class="text-decoration-none text-dark">
-              <div class="product-card text-center border p-3">
+            <div class="product-card text-center border p-3">
 
-                <div class="bg-light d-flex align-items-center justify-content-center"
-                    style="height:200px;">
-                  [ Image ]
-                </div>
+              <div class="product-image-wrap bg-light d-flex align-items-center justify-content-center"
+                   style="height:200px; overflow:hidden; border-radius: 8px;">
+                <?php if (!empty($product['image_url'])): ?>
+                  <img src="<?= htmlspecialchars($product['image_url']) ?>" 
+                       alt="<?= htmlspecialchars($product['name']) ?>"
+                       style="max-width:100%; max-height:100%; object-fit:cover;">
+                <?php else: ?>
+                  <span class="text-muted">[ No Image ]</span>
+                <?php endif; ?>
+              </div>
 
-                <h6 class="mt-3"><?= $product['name'] ?></h6>
-                <p class="text-muted small"><?= $product['desc'] ?></p>
-                <p class="text-darling fw-semibold">
-                  $<?= number_format($product['price'], 2) ?>
-                </p>
+              <h6 class="mt-3"><?= htmlspecialchars($product['name']) ?></h6>
+              <p class="text-muted small"><?= htmlspecialchars($product['desc'] ?? '') ?></p>
+              <p class="text-darling fw-semibold">
+                <?= number_format($product['price'], 0, ',', '.') ?>₫
+              </p>
+
+              <button class="btn btn-sm btn-darling"
+                      data-add-to-cart
+                      data-id="<?= $product['id'] ?>"
+                      data-name="<?= htmlspecialchars($product['name']) ?>"
+                      data-price="<?= $product['price'] ?>"
+                      data-image="<?= htmlspecialchars($product['image_url'] ?? '') ?>">
+                <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+              </button>
 
               </div>
             </a>
