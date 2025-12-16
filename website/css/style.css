@@ -1,9 +1,10 @@
+/* ===QUY ĐỊNH MÀU CHỮ DARLING=== */
 :root {
   --darling-color: #A10550;
 }
 
-.text-darling {
-  color: var(--darling-color);
+.text-darling {     
+  color: var(--darling-color);      
 }
 
 /* ===SITE LOGO (GLOBAL)=== */

@@ -43,6 +43,7 @@ $priceRanges = [
 // Product list (sau này là bảng products)
 $products = [
   [
+    'id' => 1,
     'name' => 'Beauty La Mousse Off/On',
     'desc' => 'Refreshing cleanser for daily skincare.',
     'price' => 52,
@@ -51,6 +52,7 @@ $products = [
     'featured' => 'Best Seller'
   ],
   [
+    'id' => 2,    
     'name' => 'Hydrating Serum',
     'desc' => 'Deep hydration for sensitive skin.',
     'price' => 68,
@@ -59,6 +61,7 @@ $products = [
     'featured' => 'New Arrival'
   ],
   [
+    'id' => 3,
     'name' => 'Vitamin C Essence',
     'desc' => 'Brightening and smoothing skin tone.',
     'price' => 72,
@@ -67,6 +70,7 @@ $products = [
     'featured' => 'On Sale'
   ],
   [
+    'id' => 4,
     'name' => 'Moisturizing Cream',
     'desc' => 'Locks in moisture all day.',
     'price' => 60,
@@ -117,7 +121,7 @@ $filteredProducts = array_filter($products, function ($p) use (
 
   return true;
 });
-
+$pageCss   = '../css/store.css';
 include 'header.php';
 ?>
 
@@ -185,9 +189,7 @@ include 'header.php';
           <strong>Price</strong>
           <?php foreach ($priceRanges as $range): ?>
             <div class="form-check">
-              <input class="form-check-input"
-                     type="checkbox"
-                     name="price[]"
+              <input class="form-check-input" type="checkbox" name="price[]"
                      value="<?= $range ?>"
                      <?= in_array($range, $selectedPrices) ? 'checked' : '' ?>>
               <label class="form-check-label"><?= $range ?></label>
@@ -214,20 +216,22 @@ include 'header.php';
             while ($row = mysqli_fetch_assoc($result)) { ... }
           -->
           <div class="col-md-4">
-            <div class="text-center border p-3">
+            <a href="product.php?id=<?= $product['id'] ?>" class="text-decoration-none text-dark">
+              <div class="product-card text-center border p-3">
 
-              <div class="bg-light d-flex align-items-center justify-content-center"
-                   style="height:200px;">
-                [ Image ]
+                <div class="bg-light d-flex align-items-center justify-content-center"
+                    style="height:200px;">
+                  [ Image ]
+                </div>
+
+                <h6 class="mt-3"><?= $product['name'] ?></h6>
+                <p class="text-muted small"><?= $product['desc'] ?></p>
+                <p class="text-darling fw-semibold">
+                  $<?= number_format($product['price'], 2) ?>
+                </p>
+
               </div>
-
-              <h6 class="mt-3"><?= $product['name'] ?></h6>
-              <p class="text-muted small"><?= $product['desc'] ?></p>
-              <p class="text-darling fw-semibold">
-                $<?= number_format($product['price'], 2) ?>
-              </p>
-
-            </div>
+            </a>
           </div>
         <?php endforeach; ?>
 

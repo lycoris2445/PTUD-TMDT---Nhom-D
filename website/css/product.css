@@ -1,0 +1,40 @@
+.main-img {
+  max-height: 450px;
+}
+
+.thumb-img {
+  width: 60px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+}
+
+.variant-btn {
+  border: 1px solid #000;
+  background: #fff;
+  padding: 8px 16px;
+  margin-right: 10px;
+}
+
+.variant-btn.active {
+  background: #000;
+  color: #fff;
+}
+
+.btn-darling {
+  background: #A10550;
+  color: #fff;
+  border: none;
+}
+
+.benefit-box {
+  background: #f9f9f9;
+  padding: 15px;
+}
+
+.tab-box {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+}
