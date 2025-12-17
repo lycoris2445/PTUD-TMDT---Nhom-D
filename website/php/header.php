@@ -39,8 +39,8 @@
     <!-- NAV -->
     <nav id="primary-nav">
       <ul class="nav-menu">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="about.html">About Us</a></li>
+        <li><a href="index.php">Home</a></li>
+        <li><a href="about.php">About Us</a></li>
         <li><a href="store.php">Store</a></li>
         <li><a href="cart.php">Cart</a></li>
         <li><a href="order.php">Order</a></li>

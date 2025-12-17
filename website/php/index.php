@@ -1,6 +1,10 @@
 <?php
 $pageTitle = 'Trang chủ - Darling';
 $pageCss   = '../css/trang-chu.css'; // Gọi file css giao diện trang chủ
+
+// Kết nối database để test
+$pdo = require __DIR__ . '/../../config/db_connect.php';
+
 include 'header.php';
 ?>
 

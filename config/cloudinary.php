@@ -32,12 +32,12 @@ define('CLOUDINARY_API_KEY', $_ENV['CLOUDINARY_API_KEY'] ?? 'YOUR_API_KEY');
 define('CLOUDINARY_API_SECRET', $_ENV['CLOUDINARY_API_SECRET'] ?? 'YOUR_API_SECRET');
 
 // ============================================
-// DATABASE CONNECTION
+// DATABASE CONNECTION FROM .ENV
 // ============================================
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'cosmetics_ecommerce');
+define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
+define('DB_USER', $_ENV['DB_USER'] ?? 'root');
+define('DB_PASS', $_ENV['DB_PASS'] ?? '');
+define('DB_NAME', $_ENV['DB_NAME'] ?? 'ptud');
 
 /**
  * Kết nối database
@@ -45,11 +45,32 @@ define('DB_NAME', 'cosmetics_ecommerce');
 function getDBConnection() {
     static $conn = null;
     if ($conn === null) {
+        error_log("[DB-MySQLi] Attempting connection to " . DB_NAME . "@" . DB_HOST);
         $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        
         if ($conn->connect_error) {
+            error_log("[DB-MySQLi] ✗ CONNECTION FAILED: " . $conn->connect_error);
+            
+            // Hiển thị thông báo lỗi trên trang web
+            if (php_sapi_name() !== 'cli') {
+                echo '<div style="position:fixed;top:10px;right:10px;background:#f44336;color:white;padding:12px 20px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:9999;font-family:Arial,sans-serif;font-size:14px;">';
+                echo '✗ Database Error: ' . htmlspecialchars($conn->connect_error);
+                echo '</div>';
+            }
+            
             die("Kết nối database thất bại: " . $conn->connect_error);
         }
+        
         $conn->set_charset("utf8mb4");
+        error_log("[DB-MySQLi] ✓ Connected successfully to database '" . DB_NAME . "'");
+        
+        // Hiển thị thông báo thành công trên trang web
+        if (php_sapi_name() !== 'cli') {
+            echo '<div style="position:fixed;top:10px;right:10px;background:#4caf50;color:white;padding:12px 20px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:9999;font-family:Arial,sans-serif;font-size:14px;">';
+            echo '✓ Database Connected: <strong>' . htmlspecialchars(DB_NAME) . '</strong>';
+            echo '</div>';
+            echo "<script>console.log('[DB-MySQLi] ✓ Connected to: " . DB_NAME . "');</script>";
+        }
     }
     return $conn;
 }
