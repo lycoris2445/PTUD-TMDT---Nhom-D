@@ -1,10 +1,7 @@
 <?php
 // Database connection for Laragon (MySQL)
 // Usage: $pdo = require __DIR__ . '/db_connect.php';
-
-// ============================================
 // LOAD .ENV FILE
-// ============================================
 $envFile = __DIR__ . '/../.env';
 if (file_exists($envFile)) {
     $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -17,11 +14,11 @@ if (file_exists($envFile)) {
 }
 
 // Configuration from .env
-$host = $_ENV['DB_HOST'] ?? '127.0.0.1';
-$port = $_ENV['DB_PORT'] ?? '3306';
-$db   = $_ENV['DB_NAME'] ?? 'ptud';
-$user = $_ENV['DB_USER'] ?? 'root';
-$pass = $_ENV['DB_PASS'] ?? '';
+$host = $_ENV['DB_HOST'] ?? throw new Exception('.env missing: DB_HOST required');
+$port = $_ENV['DB_PORT'] ?? throw new Exception('.env missing: DB_PORT required');
+$db   = $_ENV['DB_NAME'] ?? throw new Exception('.env missing: DB_NAME required');
+$user = $_ENV['DB_USER'] ?? throw new Exception('.env missing: DB_USER required');
+$pass = $_ENV['DB_PASS'] ?? '';  // password có thể empty
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host={$host};port={$port};dbname={$db};charset={$charset}";
@@ -43,13 +40,13 @@ try {
     // Log successful connection
     error_log("[DB] ✓ Connected successfully to database '{$db}'");
     
-    // VISIBLE OUTPUT ON WEB PAGE
-    if (php_sapi_name() !== 'cli') {
-        echo '<div style="position:fixed;top:10px;right:10px;background:#4caf50;color:white;padding:12px 20px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:9999;font-family:Arial,sans-serif;font-size:14px;">';
-        echo '✓ Database Connected: <strong>' . htmlspecialchars($db) . '</strong>';
-        echo '</div>';
-        echo "<script>console.log('[DB] ✓ Connected to database: {$db}');</script>";
-    }
+    // // Bật lên để check connect db, xong rồi nhớ tắt ehe
+    // if (php_sapi_name() !== 'cli') {
+    //     echo '<div style="position:fixed;top:10px;right:10px;background:#4caf50;color:white;padding:12px 20px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:9999;font-family:Arial,sans-serif;font-size:14px;">';
+    //     echo '✓ Database Connected: <strong>' . htmlspecialchars($db) . '</strong>';
+    //     echo '</div>';
+    //     echo "<script>console.log('[DB] ✓ Connected to database: {$db}');</script>";
+    // }
     
 } catch (PDOException $e) {
     // Detailed error logging for development/debugging
