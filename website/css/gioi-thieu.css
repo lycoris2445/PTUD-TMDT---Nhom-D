@@ -1,73 +1,183 @@
+/* === STYLE CHO TRANG GIỚI THIỆU (ABOUT US) === */
 
- /* === 3. MAIN (CSS MỚI CHO TRANG GIỚI THIỆU) === */
-        main {
-            padding-top: 40px;
-        }
+main {
+    padding-top: 50px;
+    padding-bottom: 80px;
+    background-color: #fff;
+}
 
-        /* Khung 2 cột (Text-Image) */
-        .about-frame {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-            padding: 30px;
-        }
-        .about-frame .about-text {
-            flex: 1; 
-            line-height: 1.7;
-            text-align: justify;
-        }
-        .about-frame .about-text h3 {
-            margin-top: 0;
-        }
-        .about-frame .about-image-placeholder {
-            flex: 1; 
-            height: 300px;
-            background-color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #888;
-            font-size: 16px;
-        }
+/* 1. Header của trang (Tiêu đề lớn) */
+.about-header {
+    text-align: center;
+    margin-bottom: 60px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.about-header h2 {
+    font-size: 36px;
+    color: #3b001f; /* Màu đỏ mận thương hiệu */
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.about-header p {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+}
 
-        /* Khung 3 cột (Giá trị cốt lõi) */
-        .values-section {
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-            padding: 30px;
-        }
-        .values-section h3 {
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-        .values-section .subtitle {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .values-grid {
-            display: flex;
-            gap: 20px;
-        }
-        .value-card {
-            flex: 1; /* Chia 3 cột đều */
-            text-align: center;
-            padding: 20px;
-            border: 1px solid #eee;
-            background: #f9f9f9;
-        }
-        .value-card h4 {
-            margin-top: 0;
-            color: #000;
-        }
+/* 2. Khung 2 cột (Text - Image) */
+.about-frame {
+    display: flex;
+    gap: 50px; /* Khoảng cách giữa chữ và ảnh rộng hơn cho thoáng */
+    align-items: center;
+    margin-bottom: 80px; /* Khoảng cách giữa các phần */
+}
 
-        /* Khung Cam kết (Tái sử dụng style từ trang chủ) */
-        .content-box {
-            background-color: #ffffff;
-            padding: 30px;
-            border: 1px solid #ddd;
-            line-height: 1.7;
-        }
-        
+/* Nếu muốn đảo ngược vị trí (Ảnh trái - Chữ phải) thì thêm class .reverse trong HTML */
+.about-frame.reverse {
+    flex-direction: row-reverse;
+}
+
+.about-text {
+    /* Thay vì để máy tự tính (flex: 1), mình ép cứng chiều rộng */
+    flex: 0 0 45%; 
+    max-width: 45%; /* Chiếm 45% màn hình */
+    
+    padding-right: 15px;
+    line-height: 1.8;
+    color: #444;
+    font-size: 16px;
+}
+
+.about-text h3 {
+    font-size: 24px;
+    color: #3b001f;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+}
+
+/* Gạch chân nhỏ dưới tiêu đề h3 */
+.about-text h3::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 3px;
+    background-color: #d63384; /* Gạch chân màu hồng */
+    margin-top: 10px;
+}
+
+/* KHUNG CHỨA ẢNH (Thay cho placeholder cũ) */
+.about-image {
+    /* Ảnh cũng chiếm 45% màn hình */
+    flex: 0 0 45%;
+    max-width: 45%;
+    
+    /* Các thuộc tính trang trí giữ nguyên */
+    height: 400px; 
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1); 
+    position: relative;
+}
+
+.about-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ảnh tự cắt vừa khung */
+    transition: transform 0.6s ease;
+}
+
+/* Hiệu ứng zoom nhẹ khi di chuột vào ảnh */
+.about-frame:hover .about-image img {
+    transform: scale(1.05);
+}
+
+/* 3. Khung Giá Trị Cốt Lõi (3 Cột) */
+.values-section {
+    background-color: #fcf0f5; /* Nền hồng cực nhạt */
+    padding: 60px 40px;
+    border-radius: 20px;
+    margin-bottom: 80px;
+    text-align: center;
+}
+
+.values-section h3 {
+    font-size: 28px;
+    color: #3b001f;
+    margin-bottom: 10px;
+}
+
+.values-section .subtitle {
+    color: #666;
+    margin-bottom: 40px;
+    font-style: italic;
+}
+
+.values-grid {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+.value-card {
+    flex: 1;
+    background: #ffffff;
+    padding: 40px 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none; /* Bỏ viền cũ */
+}
+
+.value-card:hover {
+    transform: translateY(-10px); /* Nổi lên khi hover */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.value-card h4 {
+    font-size: 20px;
+    color: #3b001f;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+/* 4. Khung Cam Kết (Cuối trang) */
+.commitment-section {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.content-box {
+    background-color: #ffffff;
+    padding: 40px;
+    border: 1px dashed #d63384; /* Viền nét đứt màu hồng */
+    border-radius: 15px;
+    font-size: 16px;
+    line-height: 1.8;
+}
+.content-box ul {
+    text-align: left;
+    margin-top: 20px;
+    list-style-type: none; /* Bỏ chấm tròn mặc định */
+    padding-left: 0;
+}
+.content-box li {
+    margin-bottom: 15px;
+    padding-left: 30px;
+    position: relative;
+}
+/* Tạo dấu tick màu hồng thay cho chấm tròn */
+.content-box li::before {
+    content: '✔';
+    color: #d63384;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
