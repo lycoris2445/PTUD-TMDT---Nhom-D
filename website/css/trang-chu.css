@@ -15,22 +15,79 @@ main {
     letter-spacing: 1px;
 }
 
-/* Khung 1: Hero Banner */
+/* Style Banner: Hồng Trầm + Hiệu ứng Kính (Sang & Rõ) */
 .hero-section {
-    background-color: #f5f5f5; /* Màu sáng hơn cho nhẹ nhàng */
-    min-height: 250px; /* Giảm độ cao banner (cũ là 300px) */
+    /* 1. LỚP PHỦ NỀN: Dùng màu Đỏ Mận thương hiệu (#3b001f) nhưng chỉ để 30% - 40% (0.3 - 0.4) 
+       -> Tạo cảm giác "Trầm", không bị chói, nhìn rõ ảnh phía sau */
+    background: linear-gradient(rgba(59, 0, 31, 0.4), rgba(59, 0, 31, 0.2)), 
+                url('https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=2080&auto=format&fit=crop');
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* THÊM DÒNG NÀY ĐỂ TẠO HIỆU ỨNG 3D KHI CUỘN TRANG */
+    background-attachment: fixed;
+
+    min-height: 550px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
+    
+    color: white; /* Chữ trắng trên nền trầm là đẹp nhất */
     margin-bottom: 40px;
-}
-.hero-section h1 {
-    font-size: 28px; /* Giảm tiêu đề banner */
-    margin-bottom: 10px;
+    position: relative;
 }
 
+/* 2. TẠO KHUNG KÍNH MỜ CHO CHỮ (Giải quyết vụ bố cục rối) */
+/* Đoạn này sẽ tạo một lớp kính mờ bao quanh chữ, giúp chữ không "đánh nhau" với hình chai lọ */
+.hero-section .container {
+    background: rgba(255, 255, 255, 0.1); /* Nền trắng cực mỏng */
+    backdrop-filter: blur(10px); /* Làm mờ ảnh phía sau lưng chữ */
+    -webkit-backdrop-filter: blur(10px); /* Hỗ trợ Safari */
+    padding: 40px 60px; /* Tạo khoảng cách thoáng */
+    border-radius: 20px; /* Bo tròn khung */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Viền sáng nhẹ */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Bóng đổ giúp khung nổi lên */
+    max-width: 800px;
+}
+
+/* Tiêu đề */
+.hero-section h1 {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+/* Dòng mô tả */
+.hero-section p {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 25px;
+    color: rgba(255, 255, 255, 0.9); /* Trắng hơi mờ xíu cho dịu mắt */
+}
+
+/* Nút bấm */
+.hero-section .btn {
+    background-color: white; /* Nút màu trắng */
+    color: #3b001f; /* Chữ màu đỏ mận */
+    border: none;
+    padding: 12px 40px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hero-section .btn:hover {
+    background-color: #3b001f; /* Hover thì đảo ngược màu */
+    color: white;
+    transform: translateY(-2px);
+}
 /* Khung 2: Sản phẩm nổi bật */
 .product-grid {
     display: flex;
@@ -73,73 +130,152 @@ main {
 }
 
 /* Khung 3: MUA SẮM THEO DANH MỤC */
+/* === STYLE CHO DANH MỤC (UPDATED) === */
 .category-grid {
     display: flex;
     justify-content: space-between;
-    gap: 15px;
-    margin-bottom: 40px;
+    gap: 20px;
+    margin-bottom: 60px;
 }
+
 .category-card {
     width: 32%;
-    background-color: #ffffff;
-    border: 1px solid #eee;
     text-align: center;
-    padding-bottom: 15px; /* Chỉ padding dưới đáy */
+    cursor: pointer;
+    /* Bỏ viền cũ đi cho thoáng */
+    border: none; 
 }
-.category-image-placeholder {
+
+/* Khung chứa ảnh: Bo tròn + Ẩn phần thừa */
+.category-image {
     width: 100%;
-    height: 160px; /* QUAN TRỌNG: Giảm mạnh chiều cao (cũ 250px) */
-    background-color: #f9f9f9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: #aaa;
-    margin-bottom: 12px;
+    height: 260px; /* Tăng chiều cao lên 350px để ảnh dọc hiển thị đẹp */
+    overflow: hidden; /* Để cắt phần ảnh zoom ra ngoài */
+    border-radius: 15px; /* Bo góc mềm mại */
+    margin-bottom: 15px;
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05); /* Bóng đổ nhẹ */
 }
+
+/* Định dạng ảnh bên trong */
+.category-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* QUAN TRỌNG: Giúp ảnh tự cắt vừa khung mà không bị méo */
+    transition: transform 0.6s ease; /* Hiệu ứng zoom chậm rãi */
+}
+
+/* Hiệu ứng khi di chuột vào: Ảnh phóng to nhẹ */
+.category-card:hover .category-image img {
+    transform: scale(1.1);
+}
+
+/* Tên danh mục */
 .category-card h3 {
-    margin: 0;
-    font-size: 18px; /* Cỡ chữ danh mục vừa vặn */
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 600;
     text-transform: uppercase;
-}
-
-/* Khung 4: BANNER KHUYẾN MÃI (CTA) */
-.cta-section {
-    background-color: #fcf0f5; /* Màu hồng phấn nhẹ */
-    padding: 30px 0; /* Giảm độ dày khung */
-    text-align: center;
-    margin-bottom: 40px;
-}
-.cta-section h2 {
-    font-size: 22px;
+    letter-spacing: 1px;
     color: #3b001f;
+    margin-top: 10px;
+    transition: color 0.3s;
 }
 
-/* Khung 5: ĐÁNH GIÁ CỦA KHÁCH HÀNG */
+.category-card:hover h3 {
+    color: #d63384; /* Đổi màu chữ khi hover */
+}
+
+/* Khung 4: BANNER KHUYẾN MÃI (CTA) - Style Vải Lụa */
+.cta-section {
+    /* Ảnh nền vải lụa mềm mại */
+    background: linear-gradient(rgba(59, 0, 31, 0.1), rgba(59, 0, 31, 0.1)),
+                url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=2070&auto=format&fit=crop');
+    
+    background-size: cover;
+    background-position: center;
+    padding: 80px 0; /* Tăng chiều cao cho thoáng */
+    text-align: center;
+    margin-bottom: 60px;
+    color: #3b001f;
+    
+    /* Hiệu ứng Parallax nhẹ (ảnh trôi chậm hơn web) */
+    background-attachment: fixed; 
+}
+
+.cta-section h2 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    font-family: serif; /* Dùng font có chân cho sang */
+}
+
+.cta-section p {
+    font-size: 18px;
+    max-width: 600px;
+    margin: 0 auto 25px auto;
+    font-weight: 500;
+}
+/* Khung 5: ĐÁNH GIÁ CỦA KHÁCH HÀNG (Có Avatar) */
 .testimonials-grid {
     display: flex;
-    gap: 15px;
-    margin-bottom: 40px;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 60px;
 }
+
 .testimonial-card {
     width: 32%;
     background-color: #ffffff;
-    border: 1px solid #eee;
-    padding: 15px; /* Giảm padding khung */
+    border: 1px solid #f0f0f0;
+    padding: 30px 20px;
+    text-align: center; /* Căn giữa toàn bộ nội dung */
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    transition: transform 0.3s;
 }
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* Style cho Avatar hình tròn */
+.testimonial-avatar {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 15px auto; /* Căn giữa ảnh */
+    border-radius: 50%; /* Biến ảnh vuông thành tròn */
+    overflow: hidden;
+    border: 3px solid #fcf0f5; /* Viền hồng nhạt quanh ảnh */
+}
+
+.testimonial-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Giữ mặt không bị méo */
+}
+
+/* Ngôi sao vàng */
+.stars {
+    color: #ffc107;
+    margin-bottom: 15px;
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+
 .testimonial-card p {
     font-style: italic;
-    font-size: 14px; /* Chữ nhận xét nhỏ lại */
+    font-size: 15px;
     color: #555;
-    line-height: 1.4;
+    line-height: 1.6;
+    margin-bottom: 15px;
 }
+
 .testimonial-card h5 {
-    text-align: right;
-    margin: 10px 0 0 0;
-    font-size: 14px;
-    font-weight: bold;
-    color: #000;
+    font-size: 16px;
+    font-weight: 700;
+    color: #3b001f;
+    margin: 0;
 }
 
 /* Khung 6: Nội dung (Về thương hiệu) */
@@ -185,4 +321,35 @@ main {
 }
 .newsletter-form-button:hover {
     background: #555;
+}
+/* === HIỆU ỨNG ANIMATION CHO BANNER === */
+
+/* 1. Định nghĩa chuyển động: Từ mờ đục + dưới thấp -> Rõ nét + trôi lên vị trí chuẩn */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px); /* Bắt đầu ở vị trí thấp hơn 40px */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); /* Kết thúc ở vị trí gốc */
+    }
+}
+
+/* 2. Áp dụng vào khung kính mờ (Container) */
+.hero-section .container {
+    /* Gọi tên hiệu ứng vừa tạo ở trên */
+    animation: fadeInUp 1.2s ease-out; /* Chạy trong 1.2 giây, kiểu trôi nhẹ nhàng */
+    
+    /* Các thuộc tính cũ giữ nguyên... */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    /* ... */
+}
+
+/* 3. Hiệu ứng phụ: Khi di chuột vào khung kính, nó sẽ sáng lên một chút */
+.hero-section .container:hover {
+    background: rgba(255, 255, 255, 0.15); /* Sáng hơn chút xíu */
+    border-color: rgba(255, 255, 255, 0.4); /* Viền sáng hơn */
+    transition: all 0.5s ease; /* Chuyển màu mượt mà */
 }

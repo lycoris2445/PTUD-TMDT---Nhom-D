@@ -1,5 +1,11 @@
 {
-    "require": {
-        "cloudinary/cloudinary_php": "^3.1"
-    }
+  "name": "darling/ecommerce",
+  "description": "Darling ecommerce project",
+  "require": {
+    "php": ">=7.4",
+    "cloudinary/cloudinary_php": "^3.1"
+  },
+  "autoload": {
+    "psr-4": { "App\\": "src/" }
+  }
 }

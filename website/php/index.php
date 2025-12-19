@@ -1,6 +1,10 @@
 <?php
-$pageTitle = 'Trang chủ - Darling';
-$pageCss   = '../css/trang-chu.css'; // Gọi file css giao diện trang chủ
+$pageTitle = 'Home - Darling Cosmetics';
+$pageCss   = '../css/trang-chu.css'; 
+
+// Kết nối database (giữ nguyên để dùng sau này)
+$pdo = require __DIR__ . '/../../config/db_connect.php';
+
 include 'header.php';
 ?>
 
@@ -8,95 +12,127 @@ include 'header.php';
 
     <section class="hero-section">
         <div class="container">
-            <h1>Khung Banner/Hero</h1>
-            <p>Nơi để đặt hình ảnh quảng cáo lớn.</p>
+            <h1>REVEAL YOUR TRUE RADIANCE</h1>
+            <p>Clean beauty products designed to make you shine from within.</p>
+            <a href="store.php" class="btn btn-dark mt-3">Shop Now</a>
         </div>
     </section>
 
     <section class="featured-products container">
-        <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
+        <h2 class="section-title">Featured Products</h2>
         <div class="product-grid">
             <div class="product-card">
-                <div class="product-image-placeholder">(Khung ảnh)</div>
-                <h4>Khung sản phẩm 1</h4>
-                <p>Giá: ...</p>
+                <div class="product-image-placeholder">Product Image</div>
+                <h4>Velvet Matte Lipstick</h4>
+                <p>$18.00</p>
             </div>
             <div class="product-card">
-                <div class="product-image-placeholder">(Khung ảnh)</div>
-                <h4>Khung sản phẩm 2</h4>
-                <p>Giá: ...</p>
+                <div class="product-image-placeholder">Product Image</div>
+                <h4>Hydrating Serum</h4>
+                <p>$24.50</p>
             </div>
             <div class="product-card">
-                <div class="product-image-placeholder">(Khung ảnh)</div>
-                <h4>Khung sản phẩm 3</h4>
-                <p>Giá: ...</p>
+                <div class="product-image-placeholder">Product Image</div>
+                <h4>Rose Water Toner</h4>
+                <p>$15.00</p>
             </div>
             <div class="product-card">
-                <div class="product-image-placeholder">(Khung ảnh)</div>
-                <h4>Khung sản phẩm 4</h4>
-                <p>Giá: ...</p>
+                <div class="product-image-placeholder">Product Image</div>
+                <h4>Night Repair Cream</h4>
+                <p>$32.00</p>
             </div>
         </div>
     </section>
     
     <section class="categories-section container">
-        <h2 class="section-title">Mua Sắm Theo Danh Mục</h2>
+        <h2 class="section-title">Shop by Category</h2>
         <div class="category-grid">
+            
             <div class="category-card">
-                <div class="category-image-placeholder">(Khung ảnh Danh mục)</div>
-                <h3>Chăm sóc da</h3>
+                <div class="category-image">
+                    <img src="https://c8.alamy.com/comp/2BJC15F/set-of-body-care-products-isolated-on-white-2BJC15F.jpg" alt="Skincare">
+                </div>
+                <h3>Skincare</h3>
             </div>
+
             <div class="category-card">
-                <div class="category-image-placeholder">(Khung ảnh Danh mục)</div>
-                <h3>Trang điểm</h3>
+                <div class="category-image">
+                    <img src="https://images.squarespace-cdn.com/content/v1/666fcdf1b40ced5c1847a5bb/66b9cd20-db78-4ebf-a0f8-74d7978774bd/YB+Full+Line+1.jpg?format=1000w" alt="Makeup">
+                </div>
+                <h3>Makeup</h3>
             </div>
+
             <div class="category-card">
-                <div class="category-image-placeholder">(Khung ảnh Danh mục)</div>
-                <h3>Chăm sóc cơ thể</h3>
+                <div class="category-image">
+                    <img src="https://t4.ftcdn.net/jpg/03/23/31/57/360_F_323315785_tfrtUr3pUWOfUcqHPQ4MMcbZ3eoJb96L.jpg" alt="Body Care">
+                </div>
+                <h3>Body Care</h3>
             </div>
+
         </div>
     </section>
 
     <section class="cta-section">
         <div class="container">
-            <h2>Khung Banner Khuyến Mãi (CTA)</h2>
-            <p>Nơi để thông tin giảm giá 30%, hoặc bộ sưu tập mới.</p>
+            <h2>Glow Up With Darling</h2>
+            <p>Get 30% off your first order when you join our community.</p>
+            <a href="register.php" class="btn btn-outline-dark mt-2">Join Now</a>
         </div>
     </section>
     
     <section class="testimonials-section container">
-        <h2 class="section-title">Khách Hàng Nói Gì Về Darling</h2>
+        <h2 class="section-title">Customer Love</h2>
         <div class="testimonials-grid">
+            
             <div class="testimonial-card">
-                <p>"Khung nội dung đánh giá của khách hàng. Sản phẩm rất tốt..."</p>
-                <h5>- Nguyễn Văn A</h5>
+                <div class="testimonial-avatar">
+                    <img src="https://i.pinimg.com/1200x/df/ab/f5/dfabf5cc413d52110ce3d5a7150c9698.jpg" alt="Sarah">
+                </div>
+                <div class="stars">★★★★★</div>
+                <p>"The best lipstick I've ever used! It stays on all day and doesn't dry out my lips. Highly recommend!"</p>
+                <h5>- Sarah J.</h5>
             </div>
+
             <div class="testimonial-card">
-                <p>"Khung nội dung đánh giá của khách hàng. Giao hàng nhanh..."</p>
-                <h5>- Trần Thị B</h5>
+                <div class="testimonial-avatar">
+                    <img src="https://i.pinimg.com/736x/20/ac/3c/20ac3c3a2d0e1cd6cb2e9761d0dceeb8.jpg" alt="Emily">
+                </div>
+                <div class="stars">★★★★★</div>
+                <p>"Finally, a skincare brand that is actually 100% cruelty-free. My sensitive skin loves the serum."</p>
+                <h5>- Emily R.</h5>
             </div>
+
             <div class="testimonial-card">
-                <p>"Khung nội dung đánh giá của khách hàng. Sẽ tiếp tục ủng hộ..."</p>
-                <h5>- Lê Văn C</h5>
+                <div class="testimonial-avatar">
+                    <img src="https://i.pinimg.com/736x/57/50/a7/5750a757b879ce325cc17c242fb7f7b9.jpg" alt="Jessica">
+                </div>
+                <div class="stars">★★★★☆</div>
+                <p>"Fast shipping and the packaging is so eco-friendly. I'm in love with the Rose Water Toner."</p>
+                <h5>- Jessica T.</h5>
             </div>
+
         </div>
     </section>
 
     <section class="content-section container">
-        <h2 class="section-title">Về Thương Hiệu Darling</h2>
+        <h2 class="section-title">The Darling Story</h2>
         <div class="content-box">
-            <p>Đây là khu vực nội dung bổ sung về câu chuyện thương hiệu, giá trị cốt lõi, hoặc cam kết (ví dụ: không thử nghiệm trên động vật).</p>
+            <p>
+                Founded in 2025, Darling is committed to conscious beauty. We believe that what you put on your skin matters. 
+                That's why all our products are formulated with ethically sourced ingredients, are 100% cruelty-free, and come in sustainable packaging. 
+                Beauty without compromise.
+            </p>
         </div>
     </section>
     
     <section class="newsletter-section container">
-        <h2 class="section-title">Đăng Ký Nhận Tin</h2>
+        <h2 class="section-title">Stay in the Loop</h2>
         <div class="newsletter-box">
-            <p>Để nhận thông tin về sản phẩm mới và các chương trình khuyến mãi.</p>
-            <div class="newsletter-form">
-                <div class="newsletter-form-input">(Khung Nhập Email)</div>
-                <div class="newsletter-form-button">(Khung Nút Gửi)</div>
-            </div>
+            <p>Subscribe to receive updates, access to exclusive deals, and more.</p>
+            <form action="#" method="POST" class="newsletter-form">
+                <input type="email" class="newsletter-form-input" placeholder="Enter your email address" required>
+                <button type="submit" class="newsletter-form-button">Subscribe</button>
+            </form>
         </div>
     </section>
 

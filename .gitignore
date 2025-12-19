@@ -1,1 +1,36 @@
+# Composer
+/vendor/
+/composer.phar
+
+# Environment files
+.env
+.env.*
+
+# Node
+/node_modules/
+npm-debug.log*
+
+# IDEs and editors
+/.vscode/
+/.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# Logs, caches, temp
+*.log
+.phpunit.result.cache
+phpunit.xml
+/tmp/
+/uploads/
+
+# Build
+/dist/
+/build/
+
+# Misc
+*.tmp
 .env

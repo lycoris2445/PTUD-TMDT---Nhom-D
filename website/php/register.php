@@ -1,12 +1,12 @@
 <?php
-// Tệp PHP
+// PHP file
 ?>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký</title>
+    <title>Register</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/dnhap_dki.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -20,15 +20,15 @@
                     Darling
                 </div>
                 
-                <h1>Tạo tài khoản</h1>
+                <h1>Create Account</h1>
                 <p class="subtitle">
-                    Đã có tài khoản? <a href="dang-nhap.php">Đăng nhập ngay</a>
+                    Already have an account? <a href="login.php">Log in now</a>
                 </p>
 
                 <form class="auth-form" action="process_register.php" method="POST">
                     <label for="username">Username</label>
                     <div class="input-group">
-                        <input type="text" id="username" name="username" placeholder="Nhập tên" required>
+                        <input type="text" id="username" name="username" placeholder="Enter your name" required>
                     </div>
 
                     <label for="email">E-mail</label>
@@ -36,22 +36,22 @@
                         <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
                     </div>
 
-                    <label for="password">Mật khẩu</label>
+                    <label for="password">Password</label>
                     <div class="input-group">
-                        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
+                        <input type="password" id="password" name="password" placeholder="Enter password" required>
                     </div>
 
-                    <button type="submit" class="primary-btn">Đăng ký</button>
+                    <button type="submit" class="primary-btn">Sign up</button>
 
                     <div class="separator">OR</div>
 
                     <a href="#" class="social-btn">
                         <i class="fab fa-google"></i>
-                        Đăng ký với Google
+                        Sign up with Google
                     </a>
                     <a href="#" class="social-btn">
                         <i class="fab fa-facebook"></i>
-                        Đăng ký với Facebook
+                        Sign up with Facebook
                     </a>
                 </form>
             </div>
