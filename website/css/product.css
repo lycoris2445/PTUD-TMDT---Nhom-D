@@ -1,12 +1,24 @@
 .main-img {
   max-height: 450px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
 }
 
 .thumb-img {
-  width: 60px;
-  margin-bottom: 10px;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 4px;
   cursor: pointer;
   border: 1px solid #ddd;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.thumb-img:hover {
+  border-color: -var(--darling-color);
+  transform: scale(1.05);
 }
 
 .variant-btn {
@@ -22,9 +34,13 @@
 }
 
 .btn-darling {
-  background: #A10550;
-  color: #fff;
-  border: none;
+  transition: background-color 0.25s ease, transform 0.15s ease;
+}
+
+.btn-darling:hover {
+  opacity: 0.85;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(161, 5, 80, 0.3);
 }
 
 .benefit-box {

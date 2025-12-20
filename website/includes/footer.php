@@ -46,7 +46,7 @@
 
         <div class="col-md-4">
           <div class="footer-about-header d-flex align-items-center mb-3">
-            <img src="../icons/logo_darling.svg" class="site-logo me-2" alt="Darling Logo" style="filter: brightness(0) invert(1); max-height: 30px;">
+            <img src="../../icons/logo_darling.svg" class="site-logo me-2" alt="Darling Logo" style="filter: brightness(0) invert(1); max-height: 30px;">
             <h5 class="mb-0 text-uppercase fw-bold">Darling</h5>
           </div>
 

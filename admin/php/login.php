@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Admin Login</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/admin-main.css">
 </head>
 <body class="login-page">
 

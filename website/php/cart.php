@@ -1,6 +1,6 @@
 <?php
 $pageTitle = "Cart";
-$pageCss = "../css/gio-hang.css";
+$pageCss = "gio-hang.css";
 include '../includes/header.php';
 ?>
 

@@ -221,7 +221,7 @@ if ($result) {
     <title>Quản lý Sản phẩm - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/admin-main.css">
     <style>
         .variant-image {
             width: 80px;
@@ -285,21 +285,11 @@ if ($result) {
 <body>
 
 <div class="admin-wrapper">
-    <aside class="sidebar">
-        <div class="sidebar-logo">Darling Admin</div>
-        <ul class="sidebar-menu">
-            <li onclick="location.href='dashboard.php'">Dashboard</li>
-            <li onclick="location.href='orders.php'">Orders</li>
-            <li onclick="location.href='khach_hang.php'">Customers</li>
-            <li class="active">Products</li>
-            <li>Reports</li>
-            <li>Settings</li>
-        </ul>
-    </aside>
+    <?php include '../includes/admin-sidebar.php'; ?>
 
     <main class="content">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="page-title mb-0">Quản lý Sản phẩm</h1>
+            <h1 class="page-title mb-0">Product Management</h1>
             <button class="btn btn-darling" data-bs-toggle="modal" data-bs-target="#addProductModal">
                 <i class="bi bi-plus-lg"></i> Thêm sản phẩm
             </button>

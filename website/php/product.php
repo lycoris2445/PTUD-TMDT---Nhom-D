@@ -1,56 +1,32 @@
 <?php
-/* ===== DỮ LIỆU GIẢ LẬP (GIỐNG STORE) ===== */
-$products = [
-  [
-    'id' => 1,
-    'name' => 'Beauty La Mousse Off/On',
-    'desc' => 'Refreshing cleanser for daily skincare.',
-    'price' => 52,
-    'category' => 'Cleanser'
-  ],
-  [
-    'id' => 2,
-    'name' => 'Hydrating Serum',
-    'desc' => 'Deep hydration for sensitive skin.',
-    'price' => 68,
-    'category' => 'Serum'
-  ],
-  [
-    'id' => 3,
-    'name' => 'Vitamin C Essence',
-    'desc' => 'Brightening and smoothing skin tone.',
-    'price' => 72,
-    'category' => 'Serum'
-  ],
-  [
-    'id' => 4,
-    'name' => 'Moisturizing Cream',
-    'desc' => 'Locks in moisture all day.',
-    'price' => 60,
-    'category' => 'Moisturizer'
-  ]
-];
+require_once __DIR__ . '/../../config/cloudinary.php';
+require_once __DIR__ . '/../includes/function_product.php';
 
-/* ===== LẤY ID TỪ STORE ===== */
-$id = $_GET['id'] ?? null;
-$product = null;
+$conn = getDBConnection();
 
-/* ===== TÌM SẢN PHẨM ===== */
-foreach ($products as $p) {
-  if ($p['id'] == $id) {
-    $product = $p;
-    break;
-  }
+// Get product ID from URL
+$productId = (int)($_GET['id'] ?? 0);
+
+if (!$productId) {
+    echo "<main class='container py-5'><p>Product not found.</p></main>";
+    include '../includes/footer.php';
+    exit;
 }
 
-/* ===== NẾU KHÔNG TÌM THẤY ===== */
+// Load product detail from database
+$product = getProductDetail($conn, $productId);
+
 if (!$product) {
-  echo "<main class='container py-5'><p>Product not found</p></main>";
-  include '../includes/footer.php';
-  exit;
+    echo "<main class='container py-5'><p>Product not found.</p></main>";
+    include '../includes/footer.php';
+    exit;
 }
 
-$pageTitle = 'Product Detail';
+// Load variants and images
+$variants = getProductVariants($conn, $productId);
+$images = getProductImages($conn, $productId);
+
+$pageTitle = htmlspecialchars($product['name']) . ' - Darling';
 $pageCss   = 'product.css';
 include '../includes/header.php';
 ?>
@@ -60,35 +36,58 @@ include '../includes/header.php';
   <div class="row">
 
     <!-- IMAGE GALLERY -->
-    <div class="col-md-6 d-flex">
-      <div class="me-3">
-        <img src="assets/img/placeholder.png" class="thumb-img">
-        <img src="assets/img/placeholder.png" class="thumb-img">
-        <img src="assets/img/placeholder.png" class="thumb-img">
+    <div class="col-md-6 d-flex gap-3">
+      <div class="d-flex flex-column gap-2" style="width: 80px;">
+        <?php if (count($images) > 1): ?>
+          <?php foreach (array_slice($images, 1, 3) as $img): ?>
+            <img src="<?= htmlspecialchars($img['url']) ?>" class="thumb-img" alt="<?= htmlspecialchars($img['alt']) ?>">
+          <?php endforeach; ?>
+        <?php endif; ?>
       </div>
 
       <div class="flex-grow-1 text-center">
-        <img src="assets/img/placeholder.png" class="main-img">
+        <?php if (!empty($images)): ?>
+          <img src="<?= htmlspecialchars($images[0]['url']) ?>" class="main-img" alt="<?= htmlspecialchars($images[0]['alt']) ?>">
+        <?php else: ?>
+          <img src="assets/img/placeholder.png" class="main-img" alt="No image">
+        <?php endif; ?>
       </div>
     </div>
 
     <!-- PRODUCT INFO -->
     <div class="col-md-6">
-      <h2 class="text-darling"><?= $product['name'] ?></h2>
-      <p class="fw-semibold"><?= $product['category'] ?></p>
-      <p class="text-muted"><?= $product['desc'] ?></p>
+      <h2 class="text-darling"><?= htmlspecialchars($product['name']) ?></h2>
+      <p class="fw-semibold"><?= htmlspecialchars($product['category_name'] ?? 'Uncategorized') ?></p>
+      <p class="text-muted"><?= htmlspecialchars($product['description'] ?? '') ?></p>
 
-      <h3 class="my-3">$<?= number_format($product['price'], 2) ?></h3>
+      <h3 class="my-3">$<?= number_format((float)$product['base_price'], 2) ?></h3>
 
-      <!-- VARIANT (GIẢ LẬP) -->
-      <div class="mb-3">
-        <button type="button" class="btn btn-secondary">30 ML</button>
-        <button type="button" class="btn btn-secondary">50 ML</button>
-      </div>
+      <!-- VARIANTS -->
+      <?php if (!empty($variants)): ?>
+        <div class="mb-3">
+          <label class="d-block fw-semibold mb-2">Options:</label>
+          <?php foreach ($variants as $variant): ?>
+            <?php 
+              $stock = getVariantStock($conn, $variant['id']);
+              $attrs = $variant['attributes'];
+              $attrLabel = !empty($attrs) ? implode(', ', $attrs) : 'Variant #' . $variant['id'];
+            ?>
+            <button type="button" 
+                    class="btn btn-secondary me-2 mb-2"
+                    data-variant-id="<?= (int)$variant['id'] ?>"
+                    data-variant-price="<?= htmlspecialchars($variant['price']) ?>"
+                    data-stock="<?= (int)$stock ?>"
+                    <?= $stock <= 0 ? 'disabled' : '' ?>>
+              <?= htmlspecialchars($attrLabel) ?>
+              <?php if ($stock <= 0): ?>(Out of stock)<?php endif; ?>
+            </button>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
 
       <!-- ORDER -->
       <a href="cart.php" class="btn btn-darling w-100 py-3">
-        Order
+        Add to Cart
       </a>
 
       <!-- BENEFIT BOX -->
@@ -112,8 +111,7 @@ include '../includes/header.php';
 
     <div class="tab-box">
       <p>
-        Đây là nội dung chi tiết sản phẩm. Nếu nội dung dài hơn thì khung này
-        sẽ scroll được. Sau này bạn có thể tách mỗi tab thành 1 field trong DB.
+        <?= nl2br(htmlspecialchars($product['description'] ?? 'No description available.')) ?>
       </p>
     </div>
   </div>
@@ -122,3 +120,4 @@ include '../includes/header.php';
 
 <?php include '../includes/footer.php'; ?>
 
+<script src="../js/cart.js"></script>

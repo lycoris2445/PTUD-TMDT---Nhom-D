@@ -22,30 +22,21 @@ function statusBadge($status) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
+  <title>Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/customer-management.css">
+  <link rel="stylesheet" href="../css/admin-main.css">
 </head>
 <body>
 
 <div class="admin-wrapper">
-  <aside class="sidebar">
-    <div class="sidebar-logo">Darling Admin</div>
-    <ul class="sidebar-menu">
-      <li class="active">Dashboard</li>
-      <li onclick="location.href='orders.php'">Orders</li>
-      <li onclick="location.href='khach_hang.php'">Customers</li>
-      <li>Products</li>
-      <li>Reports</li>
-      <li>Settings</li>
-    </ul>
-  </aside>
+  <?php include '../includes/admin-sidebar.php'; ?>
 
   <main class="content">
-    <h1 class="page-title">Dashboard</h1>
+    <h2 class="page-title">Dashboard</h2>
 
     <div class="row g-3 mb-4">
       <?php foreach ($stats as $stat): ?>

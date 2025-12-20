@@ -1,6 +1,6 @@
 <?php
 $pageTitle = "Thanh toán";
-$pageCss = "../css/thanh-toan.css";
+$pageCss = "thanh-toan.css";
 include '../includes/header.php';
 ?>
 

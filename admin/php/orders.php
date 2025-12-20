@@ -16,32 +16,26 @@ function statusBadge($status) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Quản lý đơn hàng</title>
+  <title>Orders</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/customer-management.css">
+  <link rel="stylesheet" href="../css/admin-main.css">
 </head>
 <body>
 
 <div class="admin-wrapper">
-  <aside class="sidebar">
-    <div class="sidebar-logo">Darling Admin</div>
-    <ul class="sidebar-menu">
-      <li onclick="location.href='dashboard.php'">Dashboard</li>
-      <li class="active">Orders</li>
-      <li onclick="location.href='khach_hang.php'">Customers</li>
-      <li>Products</li>
-      <li>Reports</li>
-      <li>Settings</li>
-    </ul>
-  </aside>
+  <?php include '../includes/admin-sidebar.php'; ?>
 
   <main class="content">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h1 class="page-title mb-0">Đơn hàng</h1>
-      <div class="d-flex gap-2">
+    <h2 class="page-title">Orders</h2>
+
+    <div class="card customers-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Orders</h5>
+        <div class="d-flex gap-2">
         <select class="form-select form-select-sm" style="width:150px;">
           <option>Lọc trạng thái</option>
           <option>Paid</option>
@@ -50,43 +44,53 @@ function statusBadge($status) {
         </select>
         <input class="form-control form-control-sm" style="width:200px;" placeholder="Tìm mã hoặc khách">
         <button class="btn btn-darling btn-sm">Tạo đơn</button>
+        </div>
       </div>
-    </div>
 
-    <div class="card card-darling">
       <div class="table-responsive">
-        <table class="table table-hover mb-0 align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>Mã</th>
-              <th>Khách hàng</th>
-              <th>Ngày</th>
-              <th>Phương thức</th>
-              <th class="text-end">Tổng</th>
-              <th class="text-center">Trạng thái</th>
-              <th class="text-end">Thao tác</th>
-            </tr>
+        <table class="table customers-table">
+          <thead>
+          <tr>
+            <th>Mã</th>
+            <th>Khách hàng</th>
+            <th>Ngày</th>
+            <th>Phương thức</th>
+            <th class="text-end">Tổng</th>
+            <th class="text-center">Trạng thái</th>
+            <th class="text-end">Thao tác</th>
+          </tr>
           </thead>
           <tbody>
           <?php foreach ($orders as $o): ?>
-            <tr>
-              <td><strong><?php echo $o['code']; ?></strong></td>
-              <td><?php echo $o['customer']; ?></td>
-              <td><?php echo $o['date']; ?></td>
-              <td><?php echo $o['method']; ?></td>
-              <td class="text-end"><?php echo $o['total']; ?></td>
-              <td class="text-center"><?php echo statusBadge($o['status']); ?></td>
-              <td class="text-end">
-                <div class="btn-group btn-group-sm" role="group">
-                  <button class="btn btn-outline-secondary">Xem</button>
-                  <button class="btn btn-outline-secondary">Sửa</button>
-                  <button class="btn btn-outline-danger">Huỷ</button>
-                </div>
-              </td>
-            </tr>
+          <tr>
+            <td><strong><?php echo $o['code']; ?></strong></td>
+            <td><?php echo $o['customer']; ?></td>
+            <td><?php echo $o['date']; ?></td>
+            <td><?php echo $o['method']; ?></td>
+            <td class="text-end"><?php echo $o['total']; ?></td>
+            <td class="text-center"><?php echo statusBadge($o['status']); ?></td>
+            <td class="text-end">
+              <div class="btn-group btn-group-sm" role="group">
+                <button class="btn btn-outline-secondary">Xem</button>
+                <button class="btn btn-outline-secondary">Sửa</button>
+                <button class="btn btn-outline-danger">Huỷ</button>
+              </div>
+            </td>
+          </tr>
           <?php endforeach; ?>
           </tbody>
         </table>
+      </div>
+
+      <div class="card-footer d-flex justify-content-between align-items-center">
+        <span>Showing 1–5 of 5</span>
+        <nav>
+          <ul class="pagination mb-0">
+            <li class="page-item active">
+              <a class="page-link" href="?page=1">1</a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
   </main>

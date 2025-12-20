@@ -39,9 +39,7 @@ define('DB_USER', $_ENV['DB_USER'] ?? 'root');
 define('DB_PASS', $_ENV['DB_PASS'] ?? '');
 define('DB_NAME', $_ENV['DB_NAME'] ?? 'ptud');
 
-/**
- * Kết nối database
- */
+/* Kết nối database */
 function getDBConnection() {
     static $conn = null;
     if ($conn === null) {

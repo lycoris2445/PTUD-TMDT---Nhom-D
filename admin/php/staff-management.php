@@ -45,7 +45,7 @@ function getRoleBadge($role) {
     <title>Admin Accounts - Darling Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/admin-main.css">
     <link rel="stylesheet" href="../css/khach_hang.css">
     
     <style>
@@ -64,21 +64,11 @@ function getRoleBadge($role) {
 
 <div class="admin-wrapper">
 
-    <aside class="sidebar">
-        <div class="sidebar-logo">Darling</div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.php" class="text-decoration-none text-white">Dashboard</a></li>
-            <li><a href="khach_hang.php" class="text-decoration-none text-white">Customers</a></li>
-            <li>Orders</li>
-            <li>Products</li>
-            <li class="active"><a href="#" class="text-decoration-none text-white">Admin Accounts</a></li> <li>Reports</li>
-            <li>Settings</li>
-        </ul>
-    </aside>
+    <?php include '../includes/admin-sidebar.php'; ?>
 
     <main class="content">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="page-title mb-0">Admin Accounts</h2>
+            <h2 class="page-title mb-0">Staff Management</h2>
             <button class="btn btn-primary">
                 <i class="bi bi-person-plus-fill"></i> Add New Account
             </button>

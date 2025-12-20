@@ -46,25 +46,14 @@ function sortLink($column, $label, $currentSort, $currentOrder) {
     <meta charset="UTF-8">
     <title>Customers</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/admin.css">
-    <link rel="stylesheet" href="../css/khach_hang.css">
+    <link rel="stylesheet" href="../css/customer-management.css">
+    <link rel="stylesheet" href="../css/admin-main.css">
 </head>
 <body>
 
 <div class="admin-wrapper">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-logo">Darling</div>
-        <ul class="sidebar-menu">
-            <li>Dashboard</li>
-            <li class="active">Customers</li>
-            <li>Orders</li>
-            <li>Products</li>
-            <li>Reports</li>
-            <li>Settings</li>
-        </ul>
-    </aside>
+    <?php include '../includes/admin-sidebar.php'; ?>
 
     <!-- MAIN CONTENT -->
     <main class="content">

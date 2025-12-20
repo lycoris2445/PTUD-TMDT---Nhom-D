@@ -11,7 +11,7 @@
 
   <!-- PAGE CSS (nếu có) -->
   <?php if (isset($pageCss)): ?>
-    <link rel="stylesheet" href="<?= $pageCss ?>">
+    <link rel="stylesheet" href="../css/<?= $pageCss ?>">
   <?php endif; ?>
 
   <!-- BOOTSTRAP (đang dùng cho footer & content) -->
@@ -26,7 +26,7 @@
 
     <!-- LOGO -->
     <a href="index.php" class="logo-link" aria-label="Darling home">
-      <img src="../icons/logo_darling.svg" class="site-logo" alt="Darling">
+      <img src="../../icons/logo_darling.svg" class="site-logo" alt="Darling">
     </a>
 
     <!-- MOBILE TOGGLE -->

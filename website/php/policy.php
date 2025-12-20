@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Policy - Darling';
-$pageCss   = '../css/policy.css'; // You can keep this or move styles to header
+$pageCss   = 'policy.css'; // You can keep this or move styles to header
 include '../includes/header.php';
 ?>
 
