@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Giỏ hàng</title>
+		<link rel="stylesheet" href="../css/styles.css" />
+		<link rel="stylesheet" href="../css/gio-hang.css" />
+	</head>
+	<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Darling</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="gioi-thieu.html">Giới thiệu</a></li>
+                    <li><a href="san-pham.html">Sản phẩm</a></li>
+                    <li><a href="gio-hang.html" class="active">Giỏ hàng <span id="cart-count" class="cart-count">0</span></a></li>
+                    <li><a href="thanh-toan.html">Thanh toán</a></li>
+                    <li><a href="chinh-sach.html">Chính sách</a></li>
+                    <li><a href="lien-he.html">Liên hệ</a></li>
+					<li><a href="dang-nhap.html" class="login-icon" title="Đăng nhập">Đăng nhập</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>		<main class="container cart-page" data-page="cart">
+			<h1>Giỏ hàng</h1>
+
+			<div id="cart-empty" class="empty">
+				<p>Giỏ hàng của bạn đang trống.</p>
+				<a class="btn" href="san-pham.html">Mua sắm ngay</a>
+			</div>
+
+			<div id="cart-table-wrap">
+				<div class="table-scroll">
+					<table class="cart-table">
+						<thead>
+							<tr>
+								<th>Sản phẩm</th>
+								<th>Giá</th>
+								<th>Số lượng</th>
+								<th>Tạm tính</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody id="cart-table-body"></tbody>
+					</table>
+				</div>
+
+				<div class="cart-actions">
+					<button id="btn-clear-cart" class="btn outline">Xóa giỏ hàng</button>
+					<a class="btn" href="san-pham.html">Tiếp tục mua sắm</a>
+				</div>
+
+				<aside class="summary">
+					<h2>Tổng kết</h2>
+					<div class="row">
+						<span>Tạm tính</span>
+						<strong id="summary-subtotal">0₫</strong>
+					</div>
+					<div class="row">
+						<span>Phí vận chuyển</span>
+						<strong id="summary-shipping">0₫</strong>
+					</div>
+					<div class="row total">
+						<span>Tổng</span>
+						<strong id="summary-total">0₫</strong>
+					</div>
+					<a class="btn primary w-100" href="thanh-toan.html">Tiến hành thanh toán</a>
+				</aside>
+			</div>
+		</main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <h4>Về Darling</h4>
+                    <p>Mô tả ngắn về công ty.</p>
+                </div>
+                <div>
+                    <h4>Chính sách</h4>
+                    <ul>
+                        <li><a href="chinh-sach.html">Chính sách</a></li>
+                        <li><a href="thanh-toan.html">Thanh toán</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Liên hệ</h4>
+                    <ul>
+                        <li><a href="lien-he.html">Thông tin liên hệ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; <span id="year"></span> Darling.
+            </div>
+        </div>
+    </footer>		<script>
+			document.getElementById('year').textContent = new Date().getFullYear();
+		</script>
+		<script src="../js/script.js" defer></script>
+		<script src="../js/cart.js" defer></script>
+	</body>
+	</html>
+

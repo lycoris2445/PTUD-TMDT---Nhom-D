@@ -37,7 +37,7 @@ function statusBadge($status) {
     <ul class="sidebar-menu">
       <li class="active">Dashboard</li>
       <li onclick="location.href='orders.php'">Orders</li>
-      <li onclick="location.href='khach_hang.php'">Customers</li>
+      <li onclick="location.href='customer.php'">Customers</li>
       <li>Products</li>
       <li>Reports</li>
       <li>Settings</li>

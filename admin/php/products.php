@@ -290,7 +290,7 @@ if ($result) {
         <ul class="sidebar-menu">
             <li onclick="location.href='dashboard.php'">Dashboard</li>
             <li onclick="location.href='orders.php'">Orders</li>
-            <li onclick="location.href='khach_hang.php'">Customers</li>
+            <li onclick="location.href='customer.php'">Customers</li>
             <li class="active">Products</li>
             <li>Reports</li>
             <li>Settings</li>
