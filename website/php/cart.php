@@ -1,7 +1,7 @@
 <?php
 $pageTitle = "Cart";
 $pageCss = "../css/gio-hang.css";
-include 'header.php';
+include '../includes/header.php';
 ?>
 
 <main class="container py-4" data-page="cart">
@@ -66,4 +66,4 @@ include 'header.php';
 </main>
 
 <script src="../js/cart.js"></script>
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

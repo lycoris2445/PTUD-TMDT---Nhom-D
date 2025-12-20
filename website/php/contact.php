@@ -1,7 +1,7 @@
 <?php
 $pageTitle = 'Liên hệ - Darling';
 $pageCss   = '../css/lien-he.css'; 
-include 'header.php';
+include '../includes/header.php';
 ?>
 
 <main>
@@ -136,4 +136,4 @@ include 'header.php';
   </div>
 </main>
 
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

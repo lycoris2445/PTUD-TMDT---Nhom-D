@@ -297,7 +297,7 @@ INSERT INTO INVENTORY (id, product_variant_id, quantity, reserved_quantity, vers
 (53, 53, 220,  0, 1),
 (54, 54, 210,  0, 1),
 (55, 55, 180,  0, 1);
---Khoan hẳn bỏ inventory logs vào 
+-- Khoan hẳn bỏ inventory logs vào 
 -- INSERT INTO INVENTORY_LOGS (id, product_variant_id, change_quantity, reason, reference_id, created_at) VALUES
 -- (9001, 6,  -2, 'order_placed', 1001, '2024-01-12 10:35:00'),
 -- (9002, 29, -1, 'order_placed', 1001, '2024-01-12 10:35:00'),

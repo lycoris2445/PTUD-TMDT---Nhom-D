@@ -46,13 +46,13 @@ foreach ($products as $p) {
 /* ===== NẾU KHÔNG TÌM THẤY ===== */
 if (!$product) {
   echo "<main class='container py-5'><p>Product not found</p></main>";
-  include 'footer.php';
+  include '../includes/footer.php';
   exit;
 }
 
 $pageTitle = 'Product Detail';
 $pageCss   = 'product.css';
-include 'header.php';
+include '../includes/header.php';
 ?>
 
 <main class="container py-5">
@@ -120,5 +120,5 @@ include 'header.php';
 
 </main>
 
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>
 

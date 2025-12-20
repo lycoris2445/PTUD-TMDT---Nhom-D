@@ -1,6 +1,6 @@
 -- 1. Tạo Database
-CREATE DATABASE IF NOT EXISTS Darling_cosmetic CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE Darling_cosmetic;
+CREATE DATABASE IF NOT EXISTS Darling_cosmetics CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE Darling_cosmetics;
 
 -- ==========================================
 -- MODULE: USER & AUTH

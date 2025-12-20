@@ -168,7 +168,7 @@ $filteredProducts = $products;
 
 $pageTitle = "Store - Darling";
 $pageCss = "../css/san-pham.css";
-include 'header.php';
+include '../includes/header.php';
 ?>
 
 <!--nd trang-->
@@ -296,4 +296,4 @@ include 'header.php';
   </div>
 </main>
 
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

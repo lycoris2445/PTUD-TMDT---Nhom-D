@@ -5,7 +5,7 @@ $pageCss   = '../css/trang-chu.css';
 // Kết nối database (giữ nguyên để dùng sau này)
 $pdo = require __DIR__ . '/../../config/db_connect.php';
 
-include 'header.php';
+include '../includes/header.php';
 ?>
 
 <main>
@@ -137,4 +137,4 @@ include 'header.php';
     </section>
 
 </main>
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

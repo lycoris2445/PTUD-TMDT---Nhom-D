@@ -1,7 +1,7 @@
 <?php
 $pageTitle = 'Policy - Darling';
 $pageCss   = '../css/policy.css'; // You can keep this or move styles to header
-include 'header.php';
+include '../includes/header.php';
 ?>
 
 <main class="container py-5">
@@ -52,4 +52,4 @@ include 'header.php';
     </div>
 </main>
 
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

@@ -1,48 +1,8 @@
 <?php
 $pageTitle = 'About Us - Darling Cosmetics';
 $pageCss   = '../css/gioi-thieu.css'; 
-include 'header.php';
+include '../includes/header.php';
 ?>
-<style>
-    /* Ép giao diện hiển thị đúng trên máy tính */
-    @media (min-width: 768px) {
-        .about-frame {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: space-between !important;
-            gap: 40px !important;
-        }
-        .about-text {
-            flex: 1 !important;
-            width: 45% !important; /* Chia đôi màn hình */
-            max-width: 45% !important;
-        }
-        .about-image {
-            flex: 1 !important;
-            width: 45% !important; /* Chia đôi màn hình */
-            max-width: 45% !important;
-            height: 400px; /* Chiều cao cố định */
-        }
-        .about-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 20px;
-        }
-    }
-    
-    /* Giao diện trên điện thoại (Xếp chồng dọc) */
-    @media (max-width: 767px) {
-        .about-frame {
-            flex-direction: column !important;
-        }
-        .about-text, .about-image {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin-bottom: 20px;
-        }
-    }
-</style>
 <main>
     <div class="container">
         
@@ -134,4 +94,4 @@ include 'header.php';
         </section>
     </div>
 </main>
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>
