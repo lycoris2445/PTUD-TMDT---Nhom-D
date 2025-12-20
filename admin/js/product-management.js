@@ -1,0 +1,151 @@
+function setQueryParam(key, val) {
+  const url = new URL(window.location.href);
+  if (val === null || val === undefined || val === '') url.searchParams.delete(key);
+  else url.searchParams.set(key, val);
+  window.location.href = url.toString();
+}
+
+function resetFilters() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('search');
+  url.searchParams.delete('status');
+  window.location.href = url.toString();
+}
+
+function wireCategoryToggles() {
+  document.querySelectorAll('.toggle-children').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.dataset.target;
+      const box = document.getElementById(targetId);
+      if (!box) return;
+      box.classList.toggle('d-none');
+      const icon = btn.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('bi-caret-right-fill');
+        icon.classList.toggle('bi-caret-down-fill');
+      }
+    });
+  });
+}
+
+function wireCategorySearch() {
+  const input = document.getElementById('category-search');
+  if (!input) return;
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    document.querySelectorAll('.category-link').forEach(a => {
+      const text = (a.textContent || '').toLowerCase();
+      const row = a.closest('li');
+      if (!row) return;
+      row.style.display = (q === '' || text.includes(q)) ? '' : 'none';
+    });
+  });
+}
+
+async function postForm(url, formData) {
+  const res = await fetch(url, { method: 'POST', body: formData });
+  const data = await res.json().catch(() => null);
+  if (!res.ok || !data || !data.ok) {
+    throw new Error((data && data.error) ? data.error : 'Request failed');
+  }
+  return data;
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Delete this product?')) return;
+  const fd = new FormData();
+  fd.append('action', 'delete');
+  fd.append('id', id);
+  await postForm('product-actions.php', fd);
+  window.location.reload();
+}
+
+async function editProduct(id) {
+  const fd = new FormData();
+  fd.append('action', 'get');
+  fd.append('id', id);
+
+  const data = await postForm('product-actions.php', fd);
+  const p = data.product;
+
+  const form = document.getElementById('addProductForm');
+  form.dataset.mode = 'update';
+
+  form.querySelector('[name="id"]').value = p.id;
+  form.querySelector('[name="name"]').value = p.name || '';
+  form.querySelector('[name="spu"]').value = p.spu || '';
+  form.querySelector('[name="category_id"]').value = p.category_id || '';
+  form.querySelector('[name="base_price"]').value = p.base_price || '';
+  form.querySelector('[name="status"]').value = p.status || 'draft';
+  form.querySelector('[name="description"]').value = p.description || '';
+  form.querySelector('[name="image_url"]').value = p.image_url || '';
+  form.querySelector('[name="image"]').value = '';
+
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addProductModal'));
+  modal.show();
+}
+
+function viewProduct(id) {
+  alert('View product id=' + id);
+}
+
+function wireForms() {
+  const addCategoryForm = document.getElementById('addCategoryForm');
+  if (addCategoryForm) {
+    addCategoryForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(addCategoryForm);
+      await postForm('category-actions.php', fd);
+      window.location.reload();
+    });
+  }
+
+  const addProductForm = document.getElementById('addProductForm');
+  if (addProductForm) {
+    addProductForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const mode = addProductForm.dataset.mode || 'create';
+      const fd = new FormData(addProductForm);
+      fd.append('action', mode);
+      await postForm('product-actions.php', fd);
+      window.location.reload();
+    });
+  }
+}
+
+function wireFilters() {
+  const search = document.getElementById('product-search');
+  const status = document.getElementById('status-filter');
+
+  if (search) {
+    search.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        setQueryParam('search', search.value.trim());
+      }
+    });
+  }
+
+  if (status) {
+    status.addEventListener('change', () => {
+      setQueryParam('status', status.value);
+    });
+  }
+
+  const resetBtn = document.getElementById('btn-reset');
+  if (resetBtn) resetBtn.addEventListener('click', resetFilters);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  wireCategoryToggles();
+  wireCategorySearch();
+  wireFilters();
+  wireForms();
+});
+
+// expose global for inline onclick
+window.deleteProduct = deleteProduct;
+window.editProduct = editProduct;
+window.viewProduct = viewProduct;
+window.resetFilters = resetFilters;

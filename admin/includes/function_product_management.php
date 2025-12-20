@@ -1,260 +1,117 @@
 <?php
-/**
- * Product Management Functions
- * Handles categories, products, variants, and inventory queries
- */
+declare(strict_types=1);
 
-/**
- * Build hierarchical category tree
- * @param PDO $conn
- * @param int|null $parent_id
- * @return array Nested array of categories
- */
-function getCategoryTree($conn, $parent_id = null) {
-    try {
-        $sql = "SELECT id, parent_id, name FROM categories WHERE parent_id " . ($parent_id === null ? "IS NULL" : "= :parent_id") . " ORDER BY name";
-        $stmt = $conn->prepare($sql);
-        if ($parent_id !== null) {
-            $stmt->bindValue(':parent_id', $parent_id, PDO::PARAM_INT);
-        }
+function h(string $s): string {
+    return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+}
+
+function getAllCategories($conn): array {
+    $stmt = $conn->query("SELECT id, parent_id, name FROM CATEGORIES ORDER BY name");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getCategoryTree($conn, ?int $parentId = null): array {
+    if ($parentId === null) {
+        $stmt = $conn->prepare("SELECT id, parent_id, name FROM CATEGORIES WHERE parent_id IS NULL ORDER BY name");
         $stmt->execute();
-        $categories = $stmt->fetchAll();
-
-        foreach ($categories as &$cat) {
-            $cat['children'] = getCategoryTree($conn, $cat['id']);
-        }
-        return $categories;
-    } catch (Exception $e) {
-        error_log("getCategoryTree error: " . $e->getMessage());
-        return [];
+    } else {
+        $stmt = $conn->prepare("SELECT id, parent_id, name FROM CATEGORIES WHERE parent_id = :pid ORDER BY name");
+        $stmt->execute([':pid' => $parentId]);
     }
+
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($rows as &$r) {
+        $r['children'] = getCategoryTree($conn, (int)$r['id']);
+    }
+    return $rows;
 }
 
-/**
- * Get all categories (flat list)
- * @param PDO $conn
- * @return array
- */
-function getAllCategories($conn) {
-    try {
-        $sql = "SELECT id, parent_id, name FROM categories ORDER BY parent_id, name";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll();
-    } catch (Exception $e) {
-        error_log("getAllCategories error: " . $e->getMessage());
-        return [];
-    }
-}
+function renderCategoryTree(array $tree, ?int $selectedId = null): string {
+    $html = '<ul class="list-unstyled mb-0">';
+    foreach ($tree as $node) {
+        $id = (int)$node['id'];
+        $name = (string)$node['name'];
+        $hasChildren = !empty($node['children']);
+        $active = ($selectedId === $id) ? ' active' : '';
 
-/**
- * Get products by category with inventory data
- * @param PDO $conn
- * @param int|null $category_id
- * @param string $search
- * @return array
- */
-function getProductsByCategory($conn, $category_id = null, $search = '') {
-    try {
-        $sql = "
-            SELECT 
-                p.id,
-                p.spu,
-                p.name,
-                p.base_price,
-                p.image_url,
-                p.status,
-                c.id as category_id,
-                c.name as category_name,
-                COUNT(DISTINCT pv.id) as variant_count,
-                COALESCE(SUM(i.quantity), 0) as total_quantity,
-                COALESCE(SUM(i.reserved_quantity), 0) as total_reserved,
-                (COALESCE(SUM(i.quantity), 0) - COALESCE(SUM(i.reserved_quantity), 0)) as available
-            FROM products p
-            LEFT JOIN categories c ON p.category_id = c.id
-            LEFT JOIN product_variants pv ON p.id = pv.product_id
-            LEFT JOIN inventory i ON pv.id = i.product_variant_id
-        ";
+        $html .= '<li class="mb-1">';
+        $html .= '<div class="d-flex align-items-center gap-2 category-row' . $active . '">';
 
-        $params = [];
-        $conditions = [];
-
-        if ($category_id !== null && $category_id !== '') {
-            $conditions[] = "p.category_id = :category_id";
-            $params[':category_id'] = $category_id;
+        if ($hasChildren) {
+            $html .= '<button type="button" class="btn btn-sm btn-light toggle-children" data-target="cat-children-' . $id . '">
+                        <i class="bi bi-caret-right-fill"></i>
+                      </button>';
+        } else {
+            $html .= '<span style="width:32px; display:inline-block;"></span>';
         }
 
-        if (!empty($search)) {
-            $conditions[] = "(p.name LIKE :search OR p.spu LIKE :search)";
-            $params[':search'] = "%{$search}%";
-        }
-
-        if (!empty($conditions)) {
-            $sql .= " WHERE " . implode(" AND ", $conditions);
-        }
-
-        $sql .= " GROUP BY p.id ORDER BY p.name";
-
-        $stmt = $conn->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll();
-    } catch (Exception $e) {
-        error_log("getProductsByCategory error: " . $e->getMessage());
-        return [];
-    }
-}
-
-/**
- * Get single product detail
- * @param PDO $conn
- * @param int $product_id
- * @return array|null
- */
-function getProductDetail($conn, $product_id) {
-    try {
-        $sql = "
-            SELECT 
-                p.id,
-                p.spu,
-                p.name,
-                p.description,
-                p.base_price,
-                p.image_url,
-                p.status,
-                p.category_id,
-                c.name as category_name
-            FROM products p
-            LEFT JOIN categories c ON p.category_id = c.id
-            WHERE p.id = :id
-        ";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([':id' => $product_id]);
-        return $stmt->fetch();
-    } catch (Exception $e) {
-        error_log("getProductDetail error: " . $e->getMessage());
-        return null;
-    }
-}
-
-/**
- * Get product variants with inventory
- * @param PDO $conn
- * @param int $product_id
- * @return array
- */
-function getProductVariants($conn, $product_id) {
-    try {
-        $sql = "
-            SELECT 
-                pv.id,
-                pv.sku_code,
-                pv.price,
-                pv.attributes,
-                pv.image_url,
-                COALESCE(i.quantity, 0) as quantity,
-                COALESCE(i.reserved_quantity, 0) as reserved_quantity,
-                (COALESCE(i.quantity, 0) - COALESCE(i.reserved_quantity, 0)) as available
-            FROM product_variants pv
-            LEFT JOIN inventory i ON pv.id = i.product_variant_id
-            WHERE pv.product_id = :product_id
-            ORDER BY pv.sku_code
-        ";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([':product_id' => $product_id]);
-        return $stmt->fetchAll();
-    } catch (Exception $e) {
-        error_log("getProductVariants error: " . $e->getMessage());
-        return [];
-    }
-}
-
-/**
- * Get total available quantity for a product (all variants)
- * @param PDO $conn
- * @param int $product_id
- * @return int
- */
-function getProductAvailability($conn, $product_id) {
-    try {
-        $sql = "
-            SELECT 
-                COALESCE(SUM(i.quantity), 0) as total_quantity,
-                COALESCE(SUM(i.reserved_quantity), 0) as total_reserved
-            FROM product_variants pv
-            LEFT JOIN inventory i ON pv.id = i.product_variant_id
-            WHERE pv.product_id = :product_id
-        ";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([':product_id' => $product_id]);
-        $result = $stmt->fetch();
-        return (int)($result['total_quantity'] - $result['total_reserved']);
-    } catch (Exception $e) {
-        error_log("getProductAvailability error: " . $e->getMessage());
-        return 0;
-    }
-}
-
-/**
- * Get product count by category
- * @param PDO $conn
- * @param int $category_id
- * @return int
- */
-function getProductCountByCategory($conn, $category_id) {
-    try {
-        $sql = "SELECT COUNT(*) as count FROM products WHERE category_id = :id";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([':id' => $category_id]);
-        return (int)$stmt->fetch()['count'];
-    } catch (Exception $e) {
-        error_log("getProductCountByCategory error: " . $e->getMessage());
-        return 0;
-    }
-}
-
-/**
- * Format status badge
- * @param string $status
- * @return string HTML
- */
-function getStatusBadge($status) {
-    $badges = [
-        'active' => '<span class="badge bg-success">Active</span>',
-        'inactive' => '<span class="badge bg-secondary">Inactive</span>',
-        'draft' => '<span class="badge bg-warning text-dark">Draft</span>',
-    ];
-    return $badges[$status] ?? '<span class="badge bg-secondary">Unknown</span>';
-}
-
-/**
- * Render category tree as HTML
- * @param array $categories
- * @param int|null $selected_id
- * @param int $depth
- * @return string HTML
- */
-function renderCategoryTree($categories, $selected_id = null, $depth = 0) {
-    $html = '';
-    foreach ($categories as $cat) {
-        $active = ($cat['id'] == $selected_id) ? 'active' : '';
-        $hasChildren = !empty($cat['children']);
-        $icon = $hasChildren ? '📁' : '📄';
-        
-        $html .= '<div class="cat-item ' . $active . '" style="margin-left: ' . ($depth * 20) . 'px;" data-id="' . $cat['id'] . '">';
-        $html .= '<span class="cat-toggle">' . ($hasChildren ? '▼' : '▶') . '</span>';
-        $html .= '<span class="cat-icon">' . $icon . '</span>';
-        $html .= '<span class="cat-name">' . htmlspecialchars($cat['name']) . '</span>';
-        $html .= '<div class="cat-actions ms-auto">';
-        $html .= '<button class="btn btn-xs btn-light" title="Add sub-category"><i class="bi bi-plus-circle"></i></button>';
-        $html .= '<button class="btn btn-xs btn-light" title="Edit"><i class="bi bi-pencil"></i></button>';
-        $html .= '<button class="btn btn-xs btn-danger" title="Delete"><i class="bi bi-trash"></i></button>';
-        $html .= '</div>';
+        $html .= '<a class="flex-grow-1 text-decoration-none category-link" href="?category=' . $id . '">' . h($name) . '</a>';
         $html .= '</div>';
 
         if ($hasChildren) {
-            $html .= renderCategoryTree($cat['children'], $selected_id, $depth + 1);
+            $html .= '<div id="cat-children-' . $id . '" class="ms-4 mt-1 d-none">';
+            $html .= renderCategoryTree($node['children'], $selectedId);
+            $html .= '</div>';
         }
+
+        $html .= '</li>';
     }
+    $html .= '</ul>';
     return $html;
 }
-?>
+
+function getProductsByCategory($conn, ?int $categoryId, string $search = '', string $status = ''): array {
+    if (!$categoryId) return [];
+
+    $search = trim($search);
+    $status = trim($status);
+
+    $sql = "
+        SELECT
+            p.id,
+            p.spu,
+            p.name,
+            p.base_price,
+            p.status,
+            p.image_url,
+            c.name AS category_name,
+            COUNT(DISTINCT pv.id) AS variant_count,
+            COALESCE(SUM(i.quantity), 0) AS total_quantity,
+            COALESCE(SUM(i.reserved_quantity), 0) AS reserved_quantity,
+            COALESCE(SUM(i.quantity - i.reserved_quantity), 0) AS available
+        FROM PRODUCTS p
+        LEFT JOIN CATEGORIES c ON c.id = p.category_id
+        LEFT JOIN PRODUCT_VARIANTS pv ON pv.product_id = p.id
+        LEFT JOIN INVENTORY i ON i.product_variant_id = pv.id
+        WHERE p.category_id = :cid
+          AND (:q = '' OR p.name LIKE :likeq1 OR p.spu LIKE :likeq2 OR pv.sku_code LIKE :likeq3)
+          AND (:st1 = '' OR p.status = :st2)
+        GROUP BY p.id
+        ORDER BY p.id DESC
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $like = '%' . $search . '%';
+
+    $stmt->execute([
+        ':cid' => $categoryId,
+        ':q' => $search,
+        ':likeq1' => $like,
+        ':likeq2' => $like,
+        ':likeq3' => $like,
+        ':st1' => $status,
+        ':st2' => $status
+    ]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getStatusBadge(string $status): string {
+    $status = strtolower(trim($status));
+    return match ($status) {
+        'active' => '<span class="badge bg-success">Active</span>',
+        'inactive' => '<span class="badge bg-secondary">Inactive</span>',
+        'draft' => '<span class="badge bg-dark">Draft</span>',
+        default => '<span class="badge bg-light text-dark">Unknown</span>',
+    };
+}

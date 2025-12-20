@@ -2,6 +2,27 @@
   --admin-darling-color: #850442;
 }
 
+.admin-wrapper{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;   /* QUAN TRỌNG: khóa ngang, tránh bị override thành column */
+  align-items: stretch;
+}
+
+/* target đúng sidebar của bạn (admin-sidebar.php đang dùng <aside class="sidebar">) */
+.admin-wrapper > .sidebar{
+  flex: 0 0 260px;
+  width: 260px;
+}
+
+/* Main content */
+.admin-main{
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  padding: 18px 18px 40px;
+}
+
 html {
   font-size: 14px;
 }
@@ -11,11 +32,6 @@ body {
   background: #f5f7fb;
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.95rem;
-}
-
-.admin-wrapper {
-  display: flex;
-  min-height: 100vh;
 }
 
 .sidebar {
@@ -36,7 +52,7 @@ body {
 }
 
 .sidebar-logo-icon {
-  height: 32px;
+  height: 50px;
   width: auto;
   filter: brightness(0) invert(1);
 }
@@ -77,10 +93,6 @@ body {
 .sidebar-menu li:hover a {
   color: #fff;
   font-weight: 600;
-}
-
-.content {
-  flex: 1;
 }
 
 .page-title {

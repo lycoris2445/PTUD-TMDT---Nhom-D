@@ -1,65 +1,41 @@
 <?php
-header('Content-Type: text/html; charset=utf-8');
+$host = 'localhost'; $db = 'Darling_cosmetics'; $user = 'root'; $pass = ''; $charset = 'utf8mb4';
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+try {
+    $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $q = $_GET['q'] ?? '';
+    if (empty($q)) exit;
 
-// Sample customer data
-$customers = [
-    ["name"=>"testsite","username"=>"testsite","last_active"=>"2025-11-15","registered"=>"2025-08-18","email"=>"dev-email@wpengine.local","orders"=>3,"total_spent"=>38552400,"aov"=>12850800,"country"=>"VN","city"=>"Ho Chi Minh City","region"=>"HCM"],
-    ["name"=>"Alice","username"=>"alice01","last_active"=>"2025-11-10","registered"=>"2025-06-12","email"=>"alice@gmail.com","orders"=>1,"total_spent"=>5200000,"aov"=>5200000,"country"=>"VN","city"=>"Da Nang","region"=>"DN"],
-    ["name"=>"Bob","username"=>"bob88","last_active"=>"2025-10-22","registered"=>"2025-05-01","email"=>"bob@yahoo.com","orders"=>5,"total_spent"=>21000000,"aov"=>4200000,"country"=>"US","city"=>"New York","region"=>"NY"],
-    ["name"=>"Charlie Brown","username"=>"charlieb","last_active"=>"2025-11-20","registered"=>"2025-07-05","email"=>"charlie@example.com","orders"=>2,"total_spent"=>15000000,"aov"=>7500000,"country"=>"UK","city"=>"London","region"=>"LDN"],
-    ["name"=>"Diana Prince","username"=>"diana","last_active"=>"2025-11-18","registered"=>"2025-09-15","email"=>"diana@example.com","orders"=>7,"total_spent"=>45000000,"aov"=>6428571,"country"=>"CA","city"=>"Toronto","region"=>"ON"],
-];
+    $sql = "SELECT a.full_name, a.email, a.created_at, a.last_login_at,
+                   ad.detail_address, COUNT(o.id) as orders, 
+                   IFNULL(SUM(o.final_amount), 0) as total_spent
+            FROM ACCOUNTS a
+            INNER JOIN ACCOUNT_ROLES ar ON a.id = ar.account_id
+            INNER JOIN ROLES r ON ar.role_id = r.id
+            LEFT JOIN ADDRESSES ad ON a.id = ad.account_id AND ad.is_default = 1
+            LEFT JOIN ORDERS o ON a.id = o.account_id
+            WHERE r.name = 'user' 
+              AND (a.full_name LIKE :s1 OR a.email LIKE :s2 OR ad.detail_address LIKE :s3)
+            GROUP BY a.id, a.full_name, a.email, a.created_at, a.last_login_at, ad.detail_address";
 
-// Get search query
-$q = isset($_GET['q']) ? strtolower(trim($_GET['q'])) : '';
+    $stmt = $pdo->prepare($sql);
+    $val = "%$q%";
+    $stmt->execute(['s1' => $val, 's2' => $val, 's3' => $val]);
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Debug: Log the search query
-error_log("Search query: " . $q);
-
-// Format currency function
-function vnd($n) {
-    return number_format($n, 0, ',', '.') . " ₫";
-}
-
-// Filter customers
-$results = [];
-if (empty($q)) {
-    // If empty search, return empty
-    echo '<tr><td colspan="11" class="text-center text-muted py-4">Type something to search...</td></tr>';
-    exit;
-} else {
-    foreach ($customers as $customer) {
-        // Search in multiple fields
-        if (stripos($customer['name'], $q) !== false ||
-            stripos($customer['username'], $q) !== false ||
-            stripos($customer['email'], $q) !== false ||
-            stripos($customer['country'], $q) !== false ||
-            stripos($customer['city'], $q) !== false ||
-            stripos($customer['region'], $q) !== false) {
-            $results[] = $customer;
+    if ($results) {
+        foreach ($results as $c) {
+            echo "<tr>
+                    <td class='fw-bold'>".htmlspecialchars($c['full_name'])."</td>
+                    <td>".htmlspecialchars($c['email'])."</td>
+                    <td>".date('d/m/Y', strtotime($c['created_at']))."</td>
+                    <td>".($c['last_login_at'] ? date('d/m/Y H:i', strtotime($c['last_login_at'])) : 'Never')."</td>
+                    <td class='text-center'>".$c['orders']."</td>
+                    <td class='text-success fw-bold'>$".number_format($c['total_spent'], 2)."</td>
+                    <td class='small text-muted'>".htmlspecialchars($c['detail_address'] ?? 'No address')."</td>
+                  </tr>";
         }
+    } else {
+        echo "<tr><td colspan='7' class='text-center py-4'>Không tìm thấy khách hàng nào.</td></tr>";
     }
-}
-
-// Output results
-if (empty($results)) {
-    echo '<tr><td colspan="11" class="text-center text-muted py-4">No customers found for "' . htmlspecialchars($q) . '"</td></tr>';
-} else {
-    foreach ($results as $c) {
-        echo "
-        <tr>
-            <td>{$c['name']}</td>
-            <td>{$c['username']}</td>
-            <td>{$c['last_active']}</td>
-            <td>{$c['registered']}</td>
-            <td><a href='mailto:{$c['email']}'>{$c['email']}</a></td>
-            <td>{$c['orders']}</td>
-            <td>" . vnd($c['total_spent']) . "</td>
-            <td>" . vnd($c['aov']) . "</td>
-            <td>{$c['country']}</td>
-            <td>{$c['city']}</td>
-            <td>{$c['region']}</td>
-        </tr>";
-    }
-}
-?>
+} catch (Exception $e) { echo "Lỗi hệ thống."; }

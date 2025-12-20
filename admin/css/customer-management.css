@@ -42,3 +42,6 @@ body {
 .search-input {
     width: 260px;
 }
+
+.details-row td{ background:#fbfbfb; }
+pre.addr{ white-space: pre-wrap; margin:0; }

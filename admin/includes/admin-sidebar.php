@@ -12,8 +12,8 @@
         <li class="<?= basename($_SERVER['PHP_SELF']) === 'dashboard.php' ? 'active' : '' ?>">
             <a href="dashboard.php">Dashboard</a>
         </li>
-        <li class="<?= basename($_SERVER['PHP_SELF']) === 'orders.php' ? 'active' : '' ?>">
-            <a href="orders.php">Orders</a>
+        <li class="<?= basename($_SERVER['PHP_SELF']) === 'order-management.php' ? 'active' : '' ?>">
+            <a href="order-management.php">Orders</a>
         </li>
         <li class="<?= basename($_SERVER['PHP_SELF']) === 'customer-management.php' ? 'active' : '' ?>">
             <a href="customer-management.php">Customers</a>

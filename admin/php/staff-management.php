@@ -66,7 +66,7 @@ function getRoleBadge($role) {
 
     <?php include '../includes/admin-sidebar.php'; ?>
 
-    <main class="content">
+    <main class="admin-main">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="page-title mb-0">Staff Management</h2>
             <button class="btn btn-primary">

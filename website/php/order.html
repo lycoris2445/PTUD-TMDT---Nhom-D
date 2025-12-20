@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Thanh toán</title>
+		<link rel="stylesheet" href="../css/styles.css" />
+		<link rel="stylesheet" href="../css/thanh-toan.css" />
+	</head>
+	<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Darling</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="gioi-thieu.html">Giới thiệu</a></li>
+                    <li><a href="san-pham.html">Sản phẩm</a></li>
+                    <li><a href="gio-hang.html">Giỏ hàng <span id="cart-count" class="cart-count">0</span></a></li>
+                    <li><a href="thanh-toan.html" class="active">Thanh toán</a></li>
+                    <li><a href="chinh-sach.html">Chính sách</a></li>
+                    <li><a href="lien-he.html">Liên hệ</a></li>
+					<li><a href="dang-nhap.html" class="login-icon" title="Đăng nhập">Đăng nhập</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>		<main class="container checkout-page" data-page="checkout">
+			<h1>Thanh toán</h1>
+
+			<div class="grid">
+				<section class="col form">
+					<h2>Thông tin giao hàng</h2>
+					<form id="checkout-form">
+						<div class="field">
+							<label for="fullname">Họ và tên</label>
+							<input id="fullname" name="fullname" type="text" required />
+						</div>
+						<div class="field">
+							<label for="phone">Số điện thoại</label>
+							<input id="phone" name="phone" type="tel" required />
+						</div>
+						<div class="field">
+							<label for="email">Email (tuỳ chọn)</label>
+							<input id="email" name="email" type="email" />
+						</div>
+						<div class="field">
+							<label for="address">Địa chỉ</label>
+							<input id="address" name="address" type="text" required />
+						</div>
+						<div class="row-2">
+							<div class="field">
+								<label for="city">Tỉnh/Thành</label>
+								<input id="city" name="city" type="text" />
+							</div>
+							<div class="field">
+								<label for="district">Quận/Huyện</label>
+								<input id="district" name="district" type="text" />
+							</div>
+						</div>
+
+						<div class="field">
+							<label>Phương thức thanh toán</label>
+							<div class="radios">
+								<label><input type="radio" name="payment" value="COD" checked /> Thanh toán khi nhận hàng (COD)</label>
+								<label><input type="radio" name="payment" value="BANK" /> Chuyển khoản ngân hàng</label>
+							</div>
+						</div>
+
+						<div class="field">
+							<label for="note">Ghi chú đơn hàng</label>
+							<textarea id="note" name="note" rows="3" placeholder="Ví dụ: giao giờ hành chính..."></textarea>
+						</div>
+
+						<button class="btn primary" type="submit">Đặt hàng</button>
+						<p id="order-note" class="note"></p>
+					</form>
+				</section>
+
+				<aside class="col summary" id="checkout-summary-wrap">
+					<h2>Đơn hàng của bạn</h2>
+					<ul id="checkout-items" class="items"></ul>
+					<div class="row">
+						<span>Tạm tính</span>
+						<strong id="checkout-subtotal">0₫</strong>
+					</div>
+					<div class="row">
+						<span>Phí vận chuyển</span>
+						<strong id="checkout-shipping">0₫</strong>
+					</div>
+					<div class="row total">
+						<span>Tổng</span>
+						<strong id="checkout-total">0₫</strong>
+					</div>
+				</aside>
+
+				<div id="checkout-empty" class="empty">
+					<p>Chưa có sản phẩm nào trong giỏ hàng.</p>
+					<a href="san-pham.html" class="btn">Quay lại mua sắm</a>
+				</div>
+			</div>
+		</main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <h4>Về Darling</h4>
+                    <p>Mô tả ngắn về công ty.</p>
+                </div>
+                <div>
+                    <h4>Chính sách</h4>
+                    <ul>
+                        <li><a href="chinh-sach.html">Chính sách</a></li>
+                        <li><a href="thanh-toan.html">Thanh toán</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Liên hệ</h4>
+                    <ul>
+                        <li><a href="lien-he.html">Thông tin liên hệ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; <span id="year"></span> Darling.
+            </div>
+        </div>
+    </footer>		<script>
+			document.getElementById('year').textContent = new Date().getFullYear();
+		</script>
+		<script src="../js/script.js" defer></script>
+		<script src="../js/cart.js" defer></script>
+	</body>
+	</html>
+
