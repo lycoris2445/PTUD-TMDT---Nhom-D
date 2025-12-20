@@ -40,14 +40,6 @@ try {
     // Log successful connection
     error_log("[DB] ✓ Connected successfully to database '{$db}'");
     
-    // Bật lên để check connect db, xong rồi nhớ tắt ehe
-    if (php_sapi_name() !== 'cli') {
-        echo '<div style="position:fixed;top:10px;right:10px;background:#4caf50;color:white;padding:12px 20px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:9999;font-family:Arial,sans-serif;font-size:14px;">';
-        echo '✓ Database Connected: <strong>' . htmlspecialchars($db) . '</strong>';
-        echo '</div>';
-        echo "<script>console.log('[DB] ✓ Connected to database: {$db}');</script>";
-    }
-    
 } catch (PDOException $e) {
     // Detailed error logging for development/debugging
     $errorMsg = $e->getMessage();
