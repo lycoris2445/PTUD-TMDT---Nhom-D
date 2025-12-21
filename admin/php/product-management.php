@@ -63,15 +63,16 @@ function money_vnd($val): string {
     <link rel="stylesheet" href="../css/admin-main.css">
 </head>
 <body>
-<div class="admin-shell">
+<div class="admin-wrapper">
 
     <!-- Sidebar -->
     <?php include __DIR__ . '/../includes/admin-sidebar.php'; ?>
 
     <!-- Main -->
     <main class="admin-main">
-        <div class="page-title">Product Management</div>
-
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="page-title">Product Management</h2>
+        </div>
         <div class="row g-3">
             <!-- Category Sidebar -->
             <div class="col-12 col-lg-4 col-xl-3">
@@ -288,7 +289,7 @@ function money_vnd($val): string {
 
                         <div class="col-12 col-md-6">
                             <label class="form-label">SPU</label>
-                            <input class="form-control" name="spu" required>
+                            <input class="form-control" name="spu" required placeholder="SPUXXXX">
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -319,7 +320,12 @@ function money_vnd($val): string {
                             <label class="form-label">Base Price</label>
                             <input class="form-control" name="base_price" type="number" step="0.01" min="0" required>
                         </div>
-
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Stock Quantity</label>
+                            <input class="form-control" name="stock_quantity" type="number" step="1" min="0" value="0" required>
+                            <small class="text-muted">Tồn kho sẽ lưu vào INVENTORY của biến thể mặc định.</small>
+                        </div>
+                    
                         <div class="col-12 col-md-6">
                             <label class="form-label">Product Image</label>
                             <input type="file" class="form-control" name="image" accept="image/*">

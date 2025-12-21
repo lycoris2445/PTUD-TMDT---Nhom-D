@@ -92,10 +92,9 @@ $returnQuery = build_query(['view' => $viewId, 'edit' => $editId, 'page' => $pag
   <?php include __DIR__ . '/../includes/admin-sidebar.php'; ?>
   <!-- Main -->
   <main class="admin-main">
-    <div class="container py-4">
 
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">Orders</h3>
+        <h3 class="admin-title">Order Management</h3>
 
         <a class="btn btn-primary" href="#" onclick="alert('Bạn chưa cung cấp flow tạo order (chọn account, thêm items, tính tiền...). Nếu bạn muốn mình sẽ code phần Create luôn.'); return false;">
           + Create Order
@@ -187,15 +186,6 @@ $returnQuery = build_query(['view' => $viewId, 'edit' => $editId, 'page' => $pag
                           href="order-management.php?<?= h(build_query(['edit' => $oid, 'view' => 0, 'page' => $page])) ?>">
                           Edit
                         </a>
-
-                        <form method="post" action="order-actions.php"
-                              onsubmit="return confirm('Delete order #<?= $oid ?>? This cannot be undone.');">
-                          <input type="hidden" name="action" value="delete">
-                          <input type="hidden" name="id" value="<?= $oid ?>">
-                          <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
-                          <input type="hidden" name="return_query" value="<?= h(build_query(['page' => $page])) ?>">
-                          <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
-                        </form>
                       </div>
                     </td>
                   </tr>
@@ -228,13 +218,33 @@ $returnQuery = build_query(['view' => $viewId, 'edit' => $editId, 'page' => $pag
 
                                   <div class="col-12">
                                     <label class="form-label">Status</label>
-                                    <select class="form-select" name="status">
-                                      <?php foreach ($statuses as $key => $label): ?>
-                                        <option value="<?= h($key) ?>" <?= ((string)$detailOrder['status'] === $key) ? 'selected' : '' ?>>
-                                          <?= h($label) ?> (<?= h($key) ?>)
-                                        </option>
-                                      <?php endforeach; ?>
-                                    </select>
+                                      <?php
+                                        $currentStatus = (string)$detailOrder['status'];
+                                        $nextStatuses = allowed_next_statuses($currentStatus);
+                                        $selectKeys = array_values(array_unique(array_merge([$currentStatus], $nextStatuses)));
+                                        $disableStatusSelect = empty($nextStatuses); // không có bước tiếp theo
+                                      ?>
+                                      <select class="form-select" name="status" <?= $disableStatusSelect ? 'disabled' : '' ?>>
+                                        <?php foreach ($selectKeys as $key): ?>
+                                          <?php $label = $statuses[$key] ?? $key; ?>
+                                          <option value="<?= h($key) ?>" <?= ($currentStatus === $key) ? 'selected' : '' ?>>
+                                            <?= h($label) ?> (<?= h($key) ?>)
+                                          </option>
+                                        <?php endforeach; ?>
+                                      </select>
+
+                                      <?php if ($disableStatusSelect): ?>
+                                        <div class="form-text text-muted">
+                                          Trạng thái hiện tại không có bước chuyển tiếp hợp lệ theo flow fulfillment (hoặc đã completed).
+                                          Bạn vẫn có thể sửa tracking/carrier.
+                                        </div>
+                                        <input type="hidden" name="status" value="<?= h($currentStatus) ?>">
+                                      <?php else: ?>
+                                        <div class="form-text">
+                                          Chỉ cho phép đổi theo flow: new → processing → awaiting_pickup → shipping → shipped → completed.
+                                        </div>
+                                      <?php endif; ?>
+
                                     <div class="form-text">Nếu đổi status sẽ tự ghi ORDER_HISTORY.</div>
                                   </div>
 
@@ -463,8 +473,6 @@ $returnQuery = build_query(['view' => $viewId, 'edit' => $editId, 'page' => $pag
 
         </div>
       </div>
-
-    </div>
   </main>
 </div>
 </body>

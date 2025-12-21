@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 session_start();
-require_once __DIR__ . '/../includes/function_customer_management.php';
+require_once __DIR__ . '/../includes/function-customer-management.php';
 
 try {
     /** @var PDO $conn */
@@ -21,7 +21,11 @@ $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
 function h(?string $s): string { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-function money($n): string { return number_format((float)$n, 0, '.', ','); }
+function money($n): string
+{
+    return '$' . number_format((float)$n, 0, '.', ',');
+}
+
 
 function build_query(array $overrides = []): string {
     $params = array_merge($_GET, $overrides);
@@ -82,12 +86,8 @@ $returnQuery = build_query(['page' => $page]);
 
   <main class="admin-main">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="page-title mb-0">Customer Management</h2>
-      <button class="btn btn-primary" type="button" onclick="alert('Admin không tạo customer trực tiếp.');">
-        + Add New Account
-      </button>
+      <h3 class="page-title">Customer Management</h3>
     </div>
-
     <?php if ($flash): ?>
       <div class="alert alert-<?= h($flash['type']) ?>"><?= h($flash['message']) ?></div>
     <?php endif; ?>
@@ -166,25 +166,31 @@ $returnQuery = build_query(['page' => $page]);
                         View
                       </a>
 
-                      <form method="post" action="customer-actions.php">
-                        <input type="hidden" name="action" value="set_status">
-                        <input type="hidden" name="id" value="<?= $cid ?>">
-                        <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
-                        <input type="hidden" name="return_query" value="<?= h($returnQuery) ?>">
-                        <input type="hidden" name="status" value="<?= $c['status'] === 'active' ? 'suspended' : 'active' ?>">
-                        <button class="btn btn-sm btn-outline-warning" type="submit">
-                          <?= $c['status'] === 'active' ? 'Suspend' : 'Activate' ?>
+                      <?php if ($c['status'] === 'active'): ?>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-warning"
+                          data-bs-toggle="modal"
+                          data-bs-target="#suspendModal"
+                          data-id="<?= (int)$cid ?>"
+                          data-name="<?= h($c['full_name']) ?>"
+                          data-return="<?= h($returnQuery) ?>"
+                          data-csrf="<?= h($csrf) ?>"
+                        >
+                          Suspend
                         </button>
-                      </form>
+                      <?php else: ?>
+                        <form method="post" action="customer-actions.php" class="m-0">
+                          <input type="hidden" name="action" value="activate_with_log">
+                          <input type="hidden" name="id" value="<?= (int)$cid ?>">
+                          <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
+                          <input type="hidden" name="return_query" value="<?= h($returnQuery) ?>">
+                          <button class="btn btn-sm btn-outline-success" type="submit">
+                            Activate
+                          </button>
+                        </form>
+                      <?php endif; ?>
 
-                      <form method="post" action="customer-actions.php"
-                            onsubmit="return confirm('Delete customer #<?= $cid ?>? Có thể lỗi nếu còn ràng buộc FK.');">
-                        <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="id" value="<?= $cid ?>">
-                        <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
-                        <input type="hidden" name="return_query" value="<?= h($returnQuery) ?>">
-                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
-                      </form>
                     </div>
                   </td>
                 </tr>
@@ -250,5 +256,53 @@ $returnQuery = build_query(['page' => $page]);
 
   </main>
 </div>
+
+<!-- Suspend Modal -->
+<div class="modal fade" id="suspendModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" action="customer-actions.php" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Suspend account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" name="action" value="suspend_with_reason">
+        <input type="hidden" name="id" id="suspend_id" value="">
+        <input type="hidden" name="csrf_token" id="suspend_csrf" value="">
+        <input type="hidden" name="return_query" id="suspend_return" value="">
+
+        <div class="mb-2">
+          <div class="small text-muted">Account:</div>
+          <div class="fw-bold" id="suspend_name">#</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Suspend reason</label>
+          <textarea class="form-control" name="reason" rows="4" required
+            placeholder="Enter suspend reason..."></textarea>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Confirm</label>
+          <select class="form-select" name="confirm" required>
+            <option value="">-- Choose --</option>
+            <option value="no">No</option>
+            <option value="yes">Yes, suspend account</option>
+          </select>
+          <div class="form-text">Only when “Yes” is selected will the system perform the suspension.</div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-warning">Confirm Suspend</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/customer-management.js"></script>
 </body>
 </html>

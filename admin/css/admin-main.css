@@ -163,3 +163,9 @@ body {
   border-color: var(--admin-darling-color);
   color: #fff;
 }
+
+.page-title{
+  font-size: 34px;
+  font-weight: 800;
+  margin: 4px 0 16px;
+}
