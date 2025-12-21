@@ -1,49 +1,54 @@
 <?php
+// Load security helper
+require_once __DIR__ . '/../../config/security_helper.php';
+
 $error = "";
 $success = "";
 
-$host = 'localhost';
-$db   = 'Darling_cosmetics';
-$user = 'root';
-$pass = '';
-$charset = 'utf8mb4';
-
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-
+// Kết nối Database - sử dụng file cấu hình chung
 try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
+    $pdo = require __DIR__ . '/../../config/db_connect.php';
+} catch (Exception $e) {
     die("Lỗi kết nối database: " . $e->getMessage());
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $full_name = $_POST['full_name'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    // Kiểm tra email đã tồn tại chưa
-    $stmt = $pdo->prepare("SELECT id FROM ACCOUNTS WHERE email = ?");
-    $stmt->execute([$email]);
+    $full_name = clean_input($_POST['full_name'] ?? '');
+    $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
+    $password = $_POST['password'] ?? '';
     
-    if ($stmt->fetch()) {
-        $error = "Email này đã được đăng ký!";
+    // Validate input
+    if (empty($full_name) || empty($email) || empty($password)) {
+        $error = "Vui lòng điền đầy đủ thông tin!";
+    } elseif (!validate_email($email)) {
+        $error = "Email không hợp lệ!";
     } else {
-        // Hash mật khẩu để bảo mật
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
-        
-        // Chèn vào database
-        $sql = "INSERT INTO ACCOUNTS (full_name, email, password_hash, status) VALUES (?, ?, ?, 'active')";
-        $stmt = $pdo->prepare($sql);
-        
-        if ($stmt->execute([$full_name, $email, $password_hash])) {
-            $success = "Đăng ký thành công! <a href='login.php'>Đăng nhập ngay</a>";
+        // Validate password strength - comment out nếu muốn đơn giản hơn
+        $password_errors = validate_password_strength($password);
+        if (!empty($password_errors)) {
+            $error = implode(". ", $password_errors);
         } else {
-            $error = "Có lỗi xảy ra, vui lòng thử lại.";
+
+        // Kiểm tra email đã tồn tại chưa
+        $stmt = $pdo->prepare("SELECT id FROM ACCOUNTS WHERE email = ?");
+        $stmt->execute([$email]);
+        
+        if ($stmt->fetch()) {
+            $error = "Email này đã được đăng ký!";
+        } else {
+            // Hash mật khẩu để bảo mật - sử dụng bcrypt với cost 12
+            $password_hash = hash_password($password);
+            
+            // Chèn vào database
+            $sql = "INSERT INTO ACCOUNTS (full_name, email, password_hash, status) VALUES (?, ?, ?, 'active')";
+            $stmt = $pdo->prepare($sql);
+            
+            if ($stmt->execute([$full_name, $email, $password_hash])) {
+                $success = "Đăng ký thành công! <a href='login.php'>Đăng nhập ngay</a>";
+            } else {
+                $error = "Có lỗi xảy ra, vui lòng thử lại.";
+            }
+        }
         }
     }
 }
