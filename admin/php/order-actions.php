@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 session_start();
 
-require_once __DIR__ . '/../includes/function_order_management.php';
+require_once __DIR__ . '/../includes/function-order-management.php';
 
 try {
     /** @var PDO $conn */
@@ -45,11 +45,6 @@ if ($id <= 0) {
     redirect_back();
 }
 
-if ($action === 'delete') {
-    $ok = delete_order($conn, $id);
-    flash($ok ? 'success' : 'danger', $ok ? "Deleted order #{$id}." : "Failed to delete order #{$id}.");
-    redirect_back();
-}
 
 if ($action === 'update') {
     $data = [
@@ -59,6 +54,19 @@ if ($action === 'update') {
     ];
     $note = trim((string)($_POST['note'] ?? ''));
     if ($note === '') $note = null;
+    $current = get_order_by_id($conn, $id);
+    if (!$current) {
+        flash('danger', "Order #{$id} not found.");
+        redirect_back();
+    }
+
+    $prev = (string)$current['status'];
+    $to   = (string)$data['status'];
+
+    if ($to !== '' && $to !== $prev && !can_transition_status($prev, $to)) {
+        flash('danger', "Không thể đổi trạng thái từ '{$prev}' sang '{$to}'. Flow hợp lệ: new → processing → awaiting_pickup → shipping → shipped → completed.");
+        redirect_back();
+    }
 
     $ok = update_order($conn, $id, $data, $note);
     flash($ok ? 'success' : 'danger', $ok ? "Updated order #{$id}." : "Failed to update order #{$id}.");

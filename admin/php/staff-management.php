@@ -68,7 +68,7 @@ function getRoleBadge($role) {
 
     <main class="admin-main">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="page-title mb-0">Staff Management</h2>
+            <h2 class="page-title">Staff Management</h2>
             <button class="btn btn-primary">
                 <i class="bi bi-person-plus-fill"></i> Add New Account
             </button>

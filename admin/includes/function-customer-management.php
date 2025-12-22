@@ -24,8 +24,10 @@ function build_customers_where(array $filters, array &$params): string
     $where[] = "r.name = 'user'";
 
     if (!empty($filters['q'])) {
-        $where[] = "(a.full_name LIKE :q OR a.email LIKE :q)";
-        $params[':q'] = '%' . (string)$filters['q'] . '%';
+        $where[] = "(a.full_name LIKE :q_name OR a.email LIKE :q_email)";
+        $like = '%' . (string)$filters['q'] . '%';
+        $params[':q_name']  = $like;
+        $params[':q_email'] = $like;
     }
 
     if (!empty($filters['status'])) {
@@ -146,10 +148,68 @@ function set_customer_status(PDO $conn, int $id, string $status): bool
     return $stmt->execute([':status' => $status, ':id' => $id]);
 }
 
-function delete_customer(PDO $conn, int $id): bool
+function log_account_status(PDO $conn, int $accountId, string $action, ?string $reason, ?int $changedBy): bool
 {
-    // NOTE: xóa cứng; nếu hệ thống có nhiều FK khác thì có thể fail.
-    // Bạn có thể đổi thành "suspended" thay vì delete nếu muốn an toàn.
-    $stmt = $conn->prepare("DELETE FROM accounts WHERE id = :id");
-    return $stmt->execute([':id' => $id]);
+    if (!in_array($action, ['suspend', 'activate'], true)) return false;
+
+    $stmt = $conn->prepare("
+        INSERT INTO account_status_logs (account_id, action, reason, changed_by)
+        VALUES (:account_id, :action, :reason, :changed_by)
+    ");
+    return $stmt->execute([
+        ':account_id' => $accountId,
+        ':action' => $action,
+        ':reason' => $reason,
+        ':changed_by' => $changedBy,
+    ]);
 }
+
+function suspend_customer_with_reason(PDO $conn, int $id, string $reason, ?int $changedBy = null): bool
+{
+    $reason = trim($reason);
+    if ($reason === '' || mb_strlen($reason) > 1000) return false;
+
+    try {
+        $conn->beginTransaction();
+
+        // Update status
+        $stmt = $conn->prepare("UPDATE accounts SET status = 'suspended' WHERE id = :id");
+        $ok1 = $stmt->execute([':id' => $id]);
+
+        // Log reason
+        $ok2 = log_account_status($conn, $id, 'suspend', $reason, $changedBy);
+
+        if ($ok1 && $ok2) {
+            $conn->commit();
+            return true;
+        }
+        $conn->rollBack();
+        return false;
+    } catch (Throwable $e) {
+        if ($conn->inTransaction()) $conn->rollBack();
+        return false;
+    }
+}
+
+function activate_customer(PDO $conn, int $id, ?int $changedBy = null): bool
+{
+    try {
+        $conn->beginTransaction();
+
+        $stmt = $conn->prepare("UPDATE accounts SET status = 'active' WHERE id = :id");
+        $ok1 = $stmt->execute([':id' => $id]);
+
+        $ok2 = log_account_status($conn, $id, 'activate', null, $changedBy);
+
+        if ($ok1 && $ok2) {
+            $conn->commit();
+            return true;
+        }
+        $conn->rollBack();
+        return false;
+    } catch (Throwable $e) {
+        if ($conn->inTransaction()) $conn->rollBack();
+        return false;
+    }
+}
+

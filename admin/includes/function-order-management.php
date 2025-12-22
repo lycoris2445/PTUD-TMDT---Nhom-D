@@ -17,6 +17,38 @@ function order_statuses(): array
     ];
 }
 
+function allowed_status_transitions(): array
+{
+    return [
+        'new'             => ['processing'],
+        'processing'      => ['awaiting_pickup'],
+        'awaiting_pickup' => ['shipping'],
+        'shipping'        => ['shipped'],
+        'shipped'         => ['completed'],
+        'completed'       => [],
+
+        // Các trạng thái khác không nằm trong fulfillment flow => không cho chuyển trong UI edit.
+        'pending'         => [],
+        'on_hold'         => [],
+        'cancelled'       => [],
+        'declined'        => [],
+    ];
+}
+
+function allowed_next_statuses(string $currentStatus): array
+{
+    $map = allowed_status_transitions();
+    return $map[$currentStatus] ?? [];
+}
+
+function can_transition_status(string $from, string $to): bool
+{
+    if ($from === $to) return true;
+    $next = allowed_next_statuses($from);
+    return in_array($to, $next, true);
+}
+
+
 function build_orders_where(array $filters, array &$params): string
 {
     $where = [];
@@ -146,6 +178,12 @@ function update_order(PDO $conn, int $orderId, array $data, ?string $note = null
 
     $prevStatus = (string)$current['status'];
     $newStatus  = $status;
+    // Enforce fulfillment transition rule
+    if ($newStatus !== $prevStatus && !can_transition_status($prevStatus, $newStatus)) {
+        // Không cho đổi status ngoài flow (nhưng vẫn có thể đổi tracking/carrier)
+        return false;
+    }
+
     $statusChanged = ($newStatus !== $prevStatus);
 
     try {

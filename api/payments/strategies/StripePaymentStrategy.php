@@ -10,7 +10,7 @@ class StripePaymentStrategy implements PaymentStrategy
     {
         global $pdo;
         $this->pdo = $pdo;
-        $this->stripeSecretKey = $_ENV['STRIPE_SECRET_KEY'] ?? 'STRIPE_KEY_REMOVED';
+        $this->stripeSecretKey = $_ENV['STRIPE_SECRET_KEY'] ?? throw new \Exception('STRIPE_SECRET_KEY not configured in .env');
         \Stripe\Stripe::setApiKey($this->stripeSecretKey);
     }
     public function getPaymentMethod(): string

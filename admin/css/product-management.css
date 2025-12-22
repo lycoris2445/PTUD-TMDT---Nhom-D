@@ -8,9 +8,6 @@
 }
 body{ background: var(--bg); }
 
-/* Left admin menu */
-.admin-shell{ min-height:100vh; display:flex; }
-
 .brand{
   display:flex; align-items:center; gap:10px;
   font-weight: 800; letter-spacing:.2px;
@@ -21,14 +18,6 @@ body{ background: var(--bg); }
   background: rgba(255,255,255,.18);
   display:grid; place-items:center;
   font-weight: 900;
-}
-
-/* Main content */
-.admin-main{ flex:1; padding: 18px 18px 40px; }
-.page-title{
-  font-size: 34px;
-  font-weight: 800;
-  margin: 4px 0 16px;
 }
 
 /* Category panel + product panel */
