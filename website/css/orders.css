@@ -1,0 +1,36 @@
+/* Orders List Page Styles */
+
+[data-page="orders"] .order-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+[data-page="orders"] .order-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-page="orders"] .order-id strong {
+    font-size: 1.25rem;
+    color: var(--darling-color, #A10550);
+}
+
+[data-page="orders"] .tracking code {
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+[data-page="orders"] .order-total strong {
+    font-size: 1.25rem;
+}
+
+[data-page="orders"] .btn-outline-darling {
+    border-color: var(--darling-color, #A10550);
+    color: var(--darling-color, #A10550);
+}
+
+[data-page="orders"] .btn-outline-darling:hover {
+    background-color: var(--darling-color, #A10550);
+    color: white;
+}

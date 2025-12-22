@@ -26,6 +26,24 @@ if (session_status() === PHP_SESSION_NONE) {
     .user-dropdown { position: relative; display: inline-block; }
     .user-name { color: #333; font-weight: 600; text-decoration: none; cursor: pointer; }
     .logout-btn { color: #dc3545 !important; font-weight: bold; }
+    
+    /* Cart badge style */
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background: #dc3545;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      line-height: 1;
+    }
   </style>
 </head>
 
@@ -49,7 +67,15 @@ if (session_status() === PHP_SESSION_NONE) {
         <li><a href="index.php">Home</a></li>
         <li><a href="about.html">About Us</a></li>
         <li><a href="store.php">Store</a></li>
-        <li><a href="cart.php">Cart</a></li>
+        <li>
+          <a href="cart.php" style="position: relative;">
+            <i class="bi bi-cart3"></i> Cart
+            <span id="cart-count" class="cart-count" style="display: none;">0</span>
+          </a>
+        </li>
+        <?php if (isset($_SESSION['user_id'])): ?>
+          <li><a href="orders.php"><i class="bi bi-bag-check"></i> My Orders</a></li>
+        <?php endif; ?>
         <li><a href="order.php">Order</a></li>
         <li><a href="policy.php">Policy</a></li>
         <li><a href="contact.php">Contact</a></li>

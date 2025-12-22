@@ -1,64 +1,76 @@
 <?php
 // 1. Khởi tạo session và biến thông báo
 session_start();
+
+// Load security helper
+require_once __DIR__ . '/../../config/security_helper.php';
+
 $error = "";
 
-// 2. Kết nối Database
-$host = 'localhost';
-$db   = 'Darling_cosmetics';
-$user = 'root';
-$pass = '';
-$charset = 'utf8mb4';
+// Redirect nếu đã đăng nhập
+if (is_logged_in()) {
+    header("Location: index.php");
+    exit;
+}
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-
+// 2. Kết nối Database - sử dụng file cấu hình chung
 try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
+    $pdo = require __DIR__ . '/../../config/db_connect.php';
+} catch (Exception $e) {
     die("Lỗi kết nối database: " . $e->getMessage());
 }
 
 // 3. Xử lý khi người dùng nhấn nút Log in
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = trim($_POST['email'] ?? '');
+    $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'] ?? '';
 
     if (empty($email) || empty($password)) {
         $error = "Vui lòng nhập email và mật khẩu!";
     } else {
-        // Tìm tài khoản theo email
-        $stmt = $pdo->prepare("SELECT id, full_name, password_hash, status FROM ACCOUNTS WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
-
-        if ($user) {
-            // Kiểm tra trạng thái tài khoản
-            if ($user['status'] === 'suspended') {
-                $error = "Tài khoản của bạn đã bị khóa!";
-            } 
-            // Xác thực mật khẩu
-            else if (password_verify($password, $user['password_hash'])) {
-                // Đăng nhập thành công: Lưu thông tin vào Session
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_name'] = $user['full_name'];
-                
-                // Cập nhật thời gian đăng nhập cuối cùng
-                $updateStmt = $pdo->prepare("UPDATE ACCOUNTS SET last_login_at = NOW() WHERE id = ?");
-                $updateStmt->execute([$user['id']]);
-
-                // Chuyển hướng về trang chủ hoặc dashboard
-                header("Location: index.php"); 
-                exit;
-            } else {
-                $error = "Mật khẩu không chính xác!";
-            }
+        // Kiểm tra rate limiting
+        $rate_limit = check_login_attempts($email);
+        if (!$rate_limit['allowed']) {
+            $error = "Bạn đã thử đăng nhập quá nhiều lần. Vui lòng thử lại sau " . $rate_limit['remaining_time'] . " phút.";
         } else {
-            $error = "Email không tồn tại trong hệ thống!";
+            // Tìm tài khoản theo email
+            $stmt = $pdo->prepare("SELECT id, full_name, password_hash, status FROM ACCOUNTS WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+
+            if ($user) {
+                // Kiểm tra trạng thái tài khoản
+                if ($user['status'] === 'suspended') {
+                    $error = "Tài khoản của bạn đã bị khóa!";
+                    record_failed_login($email);
+                } 
+                // Xác thực mật khẩu
+                else if (verify_password($password, $user['password_hash'])) {
+                    // Đăng nhập thành công: Reset login attempts
+                    reset_login_attempts($email);
+                    
+                    // Regenerate session để tránh session fixation
+                    regenerate_session();
+                    
+                    // Lưu thông tin vào Session
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_name'] = $user['full_name'];
+                    
+                    // Cập nhật thời gian đăng nhập cuối cùng
+                    $updateStmt = $pdo->prepare("UPDATE ACCOUNTS SET last_login_at = NOW() WHERE id = ?");
+                    $updateStmt->execute([$user['id']]);
+
+                    // Chuyển hướng về trang chủ hoặc dashboard
+                    header("Location: index.php"); 
+                    exit;
+                } else {
+                    $error = "Mật khẩu không chính xác!";
+                    record_failed_login($email);
+                }
+            } else {
+                $error = "Email không tồn tại trong hệ thống!";
+                record_failed_login($email);
+            }
         }
     }
 }

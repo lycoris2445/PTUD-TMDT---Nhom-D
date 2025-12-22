@@ -1,17 +1,17 @@
 <?php
-$pageTitle = "Cart";
-$pageCss = "cart.css";
+$pageTitle = "Shopping Cart";
+$pageCss = "gio-hang.css";
 include '../includes/header.php';
 ?>
 
 <main class="container py-4" data-page="cart">
   <div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="h4 mb-0 text-darling">Cart</h1>
-    <a href="store.php" class="btn btn-outline-dark btn-sm">Continue shopping</a>
+    <h1 class="h4 mb-0 text-darling">Shopping Cart</h1>
+    <a href="store.php" class="btn btn-outline-dark btn-sm">Continue Shopping</a>
   </div>
 
   <div id="cart-empty" class="alert alert-info d-none">
-    Your cart is empty. <a href="store.php" class="alert-link">Shop now</a>
+    Your cart is empty. <a href="store.php" class="alert-link">Start shopping</a>
   </div>
 
   <div id="cart-table-wrap" class="row g-4">
@@ -36,29 +36,34 @@ include '../includes/header.php';
       </div>
 
       <div class="d-flex gap-2 mt-3">
-        <button id="btn-clear-cart" class="btn btn-outline-secondary">Clear cart</button>
-        <a class="btn btn-outline-dark" href="store.php">Continue shopping</a>
+        <button id="btn-clear-cart" class="btn btn-outline-secondary">Clear Cart</button>
+        <a class="btn btn-outline-dark" href="store.php">Continue Shopping</a>
       </div>
     </div>
 
     <div class="col-lg-4">
       <div class="card shadow-sm sticky-top" style="top: 90px;">
         <div class="card-body">
-          <h5 class="card-title mb-3">Summary</h5>
-          <div class="d-flex justify-content-between py-1">
-            <span>Subtotal</span>
-            <strong id="summary-subtotal">$0</strong>
+          <h5 class="card-title mb-3">Order Summary</h5>
+          <div class="d-flex justify-content-between py-2">
+            <span class="text-muted">Subtotal</span>
+            <strong id="summary-subtotal">$0.00</strong>
           </div>
-          <div class="d-flex justify-content-between py-1">
-            <span>Shipping fee</span>
-            <strong id="summary-shipping">$0</strong>
+          <div class="d-flex justify-content-between py-2">
+            <span class="text-muted">Shipping</span>
+            <strong id="summary-shipping">$0.00</strong>
           </div>
-          <hr>
-          <div class="d-flex justify-content-between py-1 fs-5">
-            <span>Total</span>
-            <strong id="summary-total">$0</strong>
+          <hr class="my-2">
+          <div class="d-flex justify-content-between py-2 fs-5">
+            <span class="fw-bold">Total</span>
+            <strong class="text-darling" id="summary-total">$0.00</strong>
           </div>
-          <a class="btn btn-darling w-100 mt-3" href="order.php">Proceed to checkout</a>
+          <div class="text-muted small mt-2 mb-3">
+            <i class="bi bi-info-circle"></i> Free shipping on orders over $20
+          </div>
+          <a class="btn btn-darling w-100 py-3" href="order.php">
+            <i class="bi bi-lock-fill me-2"></i>Proceed to Checkout
+          </a>
         </div>
       </div>
     </div>

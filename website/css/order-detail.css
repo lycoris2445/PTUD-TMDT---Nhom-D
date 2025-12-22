@@ -1,0 +1,130 @@
+/* Order Detail Page Styles */
+
+[data-page="order-detail"] .card-header {
+    border-bottom: 2px solid #dee2e6;
+}
+
+[data-page="order-detail"] .table thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+[data-page="order-detail"] .table tbody img {
+    border: 1px solid #dee2e6;
+}
+
+[data-page="order-detail"] .table tfoot {
+    font-size: 1rem;
+}
+
+[data-page="order-detail"] .text-darling {
+    color: var(--darling-color, #A10550) !important;
+}
+
+[data-page="order-detail"] code {
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+[data-page="order-detail"] .badge {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+[data-page="order-detail"] #refund-form {
+    max-width: 100%;
+}
+
+[data-page="order-detail"] #refund-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+[data-page="order-detail"] .btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+[data-page="order-detail"] .btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+[data-page="order-detail"] .btn-warning:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+[data-page="order-detail"] .alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+[data-page="order-detail"] .alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+[data-page="order-detail"] .alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+/* Payment Method Icons */
+[data-page="order-detail"] .bi {
+    vertical-align: middle;
+}
+
+/* Refund Form Improvements */
+[data-page="order-detail"] #refund-form .form-control:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+[data-page="order-detail"] #refund-form .form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Order Status Enhancement */
+[data-page="order-detail"] .badge.fs-6 {
+    font-size: 1rem !important;
+    padding: 0.5em 1em;
+}
+
+/* Loading State */
+[data-page="order-detail"] .spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+    font-weight: 600;
+}
+
+[data-page="order-detail"] .btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+[data-page="order-detail"] .card-header h5 {
+    margin-bottom: 0;
+}
+
+[data-page="order-detail"] .alert {
+    margin-top: 1rem;
+}

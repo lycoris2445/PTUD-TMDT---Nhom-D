@@ -3,14 +3,27 @@
 
 (function () {
   const CART_KEY = "app.cart.v1";
+  const CART_VERSION_KEY = "app.cart.version";
+  const CURRENT_VERSION = "2"; // Version 2: USD prices
 
-  const fmtCurrency = (n) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(n || 0);
+  // Format currency as USD
+  const fmtCurrency = (n) => {
+    if (typeof n !== 'number' || isNaN(n)) return '$0.00';
+    return '$' + n.toFixed(2);
+  };
+
+  // Check and migrate cart if needed
+  const checkCartVersion = () => {
+    const version = localStorage.getItem(CART_VERSION_KEY);
+    if (version !== CURRENT_VERSION) {
+      // Clear old cart data
+      localStorage.removeItem(CART_KEY);
+      localStorage.setItem(CART_VERSION_KEY, CURRENT_VERSION);
+      console.log('[Cart] Migrated to version', CURRENT_VERSION);
+    }
+  };
+
+  checkCartVersion();
 
   const read = () => {
     try {
@@ -36,9 +49,18 @@
 
   const getTotals = (cart) => {
     const itemCount = cart.reduce((s, it) => s + it.qty, 0);
+    // Prices are already in USD
     const subtotal = cart.reduce((s, it) => s + it.price * it.qty, 0);
-    const shipping = subtotal > 0 ? 0 : 0; // miễn phí vận chuyển demo
+    
+    // Shipping in USD:
+    // - Free shipping if order >= $20
+    // - $1.2 if order < $20
+    const FREE_SHIPPING_THRESHOLD = 20;
+    const STANDARD_SHIPPING_FEE = 1.2;
+    
+    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : (subtotal > 0 ? STANDARD_SHIPPING_FEE : 0);
     const total = subtotal + shipping;
+    
     return { itemCount, subtotal, shipping, total };
   };
 
@@ -117,7 +139,7 @@
               <img src="${item.image || ""}" alt="${item.name}" onerror="this.style.display='none'" class="rounded" />
               <div>
                 <div class="fw-semibold">${item.name}</div>
-                <div class="text-muted small">ID: ${item.id}</div>
+                <div class="text-muted small">Mã: ${item.id}</div>
               </div>
             </div>
           </td>
@@ -131,7 +153,7 @@
           </td>
           <td class="text-end fw-semibold">${fmtCurrency(item.price * item.qty)}</td>
           <td class="text-center">
-            <button class="btn btn-link text-danger p-0" data-action="remove" data-id="${item.id}" aria-label="Remove">×</button>
+            <button class="btn btn-link text-danger p-0" data-action="remove" data-id="${item.id}" aria-label="Xóa">×</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -176,7 +198,7 @@
 
     const clearBtn = document.getElementById("btn-clear-cart");
     if (clearBtn) clearBtn.addEventListener("click", () => {
-      if (confirm("Do you really want to clear the entire cart?")) {
+      if (confirm("Bạn có chắc muốn xóa toàn bộ giỏ hàng?")) {
         clear();
         renderCartTable();
       }
@@ -188,77 +210,9 @@
     bindCartEvents();
   };
 
-  // UI: Checkout page
-  const renderCheckoutSummary = () => {
-    const cart = read();
-    const list = document.getElementById("checkout-items");
-    const sumSub = document.getElementById("checkout-subtotal");
-    const sumShip = document.getElementById("checkout-shipping");
-    const sumTotal = document.getElementById("checkout-total");
-    const empty = document.getElementById("checkout-empty");
-    const wrap = document.getElementById("checkout-summary-wrap");
-
-    if (!list) return;
-
-    list.innerHTML = "";
-    if (!cart.length) {
-      if (wrap) wrap.classList.add("d-none");
-      if (empty) empty.classList.remove("d-none");
-      return;
-    }
-    if (wrap) wrap.classList.remove("d-none");
-    if (empty) empty.classList.add("d-none");
-
-    for (const it of cart) {
-      const li = document.createElement("li");
-      li.className = "checkout-item list-group-item d-flex justify-content-between align-items-center";
-      li.innerHTML = `
-        <span class="name">${it.name} × ${it.qty}</span>
-        <span class="price fw-semibold">${fmtCurrency(it.price * it.qty)}</span>
-      `;
-      list.appendChild(li);
-    }
-    const { subtotal, shipping, total } = getTotals(cart);
-    if (sumSub) sumSub.textContent = fmtCurrency(subtotal);
-    if (sumShip) sumShip.textContent = fmtCurrency(shipping);
-    if (sumTotal) sumTotal.textContent = fmtCurrency(total);
-  };
-
-  const bindCheckoutForm = () => {
-    const form = document.getElementById("checkout-form");
-    const noteEl = document.getElementById("order-note");
-    if (!form) return;
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const cart = read();
-      if (!cart.length) {
-        alert("Cart is empty, please add products before checkout.");
-        return;
-      }
-
-      const formData = new FormData(form);
-      const payload = Object.fromEntries(formData.entries());
-      // Simple validation
-      if (!payload.fullname || !payload.phone || !payload.address) {
-        alert("Please enter full name, phone number and address.");
-        return;
-      }
-
-      // In a real app, send payload + cart to backend here
-      const orderId = "DH" + Date.now();
-      const msg = `Order placed successfully!\nOrder ID: ${orderId}`;
-      alert(msg);
-      clear();
-      renderCheckoutSummary();
-      if (noteEl) noteEl.textContent = "Thank you for your purchase!";
-    });
-  };
-
-  const initCheckoutPage = () => {
-    renderCheckoutSummary();
-    bindCheckoutForm();
-  };
+  // UI: Checkout page - REMOVED
+  // All checkout functionality has been moved to checkout-stripe.js
+  // including renderCheckoutSummary() and form submission handling.
 
   // Generic: buttons with data-add-to-cart
   const bindGlobalAddToCart = () => {
@@ -282,7 +236,7 @@
       try {
         const toast = document.createElement("div");
         toast.className = "toast add-to-cart-toast";
-        toast.textContent = "Added to cart";
+        toast.textContent = "Đã thêm vào giỏ hàng";
         document.body.appendChild(toast);
         setTimeout(() => toast.classList.add("show"), 10);
         setTimeout(() => toast.classList.remove("show"), 1600);
@@ -313,6 +267,6 @@
     const page = document.querySelector("[data-page]");
     const pageName = page ? page.getAttribute("data-page") : "";
     if (pageName === "cart") initCartPage();
-    if (pageName === "checkout") initCheckoutPage();
+    // Checkout page is handled by checkout-stripe.js
   });
 })();
