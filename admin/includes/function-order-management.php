@@ -17,6 +17,65 @@ function order_statuses(): array
     ];
 }
 
+function return_statuses(): array
+{
+    return [
+        'request_return'          => 'Return requested',
+        'accept_return'           => 'Return accepted',
+        'decline_return'          => 'Return declined',
+        'receive_return_package'  => 'Return package received',
+        'accept_refund'           => 'Refunded',
+    ];
+}
+
+/**
+ * Status options for the FILTER dropdown (search bar).
+ * We prefix values to avoid mixing order.status vs return.status.
+ * Example values:
+ *  - order:new
+ *  - return:request_return
+ */
+function status_filter_options(): array
+{
+    $out = [
+        'Order Status' => [],
+        'Return / Refund' => [],
+    ];
+
+    foreach (order_statuses() as $k => $label) {
+        $out['Order Status']["order:{$k}"] = "{$label} ({$k})";
+    }
+    foreach (return_statuses() as $k => $label) {
+        $out['Return / Refund']["return:{$k}"] = "{$label} ({$k})";
+    }
+
+    return $out;
+}
+
+function allowed_return_transitions(): array
+{
+    return [
+        'request_return'         => ['accept_return', 'decline_return'],
+        'accept_return'          => ['receive_return_package'],
+        'receive_return_package' => ['accept_refund'],
+        'decline_return'         => [],
+        'accept_refund'          => [],
+    ];
+}
+
+function allowed_next_return_statuses(string $currentStatus): array
+{
+    $map = allowed_return_transitions();
+    return $map[$currentStatus] ?? [];
+}
+
+function can_transition_return_status(string $from, string $to): bool
+{
+    if ($from === $to) return true;
+    $next = allowed_next_return_statuses($from);
+    return in_array($to, $next, true);
+}
+
 function allowed_status_transitions(): array
 {
     return [
@@ -48,7 +107,6 @@ function can_transition_status(string $from, string $to): bool
     return in_array($to, $next, true);
 }
 
-
 function build_orders_where(array $filters, array &$params): string
 {
     $where = [];
@@ -59,9 +117,28 @@ function build_orders_where(array $filters, array &$params): string
         $params[':q'] = '%' . (string)$filters['q'] . '%';
     }
 
+    // status filter supports:
+    //  - "new" (backward compatible) => orders.status
+    //  - "order:new"
+    //  - "return:request_return"
     if (!empty($filters['status'])) {
-        $where[] = "o.status = :status";
-        $params[':status'] = (string)$filters['status'];
+        $raw = (string)$filters['status'];
+        $scope = 'order';
+        $val = $raw;
+
+        if (str_contains($raw, ':')) {
+            [$scope, $val] = explode(':', $raw, 2);
+            $scope = strtolower(trim($scope));
+            $val = trim($val);
+        }
+
+        if ($scope === 'return') {
+            $where[] = "r.status = :r_status";
+            $params[':r_status'] = $val;
+        } else {
+            $where[] = "o.status = :status";
+            $params[':status'] = $val;
+        }
     }
 
     return $where ? ("WHERE " . implode(" AND ", $where)) : "";
@@ -72,7 +149,9 @@ function count_orders(PDO $conn, array $filters = []): int
     $params = [];
     $where = build_orders_where($filters, $params);
 
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM orders o {$where}");
+    // LEFT JOIN returns to support filtering by return status.
+    // COUNT(DISTINCT) prevents double counting if an order has multiple return rows.
+    $stmt = $conn->prepare("SELECT COUNT(DISTINCT o.id) FROM orders o LEFT JOIN returns r ON r.order_id = o.id {$where}");
     $stmt->execute($params);
     return (int)$stmt->fetchColumn();
 }
@@ -83,20 +162,20 @@ function fetch_orders(PDO $conn, array $filters = [], int $limit = 15, int $offs
     $where = build_orders_where($filters, $params);
 
     $sql = "
-        SELECT
-            o.id,
-            o.account_id,
-            a.email AS account_email,
-            a.full_name AS account_full_name,
-            o.tracking_number,
-            o.total_amount,
-            o.shipping_fee,
-            o.final_amount,
-            o.status,
-            o.shipping_carrier,
-            o.created_at
+    SELECT
+        o.id,
+        o.account_id,
+        a.email AS account_email,
+        o.tracking_number,
+        o.total_amount,
+        o.shipping_fee,
+        o.final_amount,
+        o.status AS order_status,
+        r.status AS return_status,
+        o.created_at
         FROM orders o
         LEFT JOIN accounts a ON a.id = o.account_id
+        LEFT JOIN returns r ON r.order_id = o.id
         {$where}
         ORDER BY o.created_at DESC, o.id DESC
         LIMIT :limit OFFSET :offset
@@ -113,7 +192,6 @@ function fetch_orders(PDO $conn, array $filters = [], int $limit = 15, int $offs
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
-
 
 function get_order_by_id(PDO $conn, int $orderId): ?array
 {
@@ -229,4 +307,68 @@ function update_order(PDO $conn, int $orderId, array $data, ?string $note = null
         if ($conn->inTransaction()) $conn->rollBack();
         return false;
     }
+}
+
+function get_return_by_order_id(PDO $conn, int $orderId): ?array
+{
+    $stmt = $conn->prepare("SELECT * FROM returns WHERE order_id = :oid ORDER BY id DESC LIMIT 1");
+    $stmt->execute([':oid' => $orderId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $row ?: null;
+}
+
+function create_return(PDO $conn, int $orderId, int $accountId, string $reason, ?string $adminNote = null, ?float $refundAmount = null): bool
+{
+    if (trim($reason) === '') return false;
+
+    $stmt = $conn->prepare("
+        INSERT INTO returns (order_id, account_id, reason, status, admin_note, refund_amount)
+        VALUES (:oid, :aid, :reason, 'request_return', :note, :amount)
+    ");
+    return $stmt->execute([
+        ':oid'    => $orderId,
+        ':aid'    => $accountId,
+        ':reason' => $reason,
+        ':note'   => ($adminNote === '' ? null : $adminNote),
+        ':amount' => $refundAmount,
+    ]);
+}
+
+function update_return(PDO $conn, int $returnId, array $data): bool
+{
+    $allowed = array_keys(return_statuses());
+
+    $status = isset($data['status']) ? trim((string)$data['status']) : '';
+    $note   = array_key_exists('admin_note', $data) ? trim((string)$data['admin_note']) : null;
+    $amount = array_key_exists('refund_amount', $data) ? $data['refund_amount'] : null;
+
+    if ($status !== '' && !in_array($status, $allowed, true)) {
+        return false;
+    }
+
+    $currentStmt = $conn->prepare("SELECT * FROM returns WHERE id = :id LIMIT 1");
+    $currentStmt->execute([':id' => $returnId]);
+    $current = $currentStmt->fetch(PDO::FETCH_ASSOC);
+    if (!$current) return false;
+
+    $prev = (string)$current['status'];
+    $to   = ($status === '' ? $prev : $status);
+
+    if ($to !== $prev && !can_transition_return_status($prev, $to)) {
+        return false;
+    }
+
+    $stmt = $conn->prepare("
+        UPDATE returns
+        SET status = :status,
+            admin_note = :note,
+            refund_amount = :amount
+        WHERE id = :id
+    ");
+    return $stmt->execute([
+        ':status' => $to,
+        ':note'   => ($note === '' ? null : $note),
+        ':amount' => ($amount === '' ? null : $amount),
+        ':id'     => $returnId,
+    ]);
 }

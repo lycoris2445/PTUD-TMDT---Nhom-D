@@ -268,7 +268,7 @@ function getOrderStatusLabel($status) {
             <i class="bi bi-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
             <h2 class="h4 mt-3 mb-2">Order Not Found</h2>
             <p class="text-muted mb-4">The order does not exist or has been deleted.</p>
-            <a href="index.php" class="btn btn-darling">Back to Home</a>
+            <a href="home.php" class="btn btn-darling">Back to Home</a>
         </div>
     <?php endif; ?>
 </main>

@@ -9,7 +9,7 @@ $error = "";
 
 // Redirect nếu đã đăng nhập
 if (is_logged_in()) {
-    header("Location: index.php");
+    header("Location: home.php");
     exit;
 }
 
@@ -17,7 +17,7 @@ if (is_logged_in()) {
 try {
     $pdo = require __DIR__ . '/../../config/db_connect.php';
 } catch (Exception $e) {
-    die("Lỗi kết nối database: " . $e->getMessage());
+    die("Fail to connect database: " . $e->getMessage());
 }
 
 // 3. Xử lý khi người dùng nhấn nút Log in
@@ -26,12 +26,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'] ?? '';
 
     if (empty($email) || empty($password)) {
-        $error = "Vui lòng nhập email và mật khẩu!";
+        $error = "Please enter your email and password!";
     } else {
         // Kiểm tra rate limiting
         $rate_limit = check_login_attempts($email);
         if (!$rate_limit['allowed']) {
-            $error = "Bạn đã thử đăng nhập quá nhiều lần. Vui lòng thử lại sau " . $rate_limit['remaining_time'] . " phút.";
+            $error = "You have tried to log in too many times. Please try again after " . $rate_limit['remaining_time'] . " minutes.";
         } else {
             // Tìm tài khoản theo email
             $stmt = $pdo->prepare("SELECT id, full_name, password_hash, status FROM ACCOUNTS WHERE email = ?");
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($user) {
                 // Kiểm tra trạng thái tài khoản
                 if ($user['status'] === 'suspended') {
-                    $error = "Tài khoản của bạn đã bị khóa!";
+                    $error = "Your account has been suspended!";
                     record_failed_login($email);
                 } 
                 // Xác thực mật khẩu
@@ -61,14 +61,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $updateStmt->execute([$user['id']]);
 
                     // Chuyển hướng về trang chủ hoặc dashboard
-                    header("Location: index.php"); 
+                    header("Location: dashboard.php"); 
                     exit;
                 } else {
-                    $error = "Mật khẩu không chính xác!";
+                    $error = "Incorrect password!";
                     record_failed_login($email);
                 }
             } else {
-                $error = "Email không tồn tại trong hệ thống!";
+                $error = "Email does not exist in the system!";
                 record_failed_login($email);
             }
         }

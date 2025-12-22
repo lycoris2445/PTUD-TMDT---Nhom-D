@@ -52,7 +52,7 @@ if (session_status() === PHP_SESSION_NONE) {
 <header class="site-header">
   <div class="header-inner">
 
-    <a href="index.php" class="logo-link" aria-label="Darling home">
+    <a href="home.php" class="logo-link" aria-label="Darling home">
       <img src="../../icons/logo_darling.svg" class="site-logo" alt="Darling">
     </a>
 
@@ -64,8 +64,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <nav id="primary-nav">
       <ul class="nav-menu">
-        <li><a href="index.php">Home</a></li>
-        <li><a href="about.html">About Us</a></li>
+        <li><a href="home.php">Home</a></li>
+        <li><a href="about.php">About Us</a></li>
         <li><a href="store.php">Store</a></li>
         <li>
           <a href="cart.php" style="position: relative;">
