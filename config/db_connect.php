@@ -43,21 +43,6 @@ try {
     $errorCode = $e->getCode();
     
     error_log("[DB] ✗ CONNECTION FAILED - Code: {$errorCode}, Message: {$errorMsg}");
-    
-    // Browser console error (only in web context)
-    if (php_sapi_name() !== 'cli') {
-        echo "<script>console.error('[DB] ✗ Connection failed: {$errorMsg}');</script>";
-    }
-    
-    // Display error message
-    echo '<div style="background:#ffebee;border-left:4px solid #c62828;padding:15px;margin:10px;font-family:monospace;">';
-    echo '<strong>Database Connection Error</strong><br>';
-    echo 'Database: ' . htmlspecialchars($db) . '<br>';
-    echo 'Host: ' . htmlspecialchars($host) . ':' . htmlspecialchars($port) . '<br>';
-    echo 'Error: ' . htmlspecialchars($errorMsg) . '<br>';
-    echo '<br><em>Kiểm tra:</em><br>';
-    echo '</div>';
-    
     exit;
 }
 

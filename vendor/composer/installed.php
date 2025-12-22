@@ -3,7 +3,7 @@
         'name' => 'darling/ecommerce',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '1ff2648abf0ad1a373f9d4369faaceb97913fb39',
+        'reference' => '587d14a311d8c4865af0fd990fa93a56ef762bf9',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'darling/ecommerce' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '1ff2648abf0ad1a373f9d4369faaceb97913fb39',
+            'reference' => '587d14a311d8c4865af0fd990fa93a56ef762bf9',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

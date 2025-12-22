@@ -48,27 +48,11 @@ function getDBConnection() {
         
         if ($conn->connect_error) {
             error_log("[DB-MySQLi] ✗ CONNECTION FAILED: " . $conn->connect_error);
-            
-            // Hiển thị thông báo lỗi trên trang web
-            if (php_sapi_name() !== 'cli') {
-                echo '<div style="position:fixed;top:10px;right:10px;background:#f44336;color:white;padding:12px 20px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:9999;font-family:Arial,sans-serif;font-size:14px;">';
-                echo '✗ Database Error: ' . htmlspecialchars($conn->connect_error);
-                echo '</div>';
-            }
-            
             die("Kết nối database thất bại: " . $conn->connect_error);
         }
         
         $conn->set_charset("utf8mb4");
         error_log("[DB-MySQLi] ✓ Connected successfully to database '" . DB_NAME . "'");
-        
-        // Hiển thị thông báo thành công trên trang web
-        if (php_sapi_name() !== 'cli') {
-            echo '<div style="position:fixed;top:10px;right:10px;background:#4caf50;color:white;padding:12px 20px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:9999;font-family:Arial,sans-serif;font-size:14px;">';
-            echo '✓ Database Connected: <strong>' . htmlspecialchars(DB_NAME) . '</strong>';
-            echo '</div>';
-            echo "<script>console.log('[DB-MySQLi] ✓ Connected to: " . DB_NAME . "');</script>";
-        }
     }
     return $conn;
 }
