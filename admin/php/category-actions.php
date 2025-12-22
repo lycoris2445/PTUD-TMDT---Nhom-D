@@ -1,6 +1,16 @@
 <?php
 declare(strict_types=1);
 
+session_start();
+
+// Kiểm tra quyền admin - CHỈ operation_staff
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true || 
+    !isset($_SESSION['admin_role']) || $_SESSION['admin_role'] !== 'operation_staff') {
+    http_response_code(403);
+    echo json_encode(['ok' => false, 'error' => 'Access denied - operation_staff only']);
+    exit;
+}
+
 header('Content-Type: application/json; charset=utf-8');
 
 try {

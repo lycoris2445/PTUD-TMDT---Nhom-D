@@ -2,6 +2,19 @@
 declare(strict_types=1);
 
 session_start();
+
+// Kiểm tra quyền admin
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true || !isset($_SESSION['admin_role'])) {
+    http_response_code(403);
+    exit(json_encode(['ok' => false, 'error' => 'Unauthorized']));
+}
+
+$allowed_roles = ['super_admin', 'operation_staff'];
+if (!in_array($_SESSION['admin_role'], $allowed_roles)) {
+    http_response_code(403);
+    exit(json_encode(['ok' => false, 'error' => 'Access denied']));
+}
+
 require_once __DIR__ . '/../includes/function-customer-management.php';
 
 try {

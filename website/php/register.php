@@ -56,17 +56,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Darling</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dnhap_dki.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body class="auth-page-body">
+<?php 
+$pageTitle = "Register - Darling";
+$pageCss = "dnhap_dki.css";
+include '../includes/header.php'; 
+?>
     <main>
         <section class="auth-section">
             <div class="register-container-single">
@@ -119,5 +113,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </section>
     </main>
-</body>
-</html>
+<?php include '../includes/footer.php'; ?>

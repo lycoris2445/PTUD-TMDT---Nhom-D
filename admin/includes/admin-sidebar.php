@@ -18,14 +18,16 @@
         <li class="<?= basename($_SERVER['PHP_SELF']) === 'customer-management.php' ? 'active' : '' ?>">
             <a href="customer-management.php">Customers</a>
         </li>
+        <?php if (isset($_SESSION['admin_role']) && $_SESSION['admin_role'] === 'operation_staff'): ?>
         <li class="<?= basename($_SERVER['PHP_SELF']) === 'product-management.php' ? 'active' : '' ?>">
             <a href="product-management.php">Products</a>
         </li>
+        <?php endif; ?>
         <li class="<?= basename($_SERVER['PHP_SELF']) === 'staff-management.php' ? 'active' : '' ?>">
             <a href="staff-management.php">Staff</a>
         </li>
         <li>
-            <a href="../php/logout.php">Logout</a>
+            <a href="logout.php">Logout</a>
         </li>
     </ul>
 </aside>

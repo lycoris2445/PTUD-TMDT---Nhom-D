@@ -3,23 +3,10 @@ session_start();
 $error = "";
 
 // 1. Kết nối Database
-$host = 'localhost';
-$db   = 'Darling_cosmetics';
-$user = 'root';
-$pass = '';
-$charset = 'utf8mb4';
-
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-
 try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
+    $pdo = require __DIR__ . '/../../config/db_connect.php';
 } catch (\PDOException $e) {
-    die("Lỗi kết nối database: " . $e->getMessage());
+    die("Lỗi kết nối database: " . htmlspecialchars($e->getMessage()));
 }
 
 // 2. Xử lý đăng nhập Admin

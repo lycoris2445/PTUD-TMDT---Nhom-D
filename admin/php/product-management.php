@@ -2,17 +2,15 @@
 declare(strict_types=1);
 session_start();
 
-// Cho phép cả super_admin và operation_staff truy cập Product Management
-$allowed_roles = ['super_admin', 'operation_staff']; 
-
-if (
-    !isset($_SESSION['is_admin']) || 
+// Kiểm tra đăng nhập và quyền truy cập
+// CHỈ cho phép operation_staff quản lý Products
+if (!isset($_SESSION['is_admin']) || 
     $_SESSION['is_admin'] !== true || 
-    !in_array($_SESSION['admin_role'], $allowed_roles)
-) {
-    // Nếu không đúng quyền, chuyển hướng về trang login hoặc báo lỗi 403
+    !isset($_SESSION['admin_role']) ||
+    $_SESSION['admin_role'] !== 'operation_staff') {
+    
     header("Location: admin-login.php");
-    exit("Truy cập bị từ chối!");
+    exit;
 }
 
 require_once __DIR__ . '/../includes/function_product_management.php';

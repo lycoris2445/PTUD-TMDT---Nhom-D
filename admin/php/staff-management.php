@@ -1,30 +1,27 @@
 <?php
 session_start();
 
-// 1. Kiểm tra quyền truy cập
-if (!isset($_SESSION['is_admin']) || $_SESSION['admin_role'] !== 'super_admin') {
+// 1. Kiểm tra đăng nhập - cho phép cả super_admin và operation_staff
+if (!isset($_SESSION['is_admin']) || 
+    $_SESSION['is_admin'] !== true || 
+    !isset($_SESSION['admin_role'])) {
+    
+    header("Location: admin-login.php");
+    exit;
+}
+
+$allowed_roles = ['super_admin', 'operation_staff'];
+if (!in_array($_SESSION['admin_role'], $allowed_roles)) {
     header("Location: admin-login.php");
     exit;
 }
 
 // 2. Kết nối Database
-$host = 'localhost';
-$db   = 'Darling_cosmetics';
-$user = 'root';
-$pass = '';
-$charset = 'utf8mb4';
-
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => true, // BẬT CÁI NÀY ĐỂ DÙNG 1 THAM SỐ NHIỀU LẦN TRONG SQL
-];
-
 try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
-    die("Lỗi kết nối database: " . $e->getMessage());
+    $pdo = require __DIR__ . '/../../config/db_connect.php';
+} catch (Throwable $e) {
+    http_response_code(500);
+    exit("Database connection error: " . htmlspecialchars($e->getMessage()));
 }
 
 // 3. Xử lý Phân trang & Tìm kiếm
@@ -35,18 +32,17 @@ $offset = ($page - 1) * $perPage;
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $role_filter = isset($_GET['role']) ? trim($_GET['role']) : '';
 
-// 4. Thiết lập tham số và SQL
-$params = [':search' => "%$search%"];
-$whereSql = " WHERE (a.full_name LIKE :search OR a.email LIKE :search)";
+// 4. Thiết lập tham số và SQL - fix để dùng được cùng parameter nhiều lần
+$searchPattern = "%$search%";
+$whereSql = " WHERE (a.full_name LIKE ? OR a.email LIKE ?)";
+$params = [$searchPattern, $searchPattern];
 
 if ($role_filter !== '') {
-    $whereSql .= " AND r.name = :role";
-    $params[':role'] = $role_filter;
+    $whereSql .= " AND r.name = ?";
+    $params[] = $role_filter;
 }
 
 // 5. Truy vấn lấy danh sách nhân viên
-// Lưu ý: LIMIT và OFFSET trong SQL không nên bind qua execute nếu không dùng PARAM_INT, 
-// nên ta nối thẳng biến vì đã ép kiểu (int) ở trên.
 $sql = "SELECT a.id, a.email, a.full_name, a.status, a.created_at, a.last_login_at, r.name as role_name
         FROM ACCOUNTS a
         JOIN ACCOUNT_ROLES ar ON a.id = ar.account_id
@@ -55,7 +51,7 @@ $sql = "SELECT a.id, a.email, a.full_name, a.status, a.created_at, a.last_login_
         " ORDER BY a.id ASC LIMIT $perPage OFFSET $offset";
 
 $stmt = $pdo->prepare($sql);
-$stmt->execute($params); // Dòng 56 - SẼ KHÔNG CÒN LỖI
+$stmt->execute($params);
 $accounts = $stmt->fetchAll();
 
 // 6. Tính tổng số bản ghi
@@ -65,8 +61,8 @@ $countSql = "SELECT COUNT(*) FROM ACCOUNTS a
 
 $countStmt = $pdo->prepare($countSql);
 $countStmt->execute($params);
-$totalItems = $countStmt->fetchColumn();
-$totalPages = ceil($totalItems / $perPage);
+$totalItems = (int)$countStmt->fetchColumn();
+$totalPages = (int)ceil($totalItems / $perPage);
 
 // 7. Hàm hiển thị
 function getStatusBadge($status) {
