@@ -64,9 +64,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <nav id="primary-nav">
       <ul class="nav-menu">
-        <li><a href="index.php">Home</a></li>
-        <li><a href="about.html">About Us</a></li>
-        <li><a href="store.php">Store</a></li>
+        <li><a href="../php/home.php">Home</a></li>
+        <li><a href="../php/about.php">About Us</a></li>
+        <li><a href="../php/store.php">Store</a></li>
         <li>
           <a href="cart.php" style="position: relative;">
             <i class="bi bi-cart3"></i> Cart
@@ -74,11 +74,11 @@ if (session_status() === PHP_SESSION_NONE) {
           </a>
         </li>
         <?php if (isset($_SESSION['user_id'])): ?>
-          <li><a href="orders.php"><i class="bi bi-bag-check"></i> My Orders</a></li>
+          <li><a href="../php/orders.php"><i class="bi bi-bag-check"></i> My Orders</a></li>
         <?php endif; ?>
-        <li><a href="order.php">Order</a></li>
-        <li><a href="policy.php">Policy</a></li>
-        <li><a href="contact.php">Contact</a></li>
+        <li><a href="../php/order.php">Order</a></li>
+        <li><a href="../php/policy.php">Policy</a></li>
+        <li><a href="../php/contact.php">Contact</a></li>
         
         <?php if (isset($_SESSION['user_id'])): ?>
           <li class="user-dropdown">

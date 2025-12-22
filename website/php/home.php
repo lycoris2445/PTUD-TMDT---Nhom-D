@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Home - Darling Cosmetics';
-$pageCss   = 'trang-chu.css'; 
+$pageCss   = 'home.css'; 
 
 // Kết nối database (giữ nguyên để dùng sau này)
 $pdo = require __DIR__ . '/../../config/db_connect.php';
