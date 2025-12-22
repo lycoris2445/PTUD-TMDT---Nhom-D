@@ -5,10 +5,11 @@
   const CART_KEY = "app.cart.v1";
 
   const fmtCurrency = (n) =>
-    new Intl.NumberFormat("vi-VN", {
+    new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "VND",
-      maximumFractionDigits: 0,
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(n || 0);
 
   const read = () => {
@@ -116,7 +117,7 @@
               <img src="${item.image || ""}" alt="${item.name}" onerror="this.style.display='none'" class="rounded" />
               <div>
                 <div class="fw-semibold">${item.name}</div>
-                <div class="text-muted small">Mã: ${item.id}</div>
+                <div class="text-muted small">ID: ${item.id}</div>
               </div>
             </div>
           </td>
@@ -130,7 +131,7 @@
           </td>
           <td class="text-end fw-semibold">${fmtCurrency(item.price * item.qty)}</td>
           <td class="text-center">
-            <button class="btn btn-link text-danger p-0" data-action="remove" data-id="${item.id}" aria-label="Xóa">×</button>
+            <button class="btn btn-link text-danger p-0" data-action="remove" data-id="${item.id}" aria-label="Remove">×</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -175,7 +176,7 @@
 
     const clearBtn = document.getElementById("btn-clear-cart");
     if (clearBtn) clearBtn.addEventListener("click", () => {
-      if (confirm("Bạn có chắc muốn xóa toàn bộ giỏ hàng?")) {
+      if (confirm("Do you really want to clear the entire cart?")) {
         clear();
         renderCartTable();
       }
@@ -232,7 +233,7 @@
       e.preventDefault();
       const cart = read();
       if (!cart.length) {
-        alert("Giỏ hàng trống, vui lòng thêm sản phẩm trước khi thanh toán.");
+        alert("Cart is empty, please add products before checkout.");
         return;
       }
 
@@ -240,17 +241,17 @@
       const payload = Object.fromEntries(formData.entries());
       // Simple validation
       if (!payload.fullname || !payload.phone || !payload.address) {
-        alert("Vui lòng nhập đầy đủ Họ tên, Số điện thoại và Địa chỉ.");
+        alert("Please enter full name, phone number and address.");
         return;
       }
 
       // In a real app, send payload + cart to backend here
       const orderId = "DH" + Date.now();
-      const msg = `Đặt hàng thành công!\nMã đơn: ${orderId}`;
+      const msg = `Order placed successfully!\nOrder ID: ${orderId}`;
       alert(msg);
       clear();
       renderCheckoutSummary();
-      if (noteEl) noteEl.textContent = "Cảm ơn bạn đã mua hàng!";
+      if (noteEl) noteEl.textContent = "Thank you for your purchase!";
     });
   };
 
@@ -281,7 +282,7 @@
       try {
         const toast = document.createElement("div");
         toast.className = "toast add-to-cart-toast";
-        toast.textContent = "Đã thêm vào giỏ hàng";
+        toast.textContent = "Added to cart";
         document.body.appendChild(toast);
         setTimeout(() => toast.classList.add("show"), 10);
         setTimeout(() => toast.classList.remove("show"), 1600);

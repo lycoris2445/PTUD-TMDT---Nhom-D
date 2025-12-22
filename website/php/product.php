@@ -31,8 +31,7 @@ $pageCss   = 'product.css';
 include '../includes/header.php';
 ?>
 
-<main class="container py-5">
-
+<main class="container py-5" data-page="product">
   <div class="row">
 
     <!-- IMAGE GALLERY -->
@@ -86,9 +85,18 @@ include '../includes/header.php';
       <?php endif; ?>
 
       <!-- ORDER -->
-      <a href="cart.php" class="btn btn-darling w-100 py-3">
+      <button
+        type="button"
+        class="btn btn-darling w-100 py-3"
+        data-add-to-cart
+        data-id="<?= (int)$product['id'] ?>"
+        data-name="<?= htmlspecialchars($product['name']) ?>"
+        data-price="<?= (float)$product['base_price'] ?>"
+        data-image="<?= htmlspecialchars($images[0]['url'] ?? '') ?>"
+      >
         Add to Cart
-      </a>
+      </button>
+
 
       <!-- BENEFIT BOX -->
       <div class="benefit-box mt-4">
@@ -117,7 +125,6 @@ include '../includes/header.php';
   </div>
 
 </main>
-
-<?php include '../includes/footer.php'; ?>
-
+<script src="../js/product.js"></script>
 <script src="../js/cart.js"></script>
+<?php include '../includes/footer.php'; ?>
