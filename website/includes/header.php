@@ -76,8 +76,6 @@ if (session_status() === PHP_SESSION_NONE) {
         <?php if (isset($_SESSION['user_id'])): ?>
         <li><a href="orders.php"><i class="bi bi-bag-check"></i> My Orders</a></li>
         <?php endif; ?>
-        <li><a href="order.php">Order</a></li>
-        <li><a href="policy.php">Policy</a></li>
         <li><a href="contact.php">Contact</a></li>
         
         <?php if (isset($_SESSION['user_id'])): ?>
