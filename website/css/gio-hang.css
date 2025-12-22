@@ -1,31 +1,67 @@
-/* Cart page tweaks on top of Bootstrap */
+/* Cart page styles */
 
 :root {
   --darling-color: #A10550;
 }
 
-.cart-page .table img {
-  width: 64px;
-  height: 64px;
+[data-page="cart"] .table img {
+  width: 60px;
+  height: 60px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #f8f9fa;
+  border: 1px solid #e5e7eb;
 }
 
-.cart-page .qty-control {
+[data-page="cart"] .table {
+  font-size: 0.95rem;
+}
+
+[data-page="cart"] .table thead th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+  border-bottom: 2px solid #e5e7eb;
+  padding: 1rem 0.75rem;
+}
+
+[data-page="cart"] .table tbody td {
+  padding: 1.25rem 0.75rem;
+  vertical-align: middle;
+}
+
+[data-page="cart"] .qty-control {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-.cart-page .qty-control .btn-outline-secondary {
-  width: 32px;
-  height: 32px;
+[data-page="cart"] .qty-control .btn-outline-secondary {
+  width: 36px;
+  height: 36px;
   padding: 0;
+  border-radius: 6px;
+  font-weight: 600;
 }
 
-.cart-page input[type="number"] {
-  width: 72px;
+[data-page="cart"] .qty-control input[type="number"] {
+  width: 70px;
+  text-align: center;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+[data-page="cart"] .btn-link {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+[data-page="cart"] .btn-link:hover {
+  transform: scale(1.2);
 }
 
 .cart-count {

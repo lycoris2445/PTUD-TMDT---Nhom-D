@@ -1,17 +1,17 @@
 <?php
-$pageTitle = "Cart";
+$pageTitle = "Shopping Cart";
 $pageCss = "gio-hang.css";
 include '../includes/header.php';
 ?>
 
 <main class="container py-4" data-page="cart">
   <div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="h4 mb-0 text-darling">Giỏ hàng</h1>
-    <a href="store.php" class="btn btn-outline-dark btn-sm">Tiếp tục mua sắm</a>
+    <h1 class="h4 mb-0 text-darling">Shopping Cart</h1>
+    <a href="store.php" class="btn btn-outline-dark btn-sm">Continue Shopping</a>
   </div>
 
   <div id="cart-empty" class="alert alert-info d-none">
-    Giỏ hàng của bạn đang trống. <a href="store.php" class="alert-link">Mua sắm ngay</a>
+    Your cart is empty. <a href="store.php" class="alert-link">Start shopping</a>
   </div>
 
   <div id="cart-table-wrap" class="row g-4">
@@ -22,11 +22,11 @@ include '../includes/header.php';
             <table class="table align-middle mb-0">
               <thead class="table-light">
                 <tr>
-                  <th scope="col">Sản phẩm</th>
-                  <th scope="col" class="text-end">Giá</th>
-                  <th scope="col" class="text-center">Số lượng</th>
-                  <th scope="col" class="text-end">Tạm tính</th>
-                  <th scope="col" class="text-center">Xóa</th>
+                  <th scope="col">Product</th>
+                  <th scope="col" class="text-end">Price</th>
+                  <th scope="col" class="text-center">Quantity</th>
+                  <th scope="col" class="text-end">Subtotal</th>
+                  <th scope="col" class="text-center">Remove</th>
                 </tr>
               </thead>
               <tbody id="cart-table-body"></tbody>
@@ -36,29 +36,34 @@ include '../includes/header.php';
       </div>
 
       <div class="d-flex gap-2 mt-3">
-        <button id="btn-clear-cart" class="btn btn-outline-secondary">Xóa giỏ hàng</button>
-        <a class="btn btn-outline-dark" href="store.php">Tiếp tục mua sắm</a>
+        <button id="btn-clear-cart" class="btn btn-outline-secondary">Clear Cart</button>
+        <a class="btn btn-outline-dark" href="store.php">Continue Shopping</a>
       </div>
     </div>
 
     <div class="col-lg-4">
       <div class="card shadow-sm sticky-top" style="top: 90px;">
         <div class="card-body">
-          <h5 class="card-title mb-3">Tổng kết</h5>
-          <div class="d-flex justify-content-between py-1">
-            <span>Tạm tính</span>
-            <strong id="summary-subtotal">0₫</strong>
+          <h5 class="card-title mb-3">Order Summary</h5>
+          <div class="d-flex justify-content-between py-2">
+            <span class="text-muted">Subtotal</span>
+            <strong id="summary-subtotal">$0.00</strong>
           </div>
-          <div class="d-flex justify-content-between py-1">
-            <span>Phí vận chuyển</span>
-            <strong id="summary-shipping">0₫</strong>
+          <div class="d-flex justify-content-between py-2">
+            <span class="text-muted">Shipping</span>
+            <strong id="summary-shipping">$0.00</strong>
           </div>
-          <hr>
-          <div class="d-flex justify-content-between py-1 fs-5">
-            <span>Tổng</span>
-            <strong id="summary-total">0₫</strong>
+          <hr class="my-2">
+          <div class="d-flex justify-content-between py-2 fs-5">
+            <span class="fw-bold">Total</span>
+            <strong class="text-darling" id="summary-total">$0.00</strong>
           </div>
-          <a class="btn btn-darling w-100 mt-3" href="order.php">Tiến hành thanh toán</a>
+          <div class="text-muted small mt-2 mb-3">
+            <i class="bi bi-info-circle"></i> Free shipping on orders over $20
+          </div>
+          <a class="btn btn-darling w-100 py-3" href="order.php">
+            <i class="bi bi-lock-fill me-2"></i>Proceed to Checkout
+          </a>
         </div>
       </div>
     </div>

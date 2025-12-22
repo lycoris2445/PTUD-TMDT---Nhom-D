@@ -33,3 +33,84 @@
   border-color: #850442;
 }
 
+.btn-outline-darling {
+  background: transparent;
+  color: var(--darling-color);
+  border: 1px solid var(--darling-color);
+}
+
+.btn-outline-darling:hover {
+  color: #fff;
+  background: var(--darling-color);
+  border-color: var(--darling-color);
+}
+
+.text-darling {
+  color: var(--darling-color);
+}
+
+/* Stripe Elements styling */
+#card-element {
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 10px 12px;
+  background: white;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#card-element:focus-within {
+  border-color: #A10550;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(161, 5, 80, 0.25);
+}
+
+#card-element.StripeElement--invalid {
+  border-color: #dc3545;
+}
+
+#card-errors {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+#stripe-card-wrapper {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading spinner */
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
+}
+
+/* Order success page */
+.sticky-top {
+  position: sticky;
+  top: 20px;
+}
+
+.badge {
+  padding: 0.35em 0.65em;
+  font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .sticky-top {
+    position: relative;
+    top: 0;
+  }
+}
