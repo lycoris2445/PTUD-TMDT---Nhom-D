@@ -12,14 +12,14 @@ if (session_status() === PHP_SESSION_NONE) {
 
   <title><?= $pageTitle ?? 'Darling' ?></title>
 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
   <link rel="stylesheet" href="../css/style.css">
 
   <?php if (isset($pageCss)): ?>
     <link rel="stylesheet" href="../css/<?= $pageCss ?>">
   <?php endif; ?>
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   
   <style>
     /* Style cơ bản cho dropdown user */

@@ -2,8 +2,8 @@
 declare(strict_types=1);
 session_start();
 
-// Chỉ cho phép 'operation_staff' truy cập. 
-$allowed_roles = ['operation_staff']; 
+// Cho phép cả super_admin và operation_staff truy cập Product Management
+$allowed_roles = ['super_admin', 'operation_staff']; 
 
 if (
     !isset($_SESSION['is_admin']) || 
