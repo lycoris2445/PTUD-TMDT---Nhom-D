@@ -308,34 +308,9 @@ $returnQuery = build_query(['page' => $page, 'q' => $q, 'status' => $status, 'ed
                 <h6 class="mb-2">Return / Refund</h6>
 
                 <?php if (!$detailReturn): ?>
-                  <div class="text-muted small mb-2">No return request for this order.</div>
-                  <form method="post" action="order-actions.php" class="row g-2">
-                    <input type="hidden" name="action" value="return_create">
-                    <input type="hidden" name="id" value="<?= $oid ?>">
-                    <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
-                    <input type="hidden" name="return_query" value="<?= h(build_query(['edit' => $oid, 'page' => $page])) ?>">
-
-                    <div class="col-12">
-                      <label class="form-label">Reason</label>
-                      <textarea class="form-control" name="reason" rows="3" placeholder="Reason for return..." <?= $editId > 0 ? '' : 'readonly' ?>></textarea>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Refund amount (optional)</label>
-                      <input class="form-control" name="refund_amount" inputmode="decimal" placeholder="e.g. 40.00" <?= $editId > 0 ? '' : 'readonly' ?>>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label class="form-label">Admin note (optional)</label>
-                      <input class="form-control" name="admin_note" placeholder="Internal note" <?= $editId > 0 ? '' : 'readonly' ?>>
-                    </div>
-
-                    <?php if ($editId > 0): ?>
-                      <div class="col-12">
-                        <button class="btn btn-outline-dark" type="submit">Create return request</button>
-                      </div>
-                    <?php endif; ?>
-                  </form>
+                  <div class="alert alert-light border text-muted small mb-0">
+                    <i class="bi bi-info-circle"></i> No return request has been submitted by the customer.
+                  </div>
                 <?php else: ?>
                   <?php
                     $rCurrent = (string)$detailReturn['status'];
@@ -345,7 +320,7 @@ $returnQuery = build_query(['page' => $page, 'q' => $q, 'status' => $status, 'ed
                   ?>
                   <div class="mb-2">
                     <div><strong>Return ID:</strong> #<?= (int)$detailReturn['id'] ?></div>
-                    <div><strong>Current status:</strong> <?= h($rCurrent) ?></div>
+                    <div><strong>Current status:</strong> <span class="badge bg-warning text-dark"><?= h($rCurrent) ?></span></div>
                     <div class="text-muted small"><strong>Reason:</strong> <?= h((string)$detailReturn['reason']) ?></div>
                   </div>
 
@@ -366,10 +341,6 @@ $returnQuery = build_query(['page' => $page, 'q' => $q, 'status' => $status, 'ed
                           </option>
                         <?php endforeach; ?>
                       </select>
-                      <?php if ($rDisable): ?>
-                        <div class="form-text text-muted">Return is in a terminal status. You can still edit note/amount.</div>
-                        <input type="hidden" name="return_status" value="<?= h($rCurrent) ?>">
-                      <?php endif; ?>
                     </div>
 
                     <div class="col-md-6">
@@ -382,14 +353,13 @@ $returnQuery = build_query(['page' => $page, 'q' => $q, 'status' => $status, 'ed
                       <input class="form-control" name="admin_note" value="<?= h((string)($detailReturn['admin_note'] ?? '')) ?>" <?= $editId > 0 ? '' : 'readonly' ?>>
                     </div>
 
-                    <?php if ($editId > 0): ?>
-                      <div class="col-12">
-                        <button class="btn btn-outline-dark" type="submit">Update return</button>
+                    <?php if ($editId > 0 && !$rDisable): ?>
+                      <div class="col-12 mt-2">
+                        <button class="btn btn-primary btn-sm" type="submit">Update return status</button>
                       </div>
                     <?php endif; ?>
                   </form>
-                <?php endif; ?>
-              </div>
+                <?php endif; ?> </div>
             </div>
 
             <div class="col-12">

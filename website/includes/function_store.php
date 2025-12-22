@@ -74,9 +74,9 @@ function buildStoreProductQuery(array $filters, PDO $conn): array
             p.id,
             p.name,
             p.description AS `desc`,
-            COALESCE(pv.price, p.base_price) AS price,
+            p.base_price AS price, -- Chỉ lấy giá gốc của SPU
             c.name AS category,
-            COALESCE(pv.image_url, p.image_url) AS image_url,
+            COALESCE(pv.image_url, p.image_url) AS image_url, -- Vẫn giữ ảnh variant đầu tiên nếu có
             pv.id AS variant_id,
             pv.sku_code
         FROM products p
@@ -93,17 +93,14 @@ function buildStoreProductQuery(array $filters, PDO $conn): array
     $where = [];
     $params = [];
 
-    // Category filter - include parent and all children
+    // Category filter (Giữ nguyên logic cũ)
     if (!empty($filters['categories'])) {
         $allCategoryIds = [];
-
         foreach ($filters['categories'] as $catName) {
             $ids = getCategoryIdsWithChildren($conn, (string)$catName);
             $allCategoryIds = array_merge($allCategoryIds, $ids);
         }
-
         $allCategoryIds = array_values(array_unique(array_map('intval', $allCategoryIds)));
-
         if (!empty($allCategoryIds)) {
             $placeholders = implode(',', array_fill(0, count($allCategoryIds), '?'));
             $where[] = "p.category_id IN ($placeholders)";
@@ -111,23 +108,22 @@ function buildStoreProductQuery(array $filters, PDO $conn): array
         }
     }
 
-    // Price filter (USD ranges from sidebar)
+    // Lọc theo Price - Đã cập nhật để dùng p.base_price
     if (!empty($filters['prices'])) {
         $priceConds = [];
         foreach ($filters['prices'] as $range) {
             if ($range === 'Under $20') {
-                $priceConds[] = "COALESCE(pv.price, p.base_price) < 20";
+                $priceConds[] = "p.base_price < 20";
             } elseif ($range === '$20 to $50') {
-                $priceConds[] = "(COALESCE(pv.price, p.base_price) >= 20 AND COALESCE(pv.price, p.base_price) <= 50)";
+                $priceConds[] = "(p.base_price >= 20 AND p.base_price <= 50)";
             } elseif ($range === 'Over $50') {
-                $priceConds[] = "COALESCE(pv.price, p.base_price) > 50";
+                $priceConds[] = "p.base_price > 50";
             }
         }
         if (!empty($priceConds)) {
             $where[] = "(" . implode(" OR ", $priceConds) . ")";
         }
     }
-
 
     if (!empty($where)) {
         $sql .= " AND " . implode(" AND ", $where);
@@ -137,7 +133,6 @@ function buildStoreProductQuery(array $filters, PDO $conn): array
 
     return [$sql, $params];
 }
-
 /**
  * Get products for Store page (PDO)
  */

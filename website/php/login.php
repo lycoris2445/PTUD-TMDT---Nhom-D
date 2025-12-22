@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $updateStmt->execute([$user['id']]);
 
                     // Chuyển hướng về trang chủ hoặc dashboard
-                    header("Location: dashboard.php"); 
+                    header("Location: home.php"); 
                     exit;
                 } else {
                     $error = "Incorrect password!";
@@ -129,9 +129,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="auth-promo-column">
                     <div class="promo-content">
-                        <h2>Multi-channel Super Sale</h2>
-                        <p>Darling deals – every purchase comes with a gift.</p>
-                        <button>Learn more</button>
+                        <h2>Administration Login page</h2>
+                        <p>Are you an admin? Log in here.</p>
+                        <a href="../../admin/php/admin-login.php" class="admin-btn-link">
+                            <button type="button">Log in for admin</button>
+                        </a>
                     </div>
                 </div>
             </div>

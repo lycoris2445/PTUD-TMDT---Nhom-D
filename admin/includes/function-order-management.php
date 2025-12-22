@@ -21,10 +21,11 @@ function return_statuses(): array
 {
     return [
         'request_return'          => 'Return requested',
-        'accept_return'           => 'Return accepted',
-        'decline_return'          => 'Return declined',
+        'accept_return'           => 'Return accepted', // Bước đệm
+        'decline_return'          => 'Return declined', // Kết thúc
         'receive_return_package'  => 'Return package received',
-        'accept_refund'           => 'Refunded',
+        'accept_refund'           => 'Refunded',        // Kết thúc
+        'decline_refund'          => 'Refund declined', // Kết thúc
     ];
 }
 
@@ -63,19 +64,28 @@ function allowed_return_transitions(): array
     ];
 }
 
-function allowed_next_return_statuses(string $currentStatus): array
+function allowed_next_return_statuses(string $current): array
 {
-    $map = allowed_return_transitions();
-    return $map[$currentStatus] ?? [];
-}
+    switch ($current) {
+        case 'request_return':
+            // Cho phép Chấp nhận hoặc Từ chối yêu cầu ban đầu
+            return ['accept_return', 'decline_return'];
 
+        case 'receive_return_package':
+            // Sau khi đã nhận hàng, admin quyết định hoàn tiền hoặc không
+            return ['accept_refund', 'decline_refund'];
+
+        default:
+            // Các trạng thái: decline_return, accept_refund, decline_refund là trạng thái cuối (Terminal)
+            // Không cho phép chuyển đi đâu nữa.
+            return [];
+    }
+}
 function can_transition_return_status(string $from, string $to): bool
 {
-    if ($from === $to) return true;
     $next = allowed_next_return_statuses($from);
     return in_array($to, $next, true);
 }
-
 function allowed_status_transitions(): array
 {
     return [
@@ -315,23 +325,6 @@ function get_return_by_order_id(PDO $conn, int $orderId): ?array
     $stmt->execute([':oid' => $orderId]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     return $row ?: null;
-}
-
-function create_return(PDO $conn, int $orderId, int $accountId, string $reason, ?string $adminNote = null, ?float $refundAmount = null): bool
-{
-    if (trim($reason) === '') return false;
-
-    $stmt = $conn->prepare("
-        INSERT INTO returns (order_id, account_id, reason, status, admin_note, refund_amount)
-        VALUES (:oid, :aid, :reason, 'request_return', :note, :amount)
-    ");
-    return $stmt->execute([
-        ':oid'    => $orderId,
-        ':aid'    => $accountId,
-        ':reason' => $reason,
-        ':note'   => ($adminNote === '' ? null : $adminNote),
-        ':amount' => $refundAmount,
-    ]);
 }
 
 function update_return(PDO $conn, int $returnId, array $data): bool

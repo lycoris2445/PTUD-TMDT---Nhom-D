@@ -25,7 +25,7 @@
             <a href="staff-management.php">Staff</a>
         </li>
         <li>
-            <a href="login.php">Logout</a>
+            <a href="../php/logout.php">Logout</a>
         </li>
     </ul>
 </aside>

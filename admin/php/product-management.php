@@ -1,5 +1,19 @@
 <?php
 declare(strict_types=1);
+session_start();
+
+// Chỉ cho phép 'operation_staff' truy cập. 
+$allowed_roles = ['operation_staff']; 
+
+if (
+    !isset($_SESSION['is_admin']) || 
+    $_SESSION['is_admin'] !== true || 
+    !in_array($_SESSION['admin_role'], $allowed_roles)
+) {
+    // Nếu không đúng quyền, chuyển hướng về trang login hoặc báo lỗi 403
+    header("Location: admin-login.php");
+    exit("Truy cập bị từ chối!");
+}
 
 require_once __DIR__ . '/../includes/function_product_management.php';
 
@@ -27,7 +41,7 @@ if ($selected_category === null && !empty($categoryTree)) {
     $selected_category = (int)($categoryTree[0]['id'] ?? 0) ?: null;
 }
 
-$products = getProductsByCategory($conn, $selected_category, $search, $status);
+$products = getProductsByCategory($conn, $selected_category, $search, $status,);
 
 // Selected category name for breadcrumb/title
 $selectedCategoryName = '';
@@ -335,6 +349,49 @@ function money_vnd($val): string {
                     </div>
 
                 </div>
+
+                <hr>
+                <h4>Product Variants (SKU)</h4>
+
+                <table class="table table-bordered" id="variantTable">
+                    <thead>
+                        <tr>
+                            <th>SKU Code</th>
+                            <th>Price ($)</th>
+                            <th>Image URL</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    <?php if (!empty($variants)): ?>
+                        <?php foreach ($variants as $v): ?>
+                            <tr>
+                                <td>
+                                    <input type="hidden" name="variant_id[]" value="<?= (int)$v['id'] ?>">
+                                    <input type="text" name="variant_sku[]" class="form-control"
+                                        value="<?= htmlspecialchars($v['sku_code']) ?>" required>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" name="variant_price[]" class="form-control"
+                                        value="<?= htmlspecialchars($v['price']) ?>" required>
+                                </td>
+                                <td>
+                                    <input type="text" name="variant_image[]" class="form-control"
+                                        value="<?= htmlspecialchars($v['image_url']) ?>">
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+
+                    </tbody>
+                </table>
+
+                <button type="button" class="btn btn-primary btn-sm" onclick="addVariant()">+ Add Variant</button>
+
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>

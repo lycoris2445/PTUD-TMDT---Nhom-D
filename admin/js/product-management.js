@@ -81,6 +81,36 @@ async function editProduct(id) {
   form.querySelector('[name="description"]').value = p.description || '';
   form.querySelector('[name="image_url"]').value = p.image_url || '';
   form.querySelector('[name="image"]').value = '';
+    // ===== Render variants into table =====
+  const tbody = document.querySelector('#variantTable tbody');
+  if (tbody) {
+    tbody.innerHTML = '';
+
+    if (data.variants && Array.isArray(data.variants) && data.variants.length > 0) {
+      data.variants.forEach(v => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <input type="hidden" name="variant_id[]" value="${v.id ?? ''}">
+            <input type="text" name="variant_sku[]" class="form-control" value="${(v.sku_code ?? '').replace(/"/g,'&quot;')}" required>
+          </td>
+          <td>
+            <input type="number" step="0.01" min="0" name="variant_price[]" class="form-control" value="${v.price ?? 0}" required>
+          </td>
+          <td>
+            <input type="text" name="variant_image[]" class="form-control" value="${(v.image_url ?? '').replace(/"/g,'&quot;')}">
+          </td>
+          <td>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } else {
+      // Không có variants -> để trống hoặc bạn có thể auto add 1 row
+      // addVariant();
+    }
+  }
 
   const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addProductModal'));
   modal.show();
@@ -149,3 +179,28 @@ window.deleteProduct = deleteProduct;
 window.editProduct = editProduct;
 window.viewProduct = viewProduct;
 window.resetFilters = resetFilters;
+
+function addVariant() {
+    const tbody = document.querySelector('#variantTable tbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>
+            <input type="hidden" name="variant_id[]" value="">
+            <input type="text" name="variant_sku[]" class="form-control" required>
+        </td>
+        <td>
+            <input type="number" step="0.01" name="variant_price[]" class="form-control" required>
+        </td>
+        <td>
+            <input type="text" name="variant_image[]" class="form-control">
+        </td>
+        <td>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+        </td>
+    `;
+    tbody.appendChild(row);
+}
+
+function removeRow(btn) {
+    btn.closest('tr').remove();
+}
