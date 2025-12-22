@@ -1,7 +1,7 @@
 <?php
 function parseStoreFilters(array $input): array {
     $categories = $input['category'] ?? [];
-    $prices     = $input['price'] ?? [];
+    $prices     = $input['prices'] ?? ($input['price'] ?? []);
     $conditions = $input['condition'] ?? [];
     $featured   = $input['featured'] ?? [];
 

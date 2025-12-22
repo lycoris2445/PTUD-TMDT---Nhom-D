@@ -1,82 +1,73 @@
 <?php
-// ../includes/function_store.php
-
 /**
- * Get categories with hierarchical structure (parent => children)
- * Also returns a flat map of category name => id for easy lookup
+ * Get all categories with their direct children (one level deep)
  */
-function getStoreCategories(mysqli $conn): array
+function getStoreCategories(PDO $conn): array
 {
-    // Fetch all categories
-    $allCategories = [];
-    $rs = $conn->query("SELECT id, parent_id, name FROM categories ORDER BY parent_id, name");
-    if ($rs) {
-        while ($row = $rs->fetch_assoc()) {
-            $allCategories[] = $row;
-        }
-    }
-    
-    // Build hierarchical structure
-    $categories = [];
+    $sql = "SELECT id, parent_id, name FROM categories ORDER BY parent_id, name";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $allCategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Group by parent_id (NULL included)
     $childrenMap = [];
-    
-    // Group children by parent_id
     foreach ($allCategories as $cat) {
-        $parentId = $cat['parent_id'] ?? null;
-        if (!isset($childrenMap[$parentId])) {
-            $childrenMap[$parentId] = [];
+        // parent_id can be null
+        $parentKey = $cat['parent_id']; // null or int
+        if (!array_key_exists($parentKey, $childrenMap)) {
+            $childrenMap[$parentKey] = [];
         }
-        $childrenMap[$parentId][] = $cat;
+        $childrenMap[$parentKey][] = $cat;
     }
-    
-    // Build tree: parent categories with children
-    $categories = $childrenMap[null] ?? []; // Root categories (parent_id IS NULL)
-    
-    // Add children to each parent
+
+    // Root categories (parent_id IS NULL)
+    $categories = $childrenMap[null] ?? [];
+
+    // Attach children one level deep (đúng như UI bạn đang render)
     foreach ($categories as &$parent) {
-        $parent['children'] = $childrenMap[$parent['id']] ?? [];
+        $pid = $parent['id'];
+        $parent['children'] = $childrenMap[$pid] ?? [];
     }
-    
+    unset($parent);
+
     return $categories;
 }
 
 /**
  * Get all category IDs including children of a parent category name
+ * (Parent + its direct children)
  */
-function getCategoryIdsWithChildren(mysqli $conn, string $categoryName): array
+function getCategoryIdsWithChildren(PDO $conn, string $categoryName): array
 {
     $ids = [];
-    
-    // Get parent category ID
-    $stmt = $conn->prepare("SELECT id FROM categories WHERE name = ?");
-    $stmt->bind_param("s", $categoryName);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($row = $result->fetch_assoc()) {
-        $parentId = $row['id'];
-        $ids[] = $parentId;
-        
-        // Get all children of this parent
-        $childStmt = $conn->prepare("SELECT id FROM categories WHERE parent_id = ?");
-        $childStmt->bind_param("i", $parentId);
-        $childStmt->execute();
-        $childResult = $childStmt->get_result();
-        
-        while ($childRow = $childResult->fetch_assoc()) {
-            $ids[] = $childRow['id'];
-        }
-        $childStmt->close();
+
+    // Get parent category id
+    $stmt = $conn->prepare("SELECT id FROM categories WHERE name = ? LIMIT 1");
+    $stmt->execute([$categoryName]);
+    $parentId = $stmt->fetchColumn();
+
+    if ($parentId === false) {
+        return [];
     }
-    $stmt->close();
-    
+
+    $parentId = (int)$parentId;
+    $ids[] = $parentId;
+
+    // Get direct children ids
+    $stmt2 = $conn->prepare("SELECT id FROM categories WHERE parent_id = ?");
+    $stmt2->execute([$parentId]);
+    $childIds = $stmt2->fetchAll(PDO::FETCH_COLUMN);
+
+    foreach ($childIds as $cid) {
+        $ids[] = (int)$cid;
+    }
+
     return $ids;
 }
-
 /**
- * Build SQL + params for store product listing
+ * Build SQL query and parameters for fetching products with filters
  */
-function buildStoreProductQuery(array $filters, mysqli $conn): array
+function buildStoreProductQuery(array $filters, PDO $conn): array
 {
     $sql = "
         SELECT
@@ -101,39 +92,35 @@ function buildStoreProductQuery(array $filters, mysqli $conn): array
 
     $where = [];
     $params = [];
-    $types = "";
 
     // Category filter - include parent and all children
     if (!empty($filters['categories'])) {
         $allCategoryIds = [];
+
         foreach ($filters['categories'] as $catName) {
-            $ids = getCategoryIdsWithChildren($conn, $catName);
+            $ids = getCategoryIdsWithChildren($conn, (string)$catName);
             $allCategoryIds = array_merge($allCategoryIds, $ids);
         }
-        
-        // Remove duplicates
-        $allCategoryIds = array_unique($allCategoryIds);
-        
+
+        $allCategoryIds = array_values(array_unique(array_map('intval', $allCategoryIds)));
+
         if (!empty($allCategoryIds)) {
             $placeholders = implode(',', array_fill(0, count($allCategoryIds), '?'));
             $where[] = "p.category_id IN ($placeholders)";
-            foreach ($allCategoryIds as $catId) {
-                $params[] = $catId;
-                $types .= "i";
-            }
+            $params = array_merge($params, $allCategoryIds);
         }
     }
 
-    // Price filter (theo UI bạn đang dùng)
+    // Price filter (USD ranges from sidebar)
     if (!empty($filters['prices'])) {
         $priceConds = [];
         foreach ($filters['prices'] as $range) {
-            if ($range === 'Dưới 500K') {
-                $priceConds[] = "COALESCE(pv.price, p.base_price) < 500000";
-            } elseif ($range === '500K - 1 triệu') {
-                $priceConds[] = "(COALESCE(pv.price, p.base_price) >= 500000 AND COALESCE(pv.price, p.base_price) <= 1000000)";
-            } elseif ($range === 'Trên 1 triệu') {
-                $priceConds[] = "COALESCE(pv.price, p.base_price) > 1000000";
+            if ($range === 'Under $20') {
+                $priceConds[] = "COALESCE(pv.price, p.base_price) < 20";
+            } elseif ($range === '$20 to $50') {
+                $priceConds[] = "(COALESCE(pv.price, p.base_price) >= 20 AND COALESCE(pv.price, p.base_price) <= 50)";
+            } elseif ($range === 'Over $50') {
+                $priceConds[] = "COALESCE(pv.price, p.base_price) > 50";
             }
         }
         if (!empty($priceConds)) {
@@ -141,39 +128,25 @@ function buildStoreProductQuery(array $filters, mysqli $conn): array
         }
     }
 
+
     if (!empty($where)) {
         $sql .= " AND " . implode(" AND ", $where);
     }
 
-    // Fix created_at (không có) => dùng id desc làm “mới nhất”
     $sql .= " ORDER BY p.id DESC";
 
-    return [$sql, $types, $params];
+    return [$sql, $params];
 }
 
-function getStoreProducts(mysqli $conn, array $filters): array
+/**
+ * Get products for Store page (PDO)
+ */
+function getStoreProducts(PDO $conn, array $filters): array
 {
-    [$sql, $types, $params] = buildStoreProductQuery($filters, $conn);
+    [$sql, $params] = buildStoreProductQuery($filters, $conn);
 
-    $products = [];
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($params);
 
-    if (!empty($params)) {
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Prepare failed: " . $conn->error);
-        }
-        $stmt->bind_param($types, ...$params);
-        $stmt->execute();
-        $rs = $stmt->get_result();
-    } else {
-        $rs = $conn->query($sql);
-    }
-
-    if ($rs) {
-        while ($row = $rs->fetch_assoc()) {
-            $products[] = $row;
-        }
-    }
-
-    return $products;
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

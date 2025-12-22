@@ -2,18 +2,15 @@
 $pageTitle = "Store - Darling";
 $pageCss   = 'store.css';
 include '../includes/header.php';
-
+$conn = require __DIR__ . '/../../config/db_connect.php';
 require_once __DIR__ . '/../../config/cloudinary.php';
 require_once __DIR__ . '/../includes/function_filter.php';
 require_once __DIR__ . '/../includes/function_store.php';
 
-$conn = getDBConnection();
-
-// UI-only options (chưa có DB)
+// UI-only options (chưa có DB) -> hạn chế
 $skinConditions = ['Acne', 'Sensitive Skin', 'Dry Skin', 'Oily Skin'];
 $featuredOptions = ['Best Seller', 'New Arrival', 'On Sale'];
-$priceRanges = ['Dưới 500K', '500K - 1 triệu', 'Trên 1 triệu'];
-
+$priceRanges = ['Under $20', '$20 to $50', 'Over $50'];
 // Parse filters
 $filters = parseStoreFilters($_GET);
 
@@ -97,16 +94,17 @@ $products = getStoreProducts($conn, $filters);
             <!-- PRICE -->
             <div class="mb-4">
             <strong>Price</strong>
-            <?php foreach ($priceRanges as $range): ?>
-                <div class="form-check">
-                <input class="form-check-input"
-                        type="checkbox"
-                        name="price[]"
-                        value="<?= htmlspecialchars($range) ?>"
-                        <?= in_array($range, $filters['prices'], true) ? 'checked' : '' ?>>
-                <label class="form-check-label"><?= htmlspecialchars($range) ?></label>
-                </div>
-            <?php endforeach; ?>
+              <?php foreach ($priceRanges as $range): ?>
+                <label class="d-flex align-items-center gap-2 mb-2">
+                  <input
+                    type="radio"
+                    name="prices[]"
+                    value="<?= htmlspecialchars($range) ?>"
+                    <?= (!empty($_GET['prices']) && in_array($range, (array)$_GET['prices'], true)) ? 'checked' : '' ?>
+                  />
+                  <span><?= htmlspecialchars($range) ?></span>
+                </label>
+              <?php endforeach; ?>
             </div>
 
             <button class="btn btn-outline-dark w-100">Apply Filter</button>
