@@ -1,6 +1,5 @@
 <?php
-$pageTitle = 'Liên hệ - Darling';
-$pageCss   = 'lien-he.css'; 
+$pageTitle = 'Contact - Darling';
 include '../includes/header.php';
 ?>
 

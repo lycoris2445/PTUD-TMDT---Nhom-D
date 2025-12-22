@@ -1,9 +1,4 @@
 <?php
-// ../includes/function_product.php
-
-/**
- * Get product detail with category info
- */
 function getProductDetail(mysqli $conn, int $productId): ?array
 {
     $sql = "

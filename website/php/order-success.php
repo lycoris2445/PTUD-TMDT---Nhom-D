@@ -1,7 +1,7 @@
 <?php
 session_start();
-$pageTitle = "Đặt hàng thành công";
-$pageCss = "thanh-toan.css";
+$pageTitle = "Order Success";
+$pageCss = "payment.css";
 include '../includes/header.php';
 $pdo = require __DIR__ . '/../../config/db_connect.php';
 
@@ -58,9 +58,9 @@ function formatCurrency($amount, $currency = 'VND') {
 // Get payment method label
 function getPaymentMethodLabel($method) {
     switch($method) {
-        case 'STRIPE': return 'Thẻ tín dụng (Stripe)';
-        case 'COD': return 'Thanh toán khi nhận hàng';
-        case 'BANK': return 'Chuyển khoản ngân hàng';
+        case 'STRIPE': return 'Credit Card (Stripe)';
+        case 'COD': return 'Cash on Delivery';
+        case 'BANK': return 'Bank Transfer';
         default: return $method;
     }
 }
@@ -68,12 +68,12 @@ function getPaymentMethodLabel($method) {
 // Get order status label
 function getOrderStatusLabel($status) {
     switch($status) {
-        case 'pending': return 'Chờ xác nhận';
-        case 'on_hold': return 'Đang xử lý';
-        case 'processing': return 'Đang chuẩn bị';
-        case 'shipping': return 'Đang giao hàng';
-        case 'completed': return 'Hoàn thành';
-        case 'cancelled': return 'Đã hủy';
+        case 'pending': return 'Pending';
+        case 'on_hold': return 'On Hold';
+        case 'processing': return 'Processing';
+        case 'shipping': return 'Shipping';
+        case 'completed': return 'Completed';
+        case 'cancelled': return 'Cancelled';
         default: return ucfirst($status);
     }
 }
@@ -86,8 +86,8 @@ function getOrderStatusLabel($status) {
             <div class="mb-3">
                 <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
             </div>
-            <h1 class="h3 mb-2">Đặt hàng thành công!</h1>
-            <p class="text-muted">Cảm ơn bạn đã mua hàng tại Darling Cosmetics</p>
+            <h1 class="h3 mb-2">Order Success!</h1>
+            <p class="text-muted">Thank you for shopping at Darling Cosmetics</p>
         </div>
 
         <div class="row g-4">
@@ -95,19 +95,19 @@ function getOrderStatusLabel($status) {
             <div class="col-lg-8">
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white">
-                        <h5 class="mb-0">Thông tin đơn hàng</h5>
+                        <h5 class="mb-0">Order Information</h5>
                     </div>
                     <div class="card-body">
                         <div class="row mb-3">
-                            <div class="col-sm-4 text-muted">Mã đơn hàng:</div>
+                            <div class="col-sm-4 text-muted">Order ID:</div>
                             <div class="col-sm-8"><strong>#<?php echo $order_id; ?></strong></div>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-sm-4 text-muted">Ngày đặt:</div>
+                            <div class="col-sm-4 text-muted">Order Date:</div>
                             <div class="col-sm-8"><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></div>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-sm-4 text-muted">Trạng thái:</div>
+                            <div class="col-sm-4 text-muted">Status:</div>
                             <div class="col-sm-8">
                                 <span class="badge bg-info"><?php echo getOrderStatusLabel($order['status']); ?></span>
                             </div>
@@ -118,10 +118,10 @@ function getOrderStatusLabel($status) {
                         </div>
                         <?php if ($order['payment_method'] === 'STRIPE'): ?>
                         <div class="row">
-                            <div class="col-sm-4 text-muted">Thanh toán:</div>
+                            <div class="col-sm-4 text-muted">Payment:</div>
                             <div class="col-sm-8">
                                 <span class="badge bg-success">
-                                    <?php echo $order['payment_status'] === 'paid' ? 'Đã thanh toán' : 'Chờ thanh toán'; ?>
+                                    <?php echo $order['payment_status'] === 'paid' ? 'Paid' : 'Pending'; ?>
                                 </span>
                             </div>
                         </div>
@@ -160,17 +160,17 @@ function getOrderStatusLabel($status) {
                 <!-- Order Items -->
                 <div class="card shadow-sm">
                     <div class="card-header bg-white">
-                        <h5 class="mb-0">Sản phẩm đã đặt</h5>
+                        <h5 class="mb-0">Products Ordered</h5>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Sản phẩm</th>
-                                        <th class="text-center">Số lượng</th>
-                                        <th class="text-end">Đơn giá</th>
-                                        <th class="text-end">Thành tiền</th>
+                                        <th>Product</th>
+                                        <th class="text-center">Quantity</th>
+                                        <th class="text-end">Unit Price</th>
+                                        <th class="text-end">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -186,7 +186,7 @@ function getOrderStatusLabel($status) {
                                                 <?php endif; ?>
                                                 <div>
                                                     <div><?php echo htmlspecialchars($item['product_name']); ?></div>
-                                                    <small class="text-muted">Mã: <?php echo $item['product_id']; ?></small>
+                                                    <small class="text-muted">ID: <?php echo $item['product_id']; ?></small>
                                                 </div>
                                             </div>
                                         </td>
@@ -210,20 +210,20 @@ function getOrderStatusLabel($status) {
             <div class="col-lg-4">
                 <div class="card shadow-sm sticky-top" style="top: 20px;">
                     <div class="card-header bg-white">
-                        <h5 class="mb-0">Tổng đơn hàng</h5>
+                        <h5 class="mb-0">Order Summary</h5>
                     </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Tạm tính:</span>
+                            <span>Subtotal:</span>
                             <strong><?php echo formatCurrency($order['total_amount'], $order['payment_currency']); ?></strong>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Phí vận chuyển:</span>
-                            <strong>Miễn phí</strong>
+                            <span>Shipping Fee:</span>
+                            <strong>Free</strong>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between fs-5 mb-4">
-                            <span><strong>Tổng cộng:</strong></span>
+                            <span><strong>Total:</strong></span>
                             <strong class="text-darling">
                                 <?php echo formatCurrency($order['total_amount'], $order['payment_currency']); ?>
                             </strong>
@@ -232,17 +232,17 @@ function getOrderStatusLabel($status) {
                         <div class="d-grid gap-2">
                             <?php if (isset($_SESSION['user_id'])): ?>
                                 <a href="order-detail.php?id=<?= $order_id ?>" class="btn btn-darling">
-                                    <i class="bi bi-receipt"></i> Xem chi tiết đơn hàng
+                                    <i class="bi bi-receipt"></i> View Order Details
                                 </a>
                                 <a href="orders.php" class="btn btn-outline-darling">
-                                    <i class="bi bi-bag-check"></i> Đơn hàng của tôi
+                                    <i class="bi bi-bag-check"></i> My Orders
                                 </a>
                             <?php endif; ?>
                             <a href="index.php" class="btn btn-outline-secondary">
-                                <i class="bi bi-house"></i> Về trang chủ
+                                <i class="bi bi-house"></i> Back to Home
                             </a>
                             <a href="store.php" class="btn btn-outline-darling">
-                                <i class="bi bi-bag"></i> Tiếp tục mua sắm
+                                <i class="bi bi-bag"></i> Continue Shopping
                             </a>
                         </div>
 
@@ -250,10 +250,10 @@ function getOrderStatusLabel($status) {
                         <div class="text-center small text-muted">
                             <p class="mb-2">
                                 <i class="bi bi-info-circle"></i> 
-                                Chúng tôi đã gửi email xác nhận đơn hàng
+                                We have sent an order confirmation email
                             </p>
                             <p class="mb-0">
-                                Mọi thắc mắc vui lòng liên hệ:<br>
+                                For any inquiries, please contact:<br>
                                 <a href="tel:0123456789">0123.456.789</a>
                             </p>
                         </div>
@@ -266,9 +266,9 @@ function getOrderStatusLabel($status) {
         <!-- Order Not Found -->
         <div class="text-center py-5">
             <i class="bi bi-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
-            <h2 class="h4 mt-3 mb-2">Không tìm thấy đơn hàng</h2>
-            <p class="text-muted mb-4">Đơn hàng không tồn tại hoặc đã bị xóa.</p>
-            <a href="index.php" class="btn btn-darling">Về trang chủ</a>
+            <h2 class="h4 mt-3 mb-2">Order Not Found</h2>
+            <p class="text-muted mb-4">The order does not exist or has been deleted.</p>
+            <a href="index.php" class="btn btn-darling">Back to Home</a>
         </div>
     <?php endif; ?>
 </main>

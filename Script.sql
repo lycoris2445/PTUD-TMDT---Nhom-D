@@ -230,14 +230,14 @@ CREATE TABLE RETURN_ITEMS (
     FOREIGN KEY (order_item_id) REFERENCES ORDER_ITEMS(id) ON DELETE CASCADE
 );
 
--- Lưu lịch sử thay đổi trạng thái account (suspend/activate) + lý do
-CREATE TABLE ACCOUNT_STATUS_LOGS (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    account_id BIGINT NOT NULL,
-    action ENUM('suspend', 'activate') NOT NULL,
-    reason TEXT NULL,
-    changed_by BIGINT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE,
-    FOREIGN KEY (changed_by) REFERENCES ACCOUNTS(id) ON DELETE SET NULL
+-- [THÊM MỚI] Lưu lịch sử thay đổi trạng thái account (suspend/activate) + lý do
+CREATE TABLE IF NOT EXISTS account_status_logs (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  account_id BIGINT NOT NULL,
+  action ENUM('suspend','activate') NOT NULL,
+  reason TEXT NULL,
+  changed_by BIGINT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX (account_id),
+  CONSTRAINT fk_asl_account FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
 );

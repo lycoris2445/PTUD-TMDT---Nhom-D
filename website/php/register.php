@@ -9,7 +9,7 @@ $success = "";
 try {
     $pdo = require __DIR__ . '/../../config/db_connect.php';
 } catch (Exception $e) {
-    die("Lỗi kết nối database: " . $e->getMessage());
+    die("Fail to connect to database: " . $e->getMessage());
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -19,9 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Validate input
     if (empty($full_name) || empty($email) || empty($password)) {
-        $error = "Vui lòng điền đầy đủ thông tin!";
+        $error = "Please fill in all required fields!";
     } elseif (!validate_email($email)) {
-        $error = "Email không hợp lệ!";
+        $error = "Invalid email address!";
     } else {
         // Validate password strength - comment out nếu muốn đơn giản hơn
         $password_errors = validate_password_strength($password);
@@ -29,24 +29,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $error = implode(". ", $password_errors);
         } else {
 
-        // Kiểm tra email đã tồn tại chưa
-        $stmt = $pdo->prepare("SELECT id FROM ACCOUNTS WHERE email = ?");
-        $stmt->execute([$email]);
-        
-        if ($stmt->fetch()) {
-            $error = "Email này đã được đăng ký!";
-        } else {
+    // Kiểm tra email đã tồn tại chưa
+    $stmt = $pdo->prepare("SELECT id FROM ACCOUNTS WHERE email = ?");
+    $stmt->execute([$email]);
+    
+    if ($stmt->fetch()) {
+            $error = "This Email has already been registered!";
+    } else {
             // Hash mật khẩu để bảo mật - sử dụng bcrypt với cost 12
             $password_hash = hash_password($password);
-            
-            // Chèn vào database
-            $sql = "INSERT INTO ACCOUNTS (full_name, email, password_hash, status) VALUES (?, ?, ?, 'active')";
-            $stmt = $pdo->prepare($sql);
-            
-            if ($stmt->execute([$full_name, $email, $password_hash])) {
-                $success = "Đăng ký thành công! <a href='login.php'>Đăng nhập ngay</a>";
-            } else {
-                $error = "Có lỗi xảy ra, vui lòng thử lại.";
+        
+        // Chèn vào database
+        $sql = "INSERT INTO ACCOUNTS (full_name, email, password_hash, status) VALUES (?, ?, ?, 'active')";
+        $stmt = $pdo->prepare($sql);
+        
+        if ($stmt->execute([$full_name, $email, $password_hash])) {
+                $success = "Registration successful! <a href='login.php'>Login now</a>";
+        } else {
+                $error = "An error occurred, please try again.";
             }
         }
         }

@@ -44,12 +44,12 @@ if ($action === 'suspend_with_reason') {
     $confirm = (string)($_POST['confirm'] ?? '');
 
     if (trim($reason) === '') {
-        flash('danger', 'Vui lòng nhập lý do suspend.');
+        flash('danger', 'Please enter a suspend reason.');
         redirect_back();
     }
 
     if ($confirm !== 'yes') {
-        flash('danger', 'Bạn chưa xác nhận (Yes) để suspend.');
+        flash('danger', 'You have not confirmed (Yes) to suspend.');
         redirect_back();
     }
 

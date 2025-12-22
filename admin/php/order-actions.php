@@ -64,7 +64,7 @@ if ($action === 'update') {
     $to   = (string)$data['status'];
 
     if ($to !== '' && $to !== $prev && !can_transition_status($prev, $to)) {
-        flash('danger', "Không thể đổi trạng thái từ '{$prev}' sang '{$to}'. Flow hợp lệ: new → processing → awaiting_pickup → shipping → shipped → completed.");
+        flash('danger', "Cannot change status from '{$prev}' to '{$to}'. Valid flow: new → processing → awaiting_pickup → shipping → shipped → completed.");
         redirect_back();
     }
 

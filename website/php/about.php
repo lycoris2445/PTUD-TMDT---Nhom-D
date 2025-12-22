@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'About Us - Darling Cosmetics';
-$pageCss   = 'gioi-thieu.css'; 
+$pageCss   = 'about.css'; 
 include '../includes/header.php';
 ?>
 <main>
