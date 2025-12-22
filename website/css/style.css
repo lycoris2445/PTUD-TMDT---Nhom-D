@@ -183,3 +183,7 @@ body.nav-open .nav-toggle span:nth-child(3) {
   }
 }
 
+/* Style cơ bản cho dropdown user */
+.user-dropdown { position: relative; display: inline-block; }
+.user-name { color: #333; font-weight: 600; text-decoration: none; cursor: pointer; }
+.logout-btn { color: #dc3545 !important; font-weight: bold; }

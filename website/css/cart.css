@@ -1,0 +1,8 @@
+/* Fix image size in cart */
+#cart-table-body img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  display: block;
+  flex: 0 0 64px;
+}
