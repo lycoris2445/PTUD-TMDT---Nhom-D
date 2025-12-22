@@ -52,7 +52,7 @@ if (session_status() === PHP_SESSION_NONE) {
 <header class="site-header">
   <div class="header-inner">
 
-    <a href="index.php" class="logo-link" aria-label="Darling home">
+    <a href="home.php" class="logo-link" aria-label="Darling home">
       <img src="../../icons/logo_darling.svg" class="site-logo" alt="Darling">
     </a>
 
@@ -64,9 +64,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <nav id="primary-nav">
       <ul class="nav-menu">
-        <li><a href="../php/home.php">Home</a></li>
-        <li><a href="../php/about.php">About Us</a></li>
-        <li><a href="../php/store.php">Store</a></li>
+        <li><a href="home.php">Home</a></li>
+        <li><a href="about.php">About Us</a></li>
+        <li><a href="store.php">Store</a></li>
         <li>
           <a href="cart.php" style="position: relative;">
             <i class="bi bi-cart3"></i> Cart
@@ -74,7 +74,7 @@ if (session_status() === PHP_SESSION_NONE) {
           </a>
         </li>
         <?php if (isset($_SESSION['user_id'])): ?>
-          <li><a href="../php/orders.php"><i class="bi bi-bag-check"></i> My Orders</a></li>
+          <li><a href="orders.php"><i class="bi bi-bag-check"></i> My Orders</a></li>
         <?php endif; ?>
         <li><a href="../php/order.php">Order</a></li>
         <li><a href="../php/policy.php">Policy</a></li>

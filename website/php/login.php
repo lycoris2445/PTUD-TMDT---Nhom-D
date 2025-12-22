@@ -9,7 +9,7 @@ $error = "";
 
 // Redirect nếu đã đăng nhập
 if (is_logged_in()) {
-    header("Location: index.php");
+    header("Location: home.php");
     exit;
 }
 
@@ -46,23 +46,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } 
                 // Xác thực mật khẩu
                 else if (verify_password($password, $user['password_hash'])) {
-                    // Đăng nhập thành công: Reset login attempts
+                
+                // KIỂM TRA QUYỀN: Chỉ cho phép role_id = 3 (User) đăng nhập
+                $roleStmt = $pdo->prepare("
+                    SELECT role_id 
+                    FROM ACCOUNT_ROLES 
+                    WHERE account_id = ? AND role_id = 3
+                ");
+                $roleStmt->execute([$user['id']]);
+                $isUser = $roleStmt->fetch();
+
+                if (!$isUser) {
+                    // Nếu không tìm thấy role_id = 3, đây là tài khoản Admin/Staff
+                    $error = "Tài khoản Admin không được phép đăng nhập tại đây!";
+                    record_failed_login($email);
+                } else {
+                    // ĐĂNG NHẬP THÀNH CÔNG CHO USER
                     reset_login_attempts($email);
-                    
-                    // Regenerate session để tránh session fixation
                     regenerate_session();
                     
-                    // Lưu thông tin vào Session
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['user_name'] = $user['full_name'];
-                    
-                    // Cập nhật thời gian đăng nhập cuối cùng
+                    $_SESSION['role_id'] = 3; // Lưu role vào session để kiểm tra ở các trang khác
+
                     $updateStmt = $pdo->prepare("UPDATE ACCOUNTS SET last_login_at = NOW() WHERE id = ?");
                     $updateStmt->execute([$user['id']]);
 
-                    // Chuyển hướng về trang chủ hoặc dashboard
-                    header("Location: index.php"); 
+                    header("Location: home.php"); 
                     exit;
+                } 
                 } else {
                     $error = "Mật khẩu không chính xác!";
                     record_failed_login($email);
