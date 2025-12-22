@@ -23,32 +23,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (!validate_email($email)) {
         $error = "Invalid email address!";
     } else {
-        // Validate password strength - comment out nếu muốn đơn giản hơn
-        $password_errors = validate_password_strength($password);
-        if (!empty($password_errors)) {
-            $error = implode(". ", $password_errors);
-        } else {
+        // Hash mật khẩu để bảo mật
+        $password_hash = hash_password($password);
+        
+        try {
+            // Bắt đầu Transaction
+            $pdo->beginTransaction();
 
-    // Kiểm tra email đã tồn tại chưa
-    $stmt = $pdo->prepare("SELECT id FROM ACCOUNTS WHERE email = ?");
-    $stmt->execute([$email]);
-    
-    if ($stmt->fetch()) {
-            $error = "This Email has already been registered!";
-    } else {
-            // Hash mật khẩu để bảo mật - sử dụng bcrypt với cost 12
-            $password_hash = hash_password($password);
-        
-        // Chèn vào database
-        $sql = "INSERT INTO ACCOUNTS (full_name, email, password_hash, status) VALUES (?, ?, ?, 'active')";
-        $stmt = $pdo->prepare($sql);
-        
-        if ($stmt->execute([$full_name, $email, $password_hash])) {
-                $success = "Registration successful! <a href='login.php'>Login now</a>";
-        } else {
-                $error = "An error occurred, please try again.";
-            }
-        }
+            // 1. Chèn vào bảng ACCOUNTS
+            $sql_account = "INSERT INTO ACCOUNTS (full_name, email, password_hash, status) VALUES (?, ?, ?, 'active')";
+            $stmt_account = $pdo->prepare($sql_account);
+            $stmt_account->execute([$full_name, $email, $password_hash]);
+
+            // Lấy ID của tài khoản vừa tạo
+            $new_account_id = $pdo->lastInsertId();
+
+            // 2. Chèn vào bảng ACCOUNT_ROLES với role_id = 3
+            $sql_role = "INSERT INTO ACCOUNT_ROLES (account_id, role_id) VALUES (?, 3)";
+            $stmt_role = $pdo->prepare($sql_role);
+            $stmt_role->execute([$new_account_id]);
+
+            // Xác nhận hoàn tất cả 2 lệnh insert
+            $pdo->commit();
+
+            $success = "Registration successful! <a href='login.php'>Login now</a>";
+        } catch (Exception $e) {
+            // Nếu có lỗi ở bất kỳ bước nào, hủy bỏ mọi thay đổi
+            $pdo->rollBack();
+            $error = "An error occurred during registration. Please try again.";
+            // Bạn có thể ghi log lỗi ở đây: error_log($e->getMessage());
         }
     }
 }
