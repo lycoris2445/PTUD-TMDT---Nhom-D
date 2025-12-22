@@ -138,6 +138,8 @@ try {
         $status = trim((string)($_POST['status'] ?? 'draft'));
         $description = trim((string)($_POST['description'] ?? ''));
         $imageUrl = trim((string)($_POST['image_url'] ?? ''));
+        $stockQty = (int)($_POST['stock_quantity'] ?? 0);
+        if ($stockQty < 0) $stockQty = 0;
 
         if ($name === '' || $spu === '' || $categoryId <= 0) fail(422, 'Missing required fields');
 

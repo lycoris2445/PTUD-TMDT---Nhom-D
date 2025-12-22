@@ -80,6 +80,7 @@ async function editProduct(id) {
   form.querySelector('[name="status"]').value = p.status || 'draft';
   form.querySelector('[name="description"]').value = p.description || '';
   form.querySelector('[name="image_url"]').value = p.image_url || '';
+  form.querySelector('[name="stock_quantity"]').value = p.stock_quantity || '0';
   form.querySelector('[name="image"]').value = '';
 
   const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addProductModal'));
