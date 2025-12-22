@@ -1,4 +1,17 @@
 <?php
+session_start();
+//chặn những người chưa đăng nhập hoặc không đúng quyền
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true || !isset($_SESSION['admin_role'])) {
+    header("Location: admin-login.php");
+    exit;
+}
+$allowed_roles = ['super_admin', 'operation_staff'];
+
+if (!in_array($_SESSION['admin_role'], $allowed_roles)) {
+    header("Location: admin-login.php");
+    exit;
+}
+
 $stats = [
   ["label" => "Doanh thu", "value" => "₫1.2B", "delta" => "+8.4% MoM"],
   ["label" => "Đơn hàng", "value" => "1,245", "delta" => "+3.1% MoM"],

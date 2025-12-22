@@ -31,27 +31,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($email) || empty($password)) {
         $error = "Vui lòng nhập email và mật khẩu!";
     } else {
-        // Tìm tài khoản theo email
         $stmt = $pdo->prepare("SELECT id, full_name, password_hash, status FROM ACCOUNTS WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
         if ($user) {
-            // Kiểm tra trạng thái tài khoản
             if ($user['status'] === 'suspended') {
                 $error = "Tài khoản của bạn đã bị khóa!";
             } 
-            // Xác thực mật khẩu
             else if (password_verify($password, $user['password_hash'])) {
-                // Đăng nhập thành công: Lưu thông tin vào Session
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['full_name'];
                 
-                // Cập nhật thời gian đăng nhập cuối cùng
                 $updateStmt = $pdo->prepare("UPDATE ACCOUNTS SET last_login_at = NOW() WHERE id = ?");
                 $updateStmt->execute([$user['id']]);
 
-                // Chuyển hướng về trang chủ hoặc dashboard
                 header("Location: index.php"); 
                 exit;
             } else {
@@ -117,9 +111,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="auth-promo-column">
                     <div class="promo-content">
-                        <h2>Multi-channel Super Sale</h2>
-                        <p>Darling deals – every purchase comes with a gift.</p>
-                        <button>Learn more</button>
+                        <h2>Administration login</h2>
+                        <p>Do you want to access the admin panel? Click the button below</p>
+                        <a href="../../admin/php/admin-login.php" style="text-decoration: none;">
+                            <button type="button" style="cursor: pointer;">Log in for admin</button>
+                        </a>
                     </div>
                 </div>
             </div>
