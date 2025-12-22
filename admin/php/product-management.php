@@ -1,5 +1,19 @@
 <?php
 declare(strict_types=1);
+session_start();
+
+// Chỉ cho phép 'operation_staff' truy cập. 
+$allowed_roles = ['operation_staff']; 
+
+if (
+    !isset($_SESSION['is_admin']) || 
+    $_SESSION['is_admin'] !== true || 
+    !in_array($_SESSION['admin_role'], $allowed_roles)
+) {
+    // Nếu không đúng quyền, chuyển hướng về trang login hoặc báo lỗi 403
+    header("Location: admin-login.php");
+    exit("Truy cập bị từ chối!");
+}
 
 require_once __DIR__ . '/../includes/function_product_management.php';
 
