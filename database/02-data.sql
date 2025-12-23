@@ -1,3 +1,8 @@
+-- ==========================================
+-- SAMPLE DATA
+-- ==========================================
+USE darling_cosmetics;
+
 INSERT INTO ACCOUNTS (`id`, `email`, `password_hash`, `full_name`, `phone_number`, `status`, `created_at`, `updated_at`, `last_login_at`) VALUES
 (1, 'superadmin01@darling.com', '$2y$10$0DUXo767msjb0ItKy8SF9ORzizlvtli32RUrIn0yzmxk7uIiqEAZ6', 'Sophia Bennett', NULL, 'active', '2023-11-20 02:10:00', '2025-12-22 03:49:13', '2025-12-22 03:49:13'),
 (2, 'superadmin02@darling.com', '$2y$10$3anekhxrnA947GDZRHkk1elpWvi6fb5.m906kZP9AmRt2lN10M9ba', 'Ethan Clarke', NULL, 'active', '2023-11-21 03:15:00', '2025-12-22 03:55:59', '2025-12-14 10:20:00'),
@@ -40,7 +45,7 @@ INSERT INTO ORDERS (id, account_id, tracking_number, total_amount, shipping_fee,
 (1005, 12, 'DAR-TRK-20241206-1202', 70.20, 5.00, 75.20, 'completed', 'William Anderson, 88 King St, Alexandria, VA 22314', '2024-12-06 16:40:00', 'FedEx'),
 (1006, 13, 'DAR-TRK-20241208-1302', 49.30, 5.00, 54.30, 'completed', 'Mia Martinez, 410 River Rd, Fairfax, VA 22030', '2024-12-08 19:05:00', 'FedEx'),
 (1007, 11, 'DAR-TRK-20241212-1103', 82.40, 6.00, 88.40, 'declined', 'Emma Johnson, 1207 Maple Ave, Arlington, VA 22201', '2024-12-12 20:05:00', 'DHL'),
-(1008, 12, 'DAR-TRK-20241218-1203', 48.00, 4.00, 52.00, 'receive_return_package', 'William Anderson, 88 King St, Alexandria, VA 22314', '2024-12-18 18:30:00', 'UPS'),
+(1008, 12, 'DAR-TRK-20241218-1203', 48.00, 4.00, 52.00, 'cancelled', 'William Anderson, 88 King St, Alexandria, VA 22314', '2024-12-18 18:30:00', 'UPS'),
 (1009, 13, 'DAR-TRK-20241214-1303', 21.20, 4.00, 25.20, 'cancelled', 'Mia Martinez, 410 River Rd, Fairfax, VA 22030', '2024-12-14 09:10:00', 'UPS'),
 (1010, 12, 'DAR-TRK-20241220-1204', 48.90, 6.00, 54.90, 'completed', 'William Anderson, 88 King St, Alexandria, VA 22314', '2024-12-20 18:50:00', 'DHL'),
 (1011, 14, 'DAR-TRK-20251201-1401', 34.80, 3.50, 38.30, 'completed', 'Benjamin Taylor, 15 Oak Dr, Falls Church, VA 22043', '2025-12-01 18:10:00', 'USPS'),
@@ -51,8 +56,8 @@ INSERT INTO ORDERS (id, account_id, tracking_number, total_amount, shipping_fee,
 (1016, 20, 'DAR-TRK-20251206-2001', 18.90, 6.00, 24.90, 'completed', 'Henry Harris, 5 Garden Ct, Manassas, VA 20110', '2025-12-06 14:45:00', 'DHL'),
 (1017, 17, 'DAR-TRK-20251207-1701', 59.80, 5.00, 64.80, 'completed', 'Evelyn Moore, 302 Pine St, Reston, VA 20190', '2025-12-07 12:30:00', 'FedEx'),
 (1018, 19, 'DAR-TRK-20251209-1902', 150.00, 5.00, 155.00, 'shipped', 'Abigail White, 66 Birch Rd, Springfield, VA 22150', '2025-12-09 09:50:00', 'FedEx'),
-(1019, 18, 'DAR-TRK-20251209-1801', 89.00, 6.00, 95.00, 'receive_return_package', 'Logan Jackson, 11 Cedar Ln, Herndon, VA 20170', '2025-12-09 18:25:00', 'DHL'),
-(1020, 17, 'DAR-TRK-20251211-1702', 25.90, 3.50, 29.40, 'receive_return_package', 'Evelyn Moore, 302 Pine St, Reston, VA 20190', '2025-12-11 20:40:00', 'USPS'),
+(1019, 18, 'DAR-TRK-20251209-1801', 89.00, 6.00, 95.00, 'processing', 'Logan Jackson, 11 Cedar Ln, Herndon, VA 20170', '2025-12-09 18:25:00', 'DHL'),
+(1020, 17, 'DAR-TRK-20251211-1702', 25.90, 3.50, 29.40, 'processing', 'Evelyn Moore, 302 Pine St, Reston, VA 20190', '2025-12-11 20:40:00', 'USPS'),
 (1021, 16, 'DAR-TRK-20251212-1602', 95.40, 6.00, 101.40, 'completed', 'Daniel Thomas, 77 Lake View, Vienna, VA 22180', '2025-12-12 09:30:00', 'DHL'),
 (1022, 20, 'DAR-TRK-20251216-2002', 34.70, 5.00, 39.70, 'processing', 'Henry Harris, 5 Garden Ct, Manassas, VA 20110', '2025-12-16 18:55:00', 'FedEx');
 

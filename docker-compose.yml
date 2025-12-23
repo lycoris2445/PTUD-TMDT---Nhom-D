@@ -20,11 +20,25 @@ services:
       # Persist vendor folder
       - vendor_data:/var/www/html/vendor
     environment:
+      # Database (match with db_connect.php variable names)
       - DB_HOST=mysql
       - DB_PORT=3306
-      - DB_DATABASE=ptud_tmdt
-      - DB_USERNAME=root
-      - DB_PASSWORD=root123
+      - DB_NAME=darling_cosmetics
+      - DB_USER=root
+      - DB_PASS=root123
+      # Cloudinary (add your own keys)
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY:-}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET:-}
+      # Stripe (add your own keys)
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY:-}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
+      - STRIPE_CURRENCY=${STRIPE_CURRENCY:-usd}
+      # App
+      - APP_ENV=${APP_ENV:-development}
+      - APP_DEBUG=${APP_DEBUG:-true}
+      - APP_URL=${APP_URL:-http://localhost}
     depends_on:
       mysql:
         condition: service_healthy
@@ -42,7 +56,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: ptud_tmdt
+      MYSQL_DATABASE: darling_cosmetics
       MYSQL_USER: ptud_user
       MYSQL_PASSWORD: ptud_pass
     volumes:
