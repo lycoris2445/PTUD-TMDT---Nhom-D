@@ -219,6 +219,29 @@ function statusBadge($status) {
             <?php endif; ?>
             <a href="customer-management.php" class="btn btn-outline-secondary">Quản lý khách hàng</a>
             <a href="staff-management.php" class="btn btn-outline-primary">Quản lý nhân viên</a>
+            
+            <hr class="my-2">
+            <div class="dropdown">
+              <button class="btn btn-success w-100 dropdown-toggle" type="button" id="exportReportBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-file-earmark-spreadsheet"></i> Xuất báo cáo
+              </button>
+              <ul class="dropdown-menu w-100" aria-labelledby="exportReportBtn">
+                <li><h6 class="dropdown-header">Chọn loại báo cáo</h6></li>
+                <li><a class="dropdown-item" href="#" onclick="exportReport('summary')">
+                  <i class="bi bi-graph-up"></i> Tổng quan doanh thu
+                </a></li>
+                <li><a class="dropdown-item" href="#" onclick="exportReport('products')">
+                  <i class="bi bi-box-seam"></i> Sản phẩm bán chạy
+                </a></li>
+                <li><a class="dropdown-item" href="#" onclick="exportReport('orders')">
+                  <i class="bi bi-receipt"></i> Chi tiết đơn hàng
+                </a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#customReportModal">
+                  <i class="bi bi-calendar-range"></i> Tùy chỉnh khoảng thời gian
+                </a></li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -226,6 +249,76 @@ function statusBadge($status) {
   </main>
 </div>
 
+<!-- Modal tùy chỉnh báo cáo -->
+<div class="modal fade" id="customReportModal" tabindex="-1" aria-labelledby="customReportModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="customReportModalLabel">Xuất báo cáo tùy chỉnh</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="customReportForm">
+          <div class="mb-3">
+            <label for="reportType" class="form-label">Loại báo cáo</label>
+            <select class="form-select" id="reportType" name="type" required>
+              <option value="summary">Tổng quan doanh thu</option>
+              <option value="products">Sản phẩm bán chạy</option>
+              <option value="orders">Chi tiết đơn hàng</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="startDate" class="form-label">Từ ngày</label>
+            <input type="date" class="form-control" id="startDate" name="start_date" value="<?php echo date('Y-m-01'); ?>" required>
+          </div>
+          <div class="mb-3">
+            <label for="endDate" class="form-label">Đến ngày</label>
+            <input type="date" class="form-control" id="endDate" name="end_date" value="<?php echo date('Y-m-d'); ?>" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-success" onclick="exportCustomReport()">
+          <i class="bi bi-download"></i> Tải xuống
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Xuất báo cáo nhanh (tháng hiện tại)
+function exportReport(type) {
+  const startDate = '<?php echo date('Y-m-01'); ?>';
+  const endDate = '<?php echo date('Y-m-d'); ?>';
+  window.location.href = `export-sales-report.php?type=${type}&start_date=${startDate}&end_date=${endDate}`;
+}
+
+// Xuất báo cáo tùy chỉnh
+function exportCustomReport() {
+  const form = document.getElementById('customReportForm');
+  const type = form.querySelector('#reportType').value;
+  const startDate = form.querySelector('#startDate').value;
+  const endDate = form.querySelector('#endDate').value;
+  
+  if (!startDate || !endDate) {
+    alert('Vui lòng chọn khoảng thời gian');
+    return;
+  }
+  
+  if (new Date(startDate) > new Date(endDate)) {
+    alert('Ngày bắt đầu phải trước ngày kết thúc');
+    return;
+  }
+  
+  window.location.href = `export-sales-report.php?type=${type}&start_date=${startDate}&end_date=${endDate}`;
+  
+  // Đóng modal
+  const modal = bootstrap.Modal.getInstance(document.getElementById('customReportModal'));
+  modal.hide();
+}
+</script>
 </body>
 </html>
