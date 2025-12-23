@@ -43,16 +43,19 @@ include '../includes/header.php';
                     $name = htmlspecialchars($product['name']);
                     $price = number_format($product['price'], 2);
                     $variantId = $product['variant_id'];
+                    $productId = $product['id'];
                     ?>
-                    <div class="product-card">
-                        <?php if ($imgUrl): ?>
-                            <div class="product-image-placeholder" style="background-image: url('<?= htmlspecialchars($imgUrl) ?>'); background-size: cover; background-position: center;"></div>
-                        <?php else: ?>
-                            <div class="product-image-placeholder">Product Image</div>
-                        <?php endif; ?>
-                        <h4><?= $name ?></h4>
-                        <p>$<?= $price ?></p>
-                    </div>
+                    <a href="product.php?id=<?= $productId ?>" class="product-card-link">
+                        <div class="product-card">
+                            <?php if ($imgUrl): ?>
+                                <div class="product-image-placeholder" style="background-image: url('<?= htmlspecialchars($imgUrl) ?>'); background-size: cover; background-position: center;"></div>
+                            <?php else: ?>
+                                <div class="product-image-placeholder">Product Image</div>
+                            <?php endif; ?>
+                            <h4><?= $name ?></h4>
+                            <p>$<?= $price ?></p>
+                        </div>
+                    </a>
                     <?php
                 }
             } else {

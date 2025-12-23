@@ -95,8 +95,14 @@ main {
     gap: 15px; /* Giảm khoảng cách giữa các ô */
     margin-bottom: 40px;
 }
-.product-card {
+.product-card-link {
     width: 24%;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.product-card {
+    width: 100%;
     background-color: #ffffff;
     border: 1px solid #eee; /* Viền mờ đi cho đỡ thô */
     padding: 10px; /* Giảm padding (cũ là 15px) -> Khung nhỏ lại */
