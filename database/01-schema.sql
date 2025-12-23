@@ -1,22 +1,22 @@
--- ==========================================
+﻿-- ==========================================
 -- DATABASE SCHEMA
 -- ==========================================
 -- This file contains the complete database schema
 -- Automatically executed by Docker on first startup
 -- ==========================================
 
-USE darling_cosmetics;
+USE ptud;
 
 -- ==========================================
 -- MODULE: USER & AUTH
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS ROLES (
+CREATE TABLE IF NOT EXISTS roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS ACCOUNTS (
+CREATE TABLE IF NOT EXISTS accounts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(150) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
@@ -28,43 +28,43 @@ CREATE TABLE IF NOT EXISTS ACCOUNTS (
     last_login_at TIMESTAMP NULL
 );
 
-CREATE TABLE IF NOT EXISTS ACCOUNT_ROLES (
+CREATE TABLE IF NOT EXISTS account_roles (
     account_id BIGINT,
     role_id INT,
     PRIMARY KEY (account_id, role_id),
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES ROLES(id) ON DELETE CASCADE
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS ADDRESSES (
+CREATE TABLE IF NOT EXISTS addresses (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     account_id BIGINT NOT NULL,
     recipient_name VARCHAR(100),
     phone VARCHAR(20),
     detail_address VARCHAR(255),
     is_default BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
 );
 
 -- ==========================================
--- MODULE: PRODUCTS
+-- MODULE: products
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS CATEGORIES (
+CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     parent_id INT,
     name VARCHAR(100) NOT NULL,
     description TEXT,
-    FOREIGN KEY (parent_id) REFERENCES CATEGORIES(id) ON DELETE CASCADE
+    FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS BRANDS (
+CREATE TABLE IF NOT EXISTS brands (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
     description TEXT
 );
 
-CREATE TABLE IF NOT EXISTS PRODUCTS (
+CREATE TABLE IF NOT EXISTS products (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     category_id INT,
     brand_id INT,
@@ -73,11 +73,11 @@ CREATE TABLE IF NOT EXISTS PRODUCTS (
     thumbnail VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES CATEGORIES(id) ON DELETE SET NULL,
-    FOREIGN KEY (brand_id) REFERENCES BRANDS(id) ON DELETE SET NULL
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
+    FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS VARIANTS (
+CREATE TABLE IF NOT EXISTS variants (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     product_id BIGINT NOT NULL,
     color VARCHAR(50),
@@ -85,45 +85,45 @@ CREATE TABLE IF NOT EXISTS VARIANTS (
     price DECIMAL(10,2) NOT NULL,
     stock INT DEFAULT 0,
     sku VARCHAR(100) UNIQUE,
-    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS PRODUCT_IMAGES (
+CREATE TABLE IF NOT EXISTS product_images (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     product_id BIGINT NOT NULL,
     image_url VARCHAR(255) NOT NULL,
     display_order INT DEFAULT 0,
-    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
 -- ==========================================
 -- MODULE: CART & WISHLIST
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS CART_ITEMS (
+CREATE TABLE IF NOT EXISTS cart_items (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     account_id BIGINT NOT NULL,
     variant_id BIGINT NOT NULL,
     quantity INT DEFAULT 1,
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE,
-    FOREIGN KEY (variant_id) REFERENCES VARIANTS(id) ON DELETE CASCADE
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+    FOREIGN KEY (variant_id) REFERENCES variants(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS WISHLIST_ITEMS (
+CREATE TABLE IF NOT EXISTS wishlist_items (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     account_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id) ON DELETE CASCADE
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
 -- ==========================================
--- MODULE: ORDERS
+-- MODULE: orders
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS ORDERS (
+CREATE TABLE IF NOT EXISTS orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     account_id BIGINT NOT NULL,
     tracking_number VARCHAR(100) UNIQUE,
@@ -134,71 +134,71 @@ CREATE TABLE IF NOT EXISTS ORDERS (
     shipping_address_snapshot TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     shipping_carrier VARCHAR(50),
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS ORDER_ITEMS (
+CREATE TABLE IF NOT EXISTS order_items (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_id BIGINT NOT NULL,
     product_variant_id BIGINT NOT NULL,
     quantity INT NOT NULL,
     price_at_purchase DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_variant_id) REFERENCES VARIANTS(id) ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_variant_id) REFERENCES variants(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS ORDER_HISTORY (
+CREATE TABLE IF NOT EXISTS order_history (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_id BIGINT NOT NULL,
     previous_status VARCHAR(50),
     new_status VARCHAR(50),
     note TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
 -- ==========================================
--- MODULE: REVIEWS
+-- MODULE: reviews
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS REVIEWS (
+CREATE TABLE IF NOT EXISTS reviews (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     product_id BIGINT NOT NULL,
     account_id BIGINT NOT NULL,
     rating INT CHECK (rating BETWEEN 1 AND 5),
     comment TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id) ON DELETE CASCADE,
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
 );
 
 -- ==========================================
--- MODULE: NOTIFICATIONS
+-- MODULE: notifications
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS NOTIFICATIONS (
+CREATE TABLE IF NOT EXISTS notifications (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     account_id BIGINT NOT NULL,
     content TEXT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
 );
 
 -- ==========================================
--- MODULE: PROMOTIONS
+-- MODULE: promotions
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS PROMOTIONS (
+CREATE TABLE IF NOT EXISTS promotions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id BIGINT,
     discount_percent DECIMAL(5,2) CHECK (discount_percent BETWEEN 0 AND 100),
     start_date DATE,
     end_date DATE,
-    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS COUPONS (
+CREATE TABLE IF NOT EXISTS coupons (
     id INT AUTO_INCREMENT PRIMARY KEY,
     code VARCHAR(50) UNIQUE NOT NULL,
     discount_percent DECIMAL(5,2) CHECK (discount_percent BETWEEN 0 AND 100),
@@ -209,10 +209,10 @@ CREATE TABLE IF NOT EXISTS COUPONS (
 );
 
 -- ==========================================
--- MODULE: PAYMENT
+-- MODULE: payment
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS PAYMENT (
+CREATE TABLE IF NOT EXISTS payment (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_id BIGINT NOT NULL,
     stripe_payment_intent_id VARCHAR(255),
@@ -224,33 +224,33 @@ CREATE TABLE IF NOT EXISTS PAYMENT (
     payment_method VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
 -- ==========================================
--- MODULE: RETURNS & REFUNDS
+-- MODULE: returns & REFUNDS
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS RETURNS (
+CREATE TABLE IF NOT EXISTS returns (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_id BIGINT NOT NULL,
     status VARCHAR(50) DEFAULT 'request_return',
     reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS RETURN_ITEMS (
+CREATE TABLE IF NOT EXISTS return_items (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     return_id BIGINT NOT NULL,
     order_item_id BIGINT NOT NULL,
     quantity_returned INT NOT NULL,
-    FOREIGN KEY (return_id) REFERENCES RETURNS(id) ON DELETE CASCADE,
-    FOREIGN KEY (order_item_id) REFERENCES ORDER_ITEMS(id) ON DELETE CASCADE
+    FOREIGN KEY (return_id) REFERENCES returns(id) ON DELETE CASCADE,
+    FOREIGN KEY (order_item_id) REFERENCES order_items(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS REFUND (
+CREATE TABLE IF NOT EXISTS refund (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     payment_id BIGINT NOT NULL,
     order_id BIGINT NOT NULL,
@@ -260,8 +260,8 @@ CREATE TABLE IF NOT EXISTS REFUND (
     status VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (payment_id) REFERENCES PAYMENT(id) ON DELETE CASCADE,
-    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE
+    FOREIGN KEY (payment_id) REFERENCES payment(id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
 -- Database version update

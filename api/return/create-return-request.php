@@ -1,9 +1,22 @@
 <?php
-header('Content-Type: application/json');
+// Prevent any output before JSON
+ob_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Don't display errors, only log them
+
+header('Content-Type: application/json; charset=utf-8');
 session_start();
 
-require_once __DIR__ . '/../../config/db_connect.php';
-require_once __DIR__ . '/../../config/cloudinary.php';
+$pdo = null;
+try {
+    $pdo = require __DIR__ . '/../../config/db_connect.php';
+    require_once __DIR__ . '/../../config/cloudinary.php';
+} catch (Exception $e) {
+    ob_end_clean();
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Configuration error: ' . $e->getMessage()]);
+    exit;
+}
 
 // Check user authentication
 if (!isset($_SESSION['user_id'])) {
@@ -32,7 +45,12 @@ try {
     
     $orderId = (int)($input['order_id'] ?? 0);
     $reason = trim($input['reason'] ?? '');
-    $returnItems = $input['return_items'] ?? []; // Array of {order_item_id, quantity}
+    $returnItems = $input['return_items'] ?? [];
+    
+    // If return_items is a JSON string (from multipart form), decode it
+    if (is_string($returnItems)) {
+        $returnItems = json_decode($returnItems, true);
+    }
     
     if (!$orderId) {
         throw new Exception('Order ID is required');
@@ -46,14 +64,11 @@ try {
         throw new Exception('At least one item must be selected for return');
     }
     
-    // Get database connection
-    $pdo = require __DIR__ . '/../../config/db_connect.php';
-    
     // Verify order belongs to user and is eligible for return
     $stmt = $pdo->prepare("
         SELECT o.*, p.status as payment_status 
-        FROM ORDERS o
-        LEFT JOIN PAYMENT p ON o.id = p.order_id
+        FROM orders o
+        LEFT JOIN payment p ON o.id = p.order_id
         WHERE o.id = ? AND o.account_id = ?
     ");
     $stmt->execute([$orderId, $_SESSION['user_id']]);
@@ -71,7 +86,7 @@ try {
     }
     
     // Check if return request already exists
-    $stmt = $pdo->prepare("SELECT id FROM RETURNS WHERE order_id = ? LIMIT 1");
+    $stmt = $pdo->prepare("SELECT id FROM returns WHERE order_id = ? LIMIT 1");
     $stmt->execute([$orderId]);
     if ($stmt->fetch()) {
         throw new Exception('A return request already exists for this order');
@@ -82,7 +97,7 @@ try {
     $placeholders = str_repeat('?,', count($orderItemIds) - 1) . '?';
     $stmt = $pdo->prepare("
         SELECT id, quantity, price_at_purchase
-        FROM ORDER_ITEMS 
+        FROM order_items 
         WHERE order_id = ? AND id IN ($placeholders)
     ");
     $stmt->execute(array_merge([$orderId], $orderItemIds));
@@ -166,7 +181,7 @@ try {
     
     // Insert return record
     $stmt = $pdo->prepare("
-        INSERT INTO RETURNS (
+        INSERT INTO returns (
             order_id,
             account_id,
             reason,
@@ -189,7 +204,7 @@ try {
     
     // Insert return items
     $stmt = $pdo->prepare("
-        INSERT INTO RETURN_ITEMS (return_id, order_item_id, quantity)
+        INSERT INTO return_items (return_id, order_item_id, quantity)
         VALUES (?, ?, ?)
     ");
     
@@ -204,7 +219,7 @@ try {
     // Update order status to indicate return requested
     // We don't change the main status, but could add a flag or note
     $stmt = $pdo->prepare("
-        INSERT INTO ORDER_HISTORY (order_id, previous_status, new_status, note, created_at)
+        INSERT INTO order_history (order_id, previous_status, new_status, note, created_at)
         VALUES (?, ?, ?, ?, NOW())
     ");
     $stmt->execute([
@@ -215,6 +230,9 @@ try {
     ]);
     
     $pdo->commit();
+    
+    // Clean any output buffer before sending JSON
+    ob_end_clean();
     
     // Return success response
     echo json_encode([
@@ -230,6 +248,9 @@ try {
     }
     
     error_log('[RETURN REQUEST ERROR] ' . $e->getMessage());
+    
+    // Clean any output buffer before sending error JSON
+    ob_end_clean();
     
     http_response_code(400);
     echo json_encode([
