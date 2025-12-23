@@ -80,7 +80,8 @@ async function editProduct(id) {
   form.querySelector('[name="status"]').value = p.status || 'draft';
   form.querySelector('[name="description"]').value = p.description || '';
   form.querySelector('[name="image_url"]').value = p.image_url || '';
-  form.querySelector('[name="stock_quantity"]').value = p.stock_quantity || '0';
+  const stockInput = form.querySelector('[name="stock_quantity"]');
+  if (stockInput) stockInput.value = p.stock_quantity || '0';
   form.querySelector('[name="image"]').value = '';
     // ===== Render variants into table =====
   const tbody = document.querySelector('#variantTable tbody');
@@ -97,6 +98,9 @@ async function editProduct(id) {
           </td>
           <td>
             <input type="number" step="0.01" min="0" name="variant_price[]" class="form-control" value="${v.price ?? 0}" required>
+          </td>
+          <td>
+            <input type="number" name="variant_stock[]" class="form-control" value="${v.quantity ?? 0}" min="0" required>
           </td>
           <td>
             <input type="text" name="variant_image[]" class="form-control" value="${(v.image_url ?? '').replace(/"/g,'&quot;')}">
@@ -180,9 +184,12 @@ window.deleteProduct = deleteProduct;
 window.editProduct = editProduct;
 window.viewProduct = viewProduct;
 window.resetFilters = resetFilters;
+window.addVariant = addVariant; // Thêm dòng này
+window.removeRow = removeRow;   // Thêm dòng này
 
 function addVariant() {
     const tbody = document.querySelector('#variantTable tbody');
+    if (!tbody) return;
     const row = document.createElement('tr');
     row.innerHTML = `
         <td>
@@ -191,6 +198,9 @@ function addVariant() {
         </td>
         <td>
             <input type="number" step="0.01" name="variant_price[]" class="form-control" required>
+        </td>
+        <td>
+            <input type="number" name="variant_stock[]" class="form-control" value="0" min="0" required>
         </td>
         <td>
             <input type="text" name="variant_image[]" class="form-control">

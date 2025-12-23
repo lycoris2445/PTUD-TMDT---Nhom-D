@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 session_start();
 
-// Kiểm tra quyền admin - CHỈ operation_staff
+// 1. Kiểm tra quyền admin - CHỈ operation_staff
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true || 
     !isset($_SESSION['admin_role']) || $_SESSION['admin_role'] !== 'operation_staff') {
     http_response_code(403);
@@ -21,7 +21,6 @@ try {
     exit;
 }
 
-// Cloudinary helper của bạn (có uploadToCloudinary)
 require_once __DIR__ . '/../../config/cloudinary.php';
 
 function fail(int $code, string $msg): never {
@@ -35,7 +34,33 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail(405, 'Method not allowed');
 $action = $_POST['action'] ?? '';
 
 try {
-    if ($action === 'create') {
+    // --- HÀNH ĐỘNG: LẤY DỮ LIỆU (GET) ---
+    if ($action === 'get') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id <= 0) fail(422, 'Invalid id');
+
+        $stmt = $conn->prepare("SELECT * FROM PRODUCTS WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $p = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$p) fail(404, 'Not found');
+
+        // Lấy biến thể kèm số lượng kho từ bảng INVENTORY
+        $stmtVar = $conn->prepare("
+            SELECT pv.*, COALESCE(i.quantity, 0) as quantity 
+            FROM PRODUCT_VARIANTS pv
+            LEFT JOIN INVENTORY i ON pv.id = i.product_variant_id
+            WHERE pv.product_id = :pid
+        ");
+        $stmtVar->execute([':pid' => $id]);
+        $variants = $stmtVar->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode(['ok' => true, 'product' => $p, 'variants' => $variants]);
+        exit;
+    }
+
+    // --- HÀNH ĐỘNG: THÊM MỚI (CREATE) HOẶC CẬP NHẬT (UPDATE) ---
+    if ($action === 'create' || $action === 'update') {
+        $id = (int)($_POST['id'] ?? 0); // Chỉ dùng cho Update
         $name = trim((string)($_POST['name'] ?? ''));
         $spu = trim((string)($_POST['spu'] ?? ''));
         $categoryId = (int)($_POST['category_id'] ?? 0);
@@ -43,12 +68,17 @@ try {
         $status = trim((string)($_POST['status'] ?? 'draft'));
         $description = trim((string)($_POST['description'] ?? ''));
         $imageUrl = trim((string)($_POST['image_url'] ?? ''));
-        $stockQty = (int)($_POST['stock_quantity'] ?? 0);
-        if ($stockQty < 0) $stockQty = 0;
+
+        // Dữ liệu mảng biến thể
+        $variantIds = $_POST['variant_id'] ?? [];
+        $variantSkus = $_POST['variant_sku'] ?? [];
+        $variantPrices = $_POST['variant_price'] ?? [];
+        $variantStocks = $_POST['variant_stock'] ?? []; 
+        $variantImages = $_POST['variant_image'] ?? [];
 
         if ($name === '' || $spu === '' || $categoryId <= 0) fail(422, 'Missing required fields');
 
-        // upload file lên cloudinary nếu có
+        // Xử lý upload ảnh sản phẩm (nếu có)
         if (!empty($_FILES['image']) && ($_FILES['image']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
             $up = uploadToCloudinary($_FILES['image']['tmp_name'], 'darling/products');
             if (!empty($up['success'])) {
@@ -60,163 +90,74 @@ try {
 
         $conn->beginTransaction();
 
-        $stmt = $conn->prepare("
-            INSERT INTO PRODUCTS (spu, category_id, name, description, base_price, status, image_url)
-            VALUES (:spu, :cid, :name, :des, :price, :st, :img)
-        ");
-        $stmt->execute([
-            ':spu' => $spu,
-            ':cid' => $categoryId,
-            ':name' => $name,
-            ':des' => $description,
-            ':price' => $basePrice,
-            ':st' => $status,
-            ':img' => ($imageUrl !== '' ? $imageUrl : null),
-        ]);
-
-        $productId = (int)$conn->lastInsertId();
-
-        /**
-         * Tạo biến thể mặc định (không làm attributes do thiếu thời gian)
-         * sku_code: tạo theo SPU + '-DEFAULT'
-         */
-        $defaultSku = $spu . '-DEFAULT';
-
-        // Nếu bảng PRODUCT_VARIANTS của bạn có thêm cột NOT NULL khác,
-        // bạn cần bổ sung đúng theo schema của bạn.
-        $stmtVar = $conn->prepare("
-            INSERT INTO PRODUCT_VARIANTS (product_id, sku_code, attributes)
-            VALUES (:pid, :sku, :attrs)
-        ");
-        $stmtVar->execute([
-            ':pid' => $productId,
-            ':sku' => $defaultSku,
-            ':attrs' => null,
-        ]);
-
-        $variantId = (int)$conn->lastInsertId();
-
-        /**
-         * Tạo inventory cho biến thể mặc định
-         */
-        $stmtInv = $conn->prepare("
-            INSERT INTO INVENTORY (product_variant_id, quantity, reserved_quantity)
-            VALUES (:vid, :qty, 0)
-        ");
-        $stmtInv->execute([
-            ':vid' => $variantId,
-            ':qty' => $stockQty,
-        ]);
-
-        $conn->commit();
-
-        echo json_encode(['ok' => true, 'id' => $productId]);
-        exit;
-    }
-
-    if ($action === 'get') {
-        $id = (int)($_POST['id'] ?? 0);
-        if ($id <= 0) fail(422, 'Invalid id');
-
-       $stmt = $conn->prepare("
-            SELECT 
-                p.id, p.spu, p.category_id, p.name, p.description, p.base_price, p.status, p.image_url,
-                COALESCE(SUM(i.quantity), 0) AS stock_quantity
-            FROM PRODUCTS p
-            LEFT JOIN PRODUCT_VARIANTS pv ON pv.product_id = p.id
-            LEFT JOIN INVENTORY i ON i.product_variant_id = pv.id
-            WHERE p.id = :id
-            GROUP BY p.id
-        ");
-
-        $stmt->execute([':id' => $id]);
-        $p = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$p) fail(404, 'Not found');
-
-        echo json_encode(['ok' => true, 'product' => $p]);
-        exit;
-    }
-
-    if ($action === 'update') {
-        $id = (int)($_POST['id'] ?? 0);
-        if ($id <= 0) fail(422, 'Invalid id');
-
-        $name = trim((string)($_POST['name'] ?? ''));
-        $spu = trim((string)($_POST['spu'] ?? ''));
-        $categoryId = (int)($_POST['category_id'] ?? 0);
-        $basePrice = (float)($_POST['base_price'] ?? 0);
-        $status = trim((string)($_POST['status'] ?? 'draft'));
-        $description = trim((string)($_POST['description'] ?? ''));
-        $imageUrl = trim((string)($_POST['image_url'] ?? ''));
-        $stockQty = (int)($_POST['stock_quantity'] ?? 0);
-        if ($stockQty < 0) $stockQty = 0;
-
-        if ($name === '' || $spu === '' || $categoryId <= 0) fail(422, 'Missing required fields');
-
-        if (!empty($_FILES['image']) && ($_FILES['image']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-            $up = uploadToCloudinary($_FILES['image']['tmp_name'], 'darling/products');
-            if (!empty($up['success'])) {
-                $imageUrl = $up['url'];
-            } else {
-                fail(500, 'Cloudinary upload failed: ' . ($up['error'] ?? 'unknown'));
-            }
-        }
-
-        if ($imageUrl !== '') {
+        if ($action === 'create') {
+            // INSERT PRODUCT
             $stmt = $conn->prepare("
-                UPDATE PRODUCTS
+                INSERT INTO PRODUCTS (spu, category_id, name, description, base_price, status, image_url)
+                VALUES (:spu, :cid, :name, :des, :price, :st, :img)
+            ");
+            $stmt->execute([
+                ':spu' => $spu, ':cid' => $categoryId, ':name' => $name, ':des' => $description,
+                ':price' => $basePrice, ':st' => $status, ':img' => ($imageUrl !== '' ? $imageUrl : null)
+            ]);
+            $productId = (int)$conn->lastInsertId();
+        } else {
+            // UPDATE PRODUCT
+            $productId = $id;
+            $stmt = $conn->prepare("
+                UPDATE PRODUCTS 
                 SET spu=:spu, category_id=:cid, name=:name, description=:des, base_price=:price, status=:st, image_url=:img
                 WHERE id=:id
             ");
             $stmt->execute([
                 ':spu' => $spu, ':cid' => $categoryId, ':name' => $name, ':des' => $description,
-                ':price' => $basePrice, ':st' => $status, ':img' => $imageUrl, ':id' => $id
-            ]);
-        } else {
-            $stmt = $conn->prepare("
-                UPDATE PRODUCTS
-                SET spu=:spu, category_id=:cid, name=:name, description=:des, base_price=:price, status=:st
-                WHERE id=:id
-            ");
-            $stmt->execute([
-                ':spu' => $spu, ':cid' => $categoryId, ':name' => $name, ':des' => $description,
-                ':price' => $basePrice, ':st' => $status, ':id' => $id
+                ':price' => $basePrice, ':st' => $status, ':img' => $imageUrl, ':id' => $productId
             ]);
         }
-        if ($stockQty >= 0) {
-            // tìm 1 variant bất kỳ (ưu tiên variant nhỏ nhất) của product
-            $stmtFindVar = $conn->prepare("SELECT id FROM PRODUCT_VARIANTS WHERE product_id = :pid ORDER BY id ASC LIMIT 1");
-            $stmtFindVar->execute([':pid' => $id]);
-            $vid = (int)($stmtFindVar->fetchColumn() ?: 0);
 
-            if ($vid > 0) {
-                // nếu đã có inventory thì update, chưa có thì insert
-                $stmtFindInv = $conn->prepare("SELECT id FROM INVENTORY WHERE product_variant_id = :vid LIMIT 1");
-                $stmtFindInv->execute([':vid' => $vid]);
-                $invId = (int)($stmtFindInv->fetchColumn() ?: 0);
+        // XỬ LÝ BIẾN THỂ VÀ KHO (Dùng cho cả Create và Update)
+        foreach ($variantSkus as $index => $sku) {
+            $vId    = !empty($variantIds[$index]) ? (int)$variantIds[$index] : null;
+            $vSku   = trim($sku);
+            $vPrice = (float)($variantPrices[$index] ?? 0);
+            $vQty   = (int)($variantStocks[$index] ?? 0);
+            $vImg   = trim($variantImages[$index] ?? '');
 
-                if ($invId > 0) {
-                    $stmtUpInv = $conn->prepare("UPDATE INVENTORY SET quantity = :qty WHERE id = :iid");
-                    $stmtUpInv->execute([':qty' => $stockQty, ':iid' => $invId]);
-                } else {
-                    $stmtInsInv = $conn->prepare("
-                        INSERT INTO INVENTORY (product_variant_id, quantity, reserved_quantity)
-                        VALUES (:vid, :qty, 0)
-                    ");
-                    $stmtInsInv->execute([':vid' => $vid, ':qty' => $stockQty]);
-                }
+            if ($vId) {
+                // Cập nhật biến thể cũ
+                $stmt = $conn->prepare("UPDATE PRODUCT_VARIANTS SET sku_code = ?, price = ?, image_url = ? WHERE id = ?");
+                $stmt->execute([$vSku, $vPrice, $vImg, $vId]);
+                $currentVId = $vId;
+            } else {
+                // Thêm biến thể mới
+                $stmt = $conn->prepare("INSERT INTO PRODUCT_VARIANTS (product_id, sku_code, price, image_url) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$productId, $vSku, $vPrice, $vImg]);
+                $currentVId = (int)$conn->lastInsertId();
             }
+
+            // Cập nhật bảng INVENTORY (Dùng UPSERT)
+            $stmtInv = $conn->prepare("
+                INSERT INTO INVENTORY (product_variant_id, quantity, reserved_quantity)
+                VALUES (:vid, :qty, 0)
+                ON DUPLICATE KEY UPDATE quantity = :qty_update
+            ");
+            $stmtInv->execute([
+                ':vid' => $currentVId,
+                ':qty' => $vQty,
+                ':qty_update' => $vQty
+            ]);
         }
 
-        echo json_encode(['ok' => true]);
+        $conn->commit();
+        echo json_encode(['ok' => true, 'id' => $productId]);
         exit;
     }
 
+    // --- HÀNH ĐỘNG: XÓA (DELETE) ---
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if ($id <= 0) fail(422, 'Invalid id');
 
-        // FK cascade sẽ xoá variants/inventory theo schema bạn set
         $stmt = $conn->prepare("DELETE FROM PRODUCTS WHERE id=:id");
         $stmt->execute([':id' => $id]);
 
@@ -225,6 +166,8 @@ try {
     }
 
     fail(400, 'Unknown action');
+
 } catch (Throwable $e) {
+    if ($conn->inTransaction()) $conn->rollBack();
     fail(500, $e->getMessage());
 }

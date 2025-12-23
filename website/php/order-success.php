@@ -238,7 +238,7 @@ function getOrderStatusLabel($status) {
                                     <i class="bi bi-bag-check"></i> My Orders
                                 </a>
                             <?php endif; ?>
-                            <a href="index.php" class="btn btn-outline-secondary">
+                            <a href="home.php" class="btn btn-outline-secondary">
                                 <i class="bi bi-house"></i> Back to Home
                             </a>
                             <a href="store.php" class="btn btn-outline-darling">

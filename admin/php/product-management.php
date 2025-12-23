@@ -331,13 +331,7 @@ function money_vnd($val): string {
                         <div class="col-12 col-md-6">
                             <label class="form-label">Base Price</label>
                             <input class="form-control" name="base_price" type="number" step="0.01" min="0" required>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Stock Quantity</label>
-                            <input class="form-control" name="stock_quantity" type="number" step="1" min="0" value="0" required>
-                            <small class="text-muted">Tồn kho sẽ lưu vào INVENTORY của biến thể mặc định.</small>
-                        </div>
-                    
+                        </div>                    
                         <div class="col-12 col-md-6">
                             <label class="form-label">Product Image</label>
                             <input type="file" class="form-control" name="image" accept="image/*">
@@ -356,7 +350,7 @@ function money_vnd($val): string {
                         <tr>
                             <th>SKU Code</th>
                             <th>Price ($)</th>
-                            <th>Image URL</th>
+                            <th>Stock</th> <th>Image URL</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -373,6 +367,10 @@ function money_vnd($val): string {
                                 <td>
                                     <input type="number" step="0.01" name="variant_price[]" class="form-control"
                                         value="<?= htmlspecialchars($v['price']) ?>" required>
+                                </td>
+                                <td>
+                                    <input type="number" step="1" name="variant_stock[]" class="form-control"
+                                        value="<?= htmlspecialchars($v['stock']) ?>" required>
                                 </td>
                                 <td>
                                     <input type="text" name="variant_image[]" class="form-control"
