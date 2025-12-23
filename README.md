@@ -5,12 +5,43 @@ Hệ thống thương mại điện tử mỹ phẩm với tích hợp thanh to�
 ## Công nghệ sử dụng
 
 - **Backend:** PHP 8+, PDO
-- **Database:** MySQL/MariaDB (darling_cosmetics)
+- **Database:** MySQL/MariaDB
 - **Frontend:** JavaScript ES6, Bootstrap 5.3.3
 - **Payment:** Stripe API v19.1.0
 - **Architecture:** Strategy Design Pattern cho payment processing
+- **DevOps:** Docker, Docker Compose
 
-## Cài đặt
+## 🚀 Quick Start với Docker (Recommended)
+
+### Yêu cầu
+- Docker Desktop hoặc Docker Engine
+- Git
+
+### Cài đặt nhanh
+
+```bash
+# Clone project
+git clone <repository-url>
+cd "PTUD TMĐT - Nhóm D"
+
+# Start all services (database tự động được tạo)
+docker compose up -d
+
+# Test setup (Windows PowerShell)
+.\docker-test.ps1
+```
+
+**Xong!** Truy cập:
+- Website: http://localhost
+- phpMyAdmin: http://localhost:8080 (root/root123)
+
+Database `ptud_tmdt` tự động được tạo và import dữ liệu mẫu.
+
+📖 Xem chi tiết: [DOCKER_SETUP.md](DOCKER_SETUP.md)
+
+---
+
+## Cài đặt thủ công (Laragon/XAMPP)
 
 ### 1. Yêu cầu hệ thống
 

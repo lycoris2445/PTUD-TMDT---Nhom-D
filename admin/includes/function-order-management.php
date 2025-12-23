@@ -110,7 +110,7 @@ function allowed_status_transitions(): array
 
         // Các trạng thái khác không nằm trong fulfillment flow => không cho chuyển trong UI edit.
         'pending'         => [],
-        'on_hold'         => [],
+        'on_hold'         => ['processing'], // Admin có thể chuyển từ on_hold sang processing
         'cancelled'       => [],
         'declined'        => [],
     ];
