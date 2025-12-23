@@ -24,12 +24,15 @@ Hệ thống thương mại điện tử mỹ phẩm với tích hợp thanh to�
 git clone <repository-url>
 cd "PTUD TMĐT - Nhóm D"
 
+# QUAN TRỌNG: Tạo file .env
+cp .env.example .env
+# Sau đó edit .env và điền Cloudinary + Stripe keys
+
 # Start all services (database tự động được tạo)
 docker compose up -d
-
-# Test setup (Windows PowerShell)
-.\docker-test.ps1
 ```
+
+**⚠️ LƯU Ý:** Phải có file `.env` với Cloudinary và Stripe keys đầy đủ, nếu không website sẽ bị lỗi!
 
 **Xong!** Truy cập:
 - Website: http://localhost
