@@ -96,25 +96,11 @@ try {
         throw new Exception("Refund amount exceeds maximum refundable amount ($maxRefundable)");
     }
     
-    // Convert to cents for Stripe
-    $refundAmountCents = (int)($refundAmount * 100);
-    
-    // Create refund via Stripe API
-    $refund = \Stripe\Refund::create([
-        'charge' => $payment['stripe_charge_id'],
-        'amount' => $refundAmountCents,
-        'reason' => 'requested_by_customer',
-        'metadata' => [
-            'order_id' => (string)$orderId,
-            'refund_reason' => $reason,
-            'admin_user_id' => (string)$_SESSION['user_id']
-        ]
-    ]);
-    
     // Start transaction
     $pdo->beginTransaction();
     
-    // Insert refund record
+    // Insert refund request record with status "pending"
+    // Admin will approve/reject later
     $stmt = $pdo->prepare("
         INSERT INTO REFUND (
             payment_id,
@@ -122,81 +108,47 @@ try {
             amount,
             reason,
             status,
-            refund_transaction_ref,
-            stripe_refund_id,
             created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+        ) VALUES (?, ?, ?, ?, 'pending', NOW())
     ");
-    
-    // Check refund status from Stripe
-    $refundStatus = $refund->status === 'succeeded' ? 'completed' : 'processing';
     
     $stmt->execute([
         $payment['id'],
         $orderId,
         $refundAmount,
-        $reason,
-        $refundStatus,
-        $refund->id,
-        $refund->id
+        $reason
     ]);
     
     $refundId = $pdo->lastInsertId();
     
-    // Update refunded_at if completed
-    if ($refundStatus === 'completed') {
-        $stmt = $pdo->prepare("
-            UPDATE REFUND 
-            SET refunded_at = NOW() 
-            WHERE id = ?
-        ");
-        $stmt->execute([$refundId]);
-    }
+    // Update order status to on_hold to prevent further processing
+    $stmt = $pdo->prepare("
+        UPDATE ORDERS 
+        SET status = 'on_hold' 
+        WHERE id = ? AND status IN ('pending', 'on_hold')
+    ");
+    $stmt->execute([$orderId]);
     
-    // Update order status if fully refunded
-    $totalRefundedNow = $totalRefunded + $refundAmount;
-    if ($totalRefundedNow >= $payment['final_amount']) {
-        $stmt = $pdo->prepare("
-            UPDATE ORDERS 
-            SET status = 'cancelled' 
-            WHERE id = ?
-        ");
-        $stmt->execute([$orderId]);
-        
-        // Log order history
-        $stmt = $pdo->prepare("
-            INSERT INTO ORDER_HISTORY (order_id, previous_status, new_status, note, created_at)
-            VALUES (?, ?, 'cancelled', ?, NOW())
-        ");
-        $stmt->execute([
-            $orderId,
-            $payment['order_status'],
-            "Fully refunded: $reason"
-        ]);
-    }
+    // Log order history
+    $stmt = $pdo->prepare("
+        INSERT INTO ORDER_HISTORY (order_id, previous_status, new_status, note, created_at)
+        VALUES (?, ?, 'on_hold', ?, NOW())
+    ");
+    $stmt->execute([
+        $orderId,
+        $payment['order_status'],
+        "Refund request submitted by customer. Refund ID: $refundId. Reason: $reason"
+    ]);
     
     $pdo->commit();
     
     // Return success response
     echo json_encode([
         'success' => true,
-        'refund_id' => $refund->id,
+        'refund_id' => $refundId,
         'amount' => $refundAmount,
-        'status' => $refund->status,
-        'message' => 'Refund processed successfully'
-    ]);
-    
-} catch (\Stripe\Exception\ApiErrorException $e) {
-    if (isset($pdo) && $pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-    
-    error_log('[STRIPE REFUND ERROR] ' . $e->getMessage());
-    
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'error' => 'Stripe refund error: ' . $e->getMessage()
+        'status' => 'pending',
+        'message' => 'Refund request submitted successfully. Our team will review it shortly.'
     ]);
     
 } catch (Exception $e) {
@@ -204,7 +156,7 @@ try {
         $pdo->rollBack();
     }
     
-    error_log('[REFUND ERROR] ' . $e->getMessage());
+    error_log('[REFUND REQUEST ERROR] ' . $e->getMessage());
     
     http_response_code(400);
     echo json_encode([

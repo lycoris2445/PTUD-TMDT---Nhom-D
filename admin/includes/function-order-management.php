@@ -29,6 +29,18 @@ function return_statuses(): array
     ];
 }
 
+function refund_statuses(): array
+{
+    return [
+        'pending'    => 'Pending Review',
+        'approved'   => 'Approved',
+        'rejected'   => 'Rejected',
+        'processing' => 'Processing',
+        'completed'  => 'Completed',
+        'failed'     => 'Failed'
+    ];
+}
+
 /**
  * Status options for the FILTER dropdown (search bar).
  * We prefix values to avoid mixing order.status vs return.status.
@@ -325,6 +337,34 @@ function get_return_by_order_id(PDO $conn, int $orderId): ?array
     $stmt->execute([':oid' => $orderId]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     return $row ?: null;
+}
+
+function get_refund_requests_by_order_id(PDO $conn, int $orderId): array
+{
+    $stmt = $conn->prepare("SELECT * FROM REFUND WHERE order_id = :oid ORDER BY created_at DESC");
+    $stmt->execute([':oid' => $orderId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+function get_return_items(PDO $conn, int $returnId): array
+{
+    $sql = "
+        SELECT 
+            ri.*,
+            oi.product_variant_id,
+            oi.price_at_purchase,
+            COALESCE(pv.sku_code, p.spu) as sku,
+            p.name as product_name
+        FROM RETURN_ITEMS ri
+        JOIN ORDER_ITEMS oi ON ri.order_item_id = oi.id
+        LEFT JOIN product_variants pv ON oi.product_variant_id = pv.id
+        LEFT JOIN products p ON pv.product_id = p.id
+        WHERE ri.return_id = :rid
+        ORDER BY ri.id ASC
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([':rid' => $returnId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
 
 function update_return(PDO $conn, int $returnId, array $data): bool
