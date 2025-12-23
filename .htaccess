@@ -1,0 +1,18 @@
+# Root .htaccess
+RewriteEngine On
+
+# Redirect root to website home
+RewriteRule ^$ /website/php/home.php [L,R=301]
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# PHP error display (development only)
+php_flag display_errors on
