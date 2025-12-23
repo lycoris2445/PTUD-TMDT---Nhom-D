@@ -6,8 +6,8 @@
 -- ==========================================
 
 -- Create database if not exists (Docker already creates it, but this is a safety check)
-CREATE DATABASE IF NOT EXISTS ptud_tmdt CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE ptud_tmdt;
+CREATE DATABASE IF NOT EXISTS darling_cosmetics CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE darling_cosmetics;
 
 -- Note: The actual schema and data will be loaded from other SQL files in this directory
 -- Files are executed in this order:

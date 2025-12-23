@@ -5,7 +5,7 @@
 -- Automatically executed by Docker on first startup
 -- ==========================================
 
-USE ptud_tmdt;
+USE darling_cosmetics;
 
 -- ==========================================
 -- MODULE: USER & AUTH

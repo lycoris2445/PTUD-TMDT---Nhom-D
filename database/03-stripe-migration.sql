@@ -1,7 +1,7 @@
 -- Migration: Add Stripe columns to PAYMENT and REFUND tables
 -- Run this SQL script in your database
 
-USE ptud_tmdt;
+USE darling_cosmetics;
 
 -- Add Stripe-specific columns to PAYMENT table
 ALTER TABLE PAYMENT 

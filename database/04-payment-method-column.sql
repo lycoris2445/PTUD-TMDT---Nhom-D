@@ -2,7 +2,7 @@
 -- Created: 2025-12-22
 -- Purpose: Add payment method tracking to orders for team members who don't have this column yet
 
-USE ptud_tmdt;
+USE darling_cosmetics;
 
 -- Check if column exists before adding (for MySQL 5.7+)
 -- This script is safe to run multiple times
@@ -22,7 +22,7 @@ SELECT
     IS_NULLABLE,
     COLUMN_COMMENT
 FROM INFORMATION_SCHEMA.COLUMNS 
-WHERE TABLE_SCHEMA = 'ptud_tmdt' 
+WHERE TABLE_SCHEMA = 'darling_cosmetics' 
   AND TABLE_NAME = 'ORDERS' 
   AND COLUMN_NAME = 'payment_method';
 
