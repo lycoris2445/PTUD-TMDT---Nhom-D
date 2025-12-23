@@ -23,7 +23,7 @@ services:
       # Database (match with db_connect.php variable names)
       - DB_HOST=mysql
       - DB_PORT=3306
-      - DB_NAME=darling_cosmetics
+      - DB_NAME=ptud
       - DB_USER=root
       - DB_PASS=root123
       # Cloudinary (add your own keys)
@@ -56,7 +56,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: darling_cosmetics
+      MYSQL_DATABASE: ptud
       MYSQL_USER: ptud_user
       MYSQL_PASSWORD: ptud_pass
     volumes:
