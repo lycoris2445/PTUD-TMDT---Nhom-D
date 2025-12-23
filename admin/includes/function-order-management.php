@@ -101,6 +101,7 @@ function can_transition_return_status(string $from, string $to): bool
 function allowed_status_transitions(): array
 {
     return [
+        'on_hold'         => ['processing'], // ✅ cho phép chuyển on_hold -> processing
         'new'             => ['processing'],
         'processing'      => ['awaiting_pickup'],
         'awaiting_pickup' => ['shipping'],
@@ -110,7 +111,6 @@ function allowed_status_transitions(): array
 
         // Các trạng thái khác không nằm trong fulfillment flow => không cho chuyển trong UI edit.
         'pending'         => [],
-        'on_hold'         => [],
         'cancelled'       => [],
         'declined'        => [],
     ];
@@ -289,8 +289,42 @@ function update_order(PDO $conn, int $orderId, array $data, ?string $note = null
     try {
         $conn->beginTransaction();
 
+        // Thay thế đoạn logic trừ tồn bên trong update_order:
+        // Thay thế đoạn từ dòng 211 đến 230 trong function-order-management.php
+        if ($statusChanged && in_array($prevStatus, ['new', 'on_hold'], true) && $newStatus === 'processing') {
+            $items = get_order_items($conn, $orderId);
+            if (!$items) {
+                $conn->rollBack();
+                return false;
+            }
+
+            // 1. Sửa lại: Truy vấn trực tiếp vào bảng INVENTORY và cột quantity
+            $lockStmt = $conn->prepare("SELECT quantity FROM INVENTORY WHERE product_variant_id = :vid FOR UPDATE");
+            $deductStmt = $conn->prepare("UPDATE INVENTORY SET quantity = quantity - :qty WHERE product_variant_id = :vid");
+
+            foreach ($items as $it) {
+                $vid = (int)$it['product_variant_id'];
+                $qty = (int)$it['quantity'];
+
+                $lockStmt->execute([':vid' => $vid]);
+                $inv = $lockStmt->fetch(PDO::FETCH_ASSOC);
+
+                // 2. Kiểm tra tồn kho từ kết quả của bảng INVENTORY
+                if (!$inv || (int)$inv['quantity'] < $qty) {
+                    error_log("Variant ID $vid không đủ tồn kho trong bảng INVENTORY.");
+                    $conn->rollBack();
+                    return false; 
+                }
+
+                // 3. Thực hiện trừ tồn trực tiếp trên bảng INVENTORY
+                $deductStmt->execute([':qty' => $qty, ':vid' => $vid]);
+                
+                // Gỡ bỏ dòng syncInvStmt cũ vì chúng ta đã thao tác trực tiếp trên bảng INVENTORY rồi
+            }
+        }
+
         $sql = "
-            UPDATE orders
+            UPDATE ORDERS
             SET tracking_number = :tracking,
                 shipping_carrier = :carrier,
                 status = :status
@@ -311,7 +345,7 @@ function update_order(PDO $conn, int $orderId, array $data, ?string $note = null
 
         if ($statusChanged) {
             $stmtH = $conn->prepare("
-                INSERT INTO order_history (order_id, previous_status, new_status, note)
+                INSERT INTO ORDER_HISTORY (order_id, previous_status, new_status, note)
                 VALUES (:oid, :prev, :new, :note)
             ");
             $stmtH->execute([
@@ -325,7 +359,8 @@ function update_order(PDO $conn, int $orderId, array $data, ?string $note = null
         $conn->commit();
         return true;
 
-    } catch (Throwable $e) {
+    }  catch (Throwable $e) {
+        error_log('[update_order] ' . $e->getMessage()); // Xem file log của PHP
         if ($conn->inTransaction()) $conn->rollBack();
         return false;
     }

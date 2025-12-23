@@ -239,18 +239,14 @@ if ($action === 'return_update') {
             $stmt->execute([$item['quantity'], $item['product_variant_id']]);
             
             // Log inventory movement
-            $stmt = $conn->prepare("
-                INSERT INTO INVENTORY (
-                    product_variant_id,
-                    quantity,
-                    reason,
-                    created_at
-                ) VALUES (?, ?, 'Return_restock', NOW())
+            // Sync inventory.quantity theo stock mới (không log)
+            $syncInv = $conn->prepare("
+                INSERT INTO INVENTORY (product_variant_id, quantity)
+                SELECT id, stock_quantity FROM product_variants WHERE id = ?
+                ON DUPLICATE KEY UPDATE quantity = VALUES(quantity)
             ");
-            $stmt->execute([
-                $item['product_variant_id'],
-                $item['quantity']
-            ]);
+            $syncInv->execute([$item['product_variant_id']]);
+
         }
     }
     
