@@ -61,6 +61,7 @@ $orders = fetch_orders($conn, $filters, $perPage, $offset);
 $statuses = order_statuses();
 $filterStatusGroups = status_filter_options();
 $returnStatuses = return_statuses();
+$refundStatuses = refund_statuses();
 
 function h(?string $s): string { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
@@ -79,6 +80,8 @@ $detailOrder = null;
 $detailItems = [];
 $detailHistory = [];
 $detailReturn = null;
+$detailReturnItems = [];
+$detailRefundRequests = [];
 
 if ($detailId > 0) {
     $detailOrder = get_order_by_id($conn, $detailId);
@@ -86,6 +89,11 @@ if ($detailId > 0) {
         $detailItems = get_order_items($conn, $detailId);
         $detailHistory = get_order_history($conn, $detailId);
         $detailReturn = get_return_by_order_id($conn, $detailId);
+        $detailRefundRequests = get_refund_requests_by_order_id($conn, $detailId);
+        
+        if ($detailReturn) {
+            $detailReturnItems = get_return_items($conn, $detailReturn['id']);
+        }
     }
 }
 
@@ -330,11 +338,60 @@ $returnQuery = build_query(['page' => $page, 'q' => $q, 'status' => $status, 'ed
                     $rSelectKeys = array_values(array_unique(array_merge([$rCurrent], $rNext)));
                     $rDisable = empty($rNext);
                   ?>
-                  <div class="mb-2">
+                  <div class="mb-3">
                     <div><strong>Return ID:</strong> #<?= (int)$detailReturn['id'] ?></div>
                     <div><strong>Current status:</strong> <span class="badge bg-warning text-dark"><?= h($rCurrent) ?></span></div>
                     <div class="text-muted small"><strong>Reason:</strong> <?= h((string)$detailReturn['reason']) ?></div>
+                    <div class="text-muted small"><strong>Submitted:</strong> <?= h((string)$detailReturn['created_at']) ?></div>
                   </div>
+
+                  <!-- Proof Images -->
+                  <?php 
+                    $proofImages = json_decode($detailReturn['proof_images'] ?? '[]', true);
+                    if (!empty($proofImages) && is_array($proofImages)):
+                  ?>
+                  <div class="mb-3">
+                    <strong class="d-block mb-2">Proof Images:</strong>
+                    <div class="row g-2">
+                      <?php foreach ($proofImages as $imgUrl): ?>
+                        <div class="col-4 col-md-3">
+                          <a href="<?= h($imgUrl) ?>" target="_blank">
+                            <img src="<?= h($imgUrl) ?>" class="img-thumbnail" alt="Proof" style="width: 100%; height: 80px; object-fit: cover;">
+                          </a>
+                        </div>
+                      <?php endforeach; ?>
+                    </div>
+                  </div>
+                  <?php endif; ?>
+
+                  <!-- Return Items -->
+                  <?php if (!empty($detailReturnItems)): ?>
+                  <div class="mb-3">
+                    <strong class="d-block mb-2">Returned Items:</strong>
+                    <div class="table-responsive">
+                      <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                          <tr>
+                            <th>Product</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-end">Price</th>
+                            <th class="text-end">Subtotal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <?php foreach ($detailReturnItems as $rItem): ?>
+                            <tr>
+                              <td><?= h((string)$rItem['product_name']) ?><br><small class="text-muted">SKU: <?= h((string)$rItem['sku']) ?></small></td>
+                              <td class="text-center"><?= (int)$rItem['quantity'] ?></td>
+                              <td class="text-end">$<?= number_format((float)$rItem['price_at_purchase'], 2) ?></td>
+                              <td class="text-end">$<?= number_format((float)$rItem['price_at_purchase'] * (int)$rItem['quantity'], 2) ?></td>
+                            </tr>
+                          <?php endforeach; ?>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <?php endif; ?>
 
                   <form method="post" action="order-actions.php" class="row g-2">
                     <input type="hidden" name="action" value="return_update">
@@ -368,10 +425,76 @@ $returnQuery = build_query(['page' => $page, 'q' => $q, 'status' => $status, 'ed
                     <?php if ($editId > 0 && !$rDisable): ?>
                       <div class="col-12 mt-2">
                         <button class="btn btn-primary btn-sm" type="submit">Update return status</button>
+                        <?php if ($rCurrent === 'receive_return_package'): ?>
+                          <small class="text-muted d-block mt-1">
+                            <i class="bi bi-info-circle"></i> Selecting "accept_refund" will process refund and restock inventory automatically.
+                          </small>
+                        <?php endif; ?>
                       </div>
                     <?php endif; ?>
                   </form>
                 <?php endif; ?> </div>
+            </div>
+
+            <!-- Refund Requests Section -->
+            <div class="col-md-6">
+              <div class="p-3 border rounded bg-white mt-3">
+                <h6 class="mb-2">Refund Requests</h6>
+
+                <?php if (empty($detailRefundRequests)): ?>
+                  <div class="alert alert-light border text-muted small mb-0">
+                    <i class="bi bi-info-circle"></i> No refund request has been submitted.
+                  </div>
+                <?php else: ?>
+                  <?php foreach ($detailRefundRequests as $refund): ?>
+                    <div class="card mb-2 border-<?= $refund['status'] === 'pending' ? 'warning' : ($refund['status'] === 'completed' ? 'success' : 'secondary') ?>">
+                      <div class="card-body p-2">
+                        <div class="mb-1">
+                          <strong>Refund ID:</strong> #<?= (int)$refund['id'] ?> 
+                          <span class="badge bg-<?= $refund['status'] === 'pending' ? 'warning' : ($refund['status'] === 'completed' ? 'success' : ($refund['status'] === 'rejected' ? 'danger' : 'secondary')) ?> float-end">
+                            <?= h($refundStatuses[$refund['status']] ?? $refund['status']) ?>
+                          </span>
+                        </div>
+                        <div class="text-muted small">
+                          <strong>Amount:</strong> $<?= number_format((float)$refund['amount'], 2) ?>
+                        </div>
+                        <div class="text-muted small">
+                          <strong>Reason:</strong> <?= h((string)$refund['reason']) ?>
+                        </div>
+                        <div class="text-muted small">
+                          <strong>Created:</strong> <?= h((string)$refund['created_at']) ?>
+                        </div>
+                        
+                        <?php if ($refund['status'] === 'pending'): ?>
+                          <form method="post" action="order-actions.php" class="mt-2">
+                            <input type="hidden" name="action" value="refund_approve">
+                            <input type="hidden" name="id" value="<?= $oid ?>">
+                            <input type="hidden" name="refund_id" value="<?= (int)$refund['id'] ?>">
+                            <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
+                            <input type="hidden" name="return_query" value="<?= h(build_query(['view' => $oid, 'page' => $page])) ?>">
+                            <div class="btn-group btn-group-sm" role="group">
+                              <button type="submit" name="refund_action" value="approve" class="btn btn-success btn-sm" 
+                                      onclick="return confirm('Approve this refund request? Amount: $<?= number_format((float)$refund['amount'], 2) ?>')">
+                                <i class="bi bi-check-circle"></i> Approve
+                              </button>
+                              <button type="submit" name="refund_action" value="reject" class="btn btn-danger btn-sm"
+                                      onclick="return confirm('Reject this refund request?')">
+                                <i class="bi bi-x-circle"></i> Reject
+                              </button>
+                            </div>
+                          </form>
+                        <?php endif; ?>
+                        
+                        <?php if ($refund['stripe_refund_id']): ?>
+                          <div class="text-muted small mt-1">
+                            <strong>Stripe Refund:</strong> <code style="font-size: 9px;"><?= h((string)$refund['stripe_refund_id']) ?></code>
+                          </div>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+              </div>
             </div>
 
             <div class="col-12">

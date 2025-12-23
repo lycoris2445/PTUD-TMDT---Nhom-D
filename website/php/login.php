@@ -9,7 +9,16 @@ $error = "";
 
 // Redirect nếu đã đăng nhập
 if (is_logged_in()) {
-    header("Location: home.php");
+    // Check if there's a redirect parameter
+    $redirect = $_GET['redirect'] ?? 'home.php';
+    // Sanitize redirect to prevent open redirect vulnerability
+    $redirect = filter_var($redirect, FILTER_SANITIZE_URL);
+    // Only allow internal redirects
+    if (!str_starts_with($redirect, 'http') && !str_starts_with($redirect, '//')) {
+        header("Location: " . $redirect);
+    } else {
+        header("Location: home.php");
+    }
     exit;
 }
 
@@ -47,17 +56,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Xác thực mật khẩu
                 else if (verify_password($password, $user['password_hash'])) {
                 
-                // KIỂM TRA QUYỀN: Chỉ cho phép role_id = 3 (User) đăng nhập
+                // KIỂM TRA QUYỀN: Chỉ cho phép role_id = 3 (User) hoặc không có role đăng nhập
                 $roleStmt = $pdo->prepare("
                     SELECT role_id 
                     FROM ACCOUNT_ROLES 
-                    WHERE account_id = ? AND role_id = 3
+                    WHERE account_id = ?
                 ");
                 $roleStmt->execute([$user['id']]);
-                $isUser = $roleStmt->fetch();
+                $userRole = $roleStmt->fetch();
 
-                if (!$isUser) {
-                    // Nếu không tìm thấy role_id = 3, đây là tài khoản Admin/Staff
+                if ($userRole && $userRole['role_id'] != 3) {
+                    // Nếu có role và không phải role 3, đây là tài khoản Admin/Staff
                     $error = "Tài khoản Admin không được phép đăng nhập tại đây!";
                     record_failed_login($email);
                 } else {
@@ -72,7 +81,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $updateStmt = $pdo->prepare("UPDATE ACCOUNTS SET last_login_at = NOW() WHERE id = ?");
                     $updateStmt->execute([$user['id']]);
 
-                    header("Location: home.php"); 
+                    // Check for redirect parameter
+                    $redirect = $_GET['redirect'] ?? 'home.php';
+                    // Sanitize redirect
+                    $redirect = filter_var($redirect, FILTER_SANITIZE_URL);
+                    // Only allow internal redirects
+                    if (!str_starts_with($redirect, 'http') && !str_starts_with($redirect, '//')) {
+                        header("Location: " . $redirect);
+                    } else {
+                        header("Location: home.php");
+                    }
                     exit;
                 } 
                 } else {

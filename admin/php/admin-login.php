@@ -9,7 +9,13 @@ try {
     die("Lỗi kết nối database: " . htmlspecialchars($e->getMessage()));
 }
 
-// 2. Xử lý đăng nhập Admin
+// 2. Nếu đã đăng nhập, chuyển đến dashboard
+if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true) {
+    header("Location: dashboard.php");
+    exit;
+}
+
+// 3. Xử lý đăng nhập Admin
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -78,38 +84,115 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-<div class="login-container"> <div class="logo"> 
-    <i img src="../../icons/logo_darling.svg"></i> </div>
+<div class="login-container">
+    <div class="logo">
+        <i class="fas fa-crown"></i>
+    </div>
 
     <?php if(!empty($error)): ?>
         <div class="error-msg">
-            <?= $error ?>
+            <i class="fas fa-exclamation-circle"></i>
+            <?= htmlspecialchars($error) ?>
         </div>
     <?php endif; ?>
 
     <div class="login-form">
-        <form action="admin-login.php" method="POST">
+        <form action="admin-login.php" method="POST" id="loginForm">
             <div class="form-group">
                 <label for="email">Email Quản Trị</label>
-                <input type="email" id="email" name="email" required>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    autocomplete="email"
+                    placeholder="admin@darling.com"
+                >
             </div>
 
             <div class="form-group">
                 <label for="password">Mật khẩu</label>
-                <input type="password" id="password" name="password" required>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required 
+                    autocomplete="current-password"
+                    placeholder="Nhập mật khẩu"
+                >
             </div>
 
-            <div class="clearfix">
-                <label style="float: left; font-weight: normal; margin-top: 8px;">
-                    <input type="checkbox" name="remember"> Ghi nhớ tôi
-                </label>
-                <button type="submit" class="btn-submit">Log In</button>
+            <div class="remember-me">
+                <input 
+                    type="checkbox" 
+                    id="remember" 
+                    name="remember"
+                >
+                <label for="remember">Ghi nhớ email của tôi</label>
             </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+                Đăng nhập
+            </button>
         </form>
     </div>
 
-    <a href="../../website/php/login.php" class="back-link">← Quay lại trang đăng nhập người dùng</a>
+    <a href="../../website/php/login.php" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Quay lại trang đăng nhập người dùng
+    </a>
 </div>
+
+<script>
+// LocalStorage key
+const REMEMBER_EMAIL_KEY = 'admin_remember_email';
+
+// Load saved email khi trang load
+window.addEventListener('DOMContentLoaded', function() {
+    const emailInput = document.getElementById('email');
+    const rememberCheckbox = document.getElementById('remember');
+    const passwordInput = document.getElementById('password');
+    
+    // Lấy email đã lưu từ localStorage
+    const savedEmail = localStorage.getItem(REMEMBER_EMAIL_KEY);
+    
+    if (savedEmail) {
+        emailInput.value = savedEmail;
+        rememberCheckbox.checked = true;
+        // Focus vào password nếu email đã có
+        passwordInput.focus();
+    } else {
+        // Focus vào email nếu chưa có
+        emailInput.focus();
+    }
+});
+
+// Xử lý submit form
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const emailInput = document.getElementById('email');
+    const rememberCheckbox = document.getElementById('remember');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Lưu hoặc xóa email từ localStorage
+    if (rememberCheckbox.checked) {
+        localStorage.setItem(REMEMBER_EMAIL_KEY, emailInput.value);
+    } else {
+        localStorage.removeItem(REMEMBER_EMAIL_KEY);
+    }
+    
+    // Thêm loading state
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+    submitBtn.textContent = 'Đang xử lý...';
+});
+
+// Xử lý khi checkbox remember thay đổi
+document.getElementById('remember').addEventListener('change', function() {
+    if (!this.checked) {
+        localStorage.removeItem(REMEMBER_EMAIL_KEY);
+    }
+});
+</script>
 
 </body>
 </html>

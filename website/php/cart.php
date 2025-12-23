@@ -1,6 +1,11 @@
 <?php
+session_start();
 $pageTitle = "Shopping Cart";
 $pageCss = "cart.css";
+
+// Kiểm tra trạng thái đăng nhập
+$isLoggedIn = isset($_SESSION['user_id']) && $_SESSION['user_id'] > 0;
+
 include '../includes/header.php';
 ?>
 
@@ -61,9 +66,12 @@ include '../includes/header.php';
           <div class="text-muted small mt-2 mb-3">
             <i class="bi bi-info-circle"></i> Free shipping on orders over $20
           </div>
-          <a class="btn btn-darling w-100 py-3" href="order.php">
+          <button 
+            id="btn-checkout" 
+            class="btn btn-darling w-100 py-3" 
+            data-logged-in="<?= $isLoggedIn ? 'true' : 'false' ?>">
             <i class="bi bi-lock-fill me-2"></i>Proceed to Checkout
-          </a>
+          </button>
         </div>
       </div>
     </div>

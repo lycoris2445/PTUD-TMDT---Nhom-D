@@ -203,6 +203,38 @@
         renderCartTable();
       }
     });
+
+    // Handle checkout button with login check
+    const checkoutBtn = document.getElementById("btn-checkout");
+    if (checkoutBtn) {
+      checkoutBtn.addEventListener("click", () => {
+        const isLoggedIn = checkoutBtn.getAttribute("data-logged-in") === "true";
+        const cart = read();
+        
+        // Check if cart is empty
+        if (!cart || cart.length === 0) {
+          alert("Giỏ hàng của bạn đang trống!");
+          return;
+        }
+        
+        // Check if user is logged in
+        if (!isLoggedIn) {
+          const shouldLogin = confirm(
+            "Bạn cần đăng nhập để tiếp tục thanh toán.\n\n" +
+            "Nhấn OK để đến trang đăng nhập, hoặc Cancel để tiếp tục mua sắm."
+          );
+          
+          if (shouldLogin) {
+            // Redirect to login page with return URL
+            window.location.href = "login.php?redirect=order.php";
+          }
+          return;
+        }
+        
+        // If logged in, proceed to checkout
+        window.location.href = "order.php";
+      });
+    }
   };
 
   const initCartPage = () => {
