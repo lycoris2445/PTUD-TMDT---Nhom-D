@@ -2,11 +2,6 @@
 // Đăng xuất admin
 session_start();
 
-// Xóa cookie remember me nếu có
-if (isset($_COOKIE['admin_remember'])) {
-    setcookie('admin_remember', '', time() - 3600, "/", "", true, true);
-}
-
 // Xóa tất cả session
 $_SESSION = array();
 

@@ -60,11 +60,34 @@ function renderCategoryTree(array $tree, ?int $selectedId = null): string {
     return $html;
 }
 
+/**
+ * Lấy tất cả category con của một category (đệ quy)
+ */
+function getAllChildCategoryIds($conn, int $categoryId): array {
+    $ids = [$categoryId];
+    
+    $stmt = $conn->prepare("SELECT id FROM CATEGORIES WHERE parent_id = ?");
+    $stmt->execute([$categoryId]);
+    $children = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    
+    foreach ($children as $childId) {
+        $ids = array_merge($ids, getAllChildCategoryIds($conn, (int)$childId));
+    }
+    
+    return $ids;
+}
+
 function getProductsByCategory($conn, ?int $categoryId, string $search = '', string $status = ''): array {
     if (!$categoryId) return [];
 
     $search = trim($search);
     $status = trim($status);
+
+    // Lấy tất cả category con (bao gồm cả chính nó)
+    $categoryIds = getAllChildCategoryIds($conn, $categoryId);
+    
+    // Tạo placeholders cho IN clause
+    $placeholders = implode(',', array_fill(0, count($categoryIds), '?'));
 
     $sql = "
         SELECT
@@ -83,9 +106,9 @@ function getProductsByCategory($conn, ?int $categoryId, string $search = '', str
         LEFT JOIN CATEGORIES c ON c.id = p.category_id
         LEFT JOIN PRODUCT_VARIANTS pv ON pv.product_id = p.id
         LEFT JOIN INVENTORY i ON i.product_variant_id = pv.id
-        WHERE p.category_id = :cid
-          AND (:q = '' OR p.name LIKE :likeq1 OR p.spu LIKE :likeq2 OR pv.sku_code LIKE :likeq3)
-          AND (:st1 = '' OR p.status = :st2)
+        WHERE p.category_id IN ($placeholders)
+          AND (? = '' OR p.name LIKE ? OR p.spu LIKE ? OR pv.sku_code LIKE ?)
+          AND (? = '' OR p.status = ?)
         GROUP BY p.id
         ORDER BY p.id DESC
     ";
@@ -93,15 +116,13 @@ function getProductsByCategory($conn, ?int $categoryId, string $search = '', str
     $stmt = $conn->prepare($sql);
     $like = '%' . $search . '%';
 
-    $stmt->execute([
-        ':cid' => $categoryId,
-        ':q' => $search,
-        ':likeq1' => $like,
-        ':likeq2' => $like,
-        ':likeq3' => $like,
-        ':st1' => $status,
-        ':st2' => $status
-    ]);
+    // Bind parameters: category IDs + search params + status params
+    $params = array_merge(
+        $categoryIds,
+        [$search, $like, $like, $like, $status, $status]
+    );
+
+    $stmt->execute($params);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

@@ -83,7 +83,7 @@ function check_login_attempts($identifier) {
     
     $key = 'login_attempts_' . md5($identifier);
     $max_attempts = 5;
-    $lockout_time = 900; // 15 phút
+    $lockout_time = 300; // 5 phút
     
     if (!isset($_SESSION[$key])) {
         $_SESSION[$key] = [

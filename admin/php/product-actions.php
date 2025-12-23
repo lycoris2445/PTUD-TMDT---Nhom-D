@@ -46,6 +46,9 @@ try {
         $stockQty = (int)($_POST['stock_quantity'] ?? 0);
         if ($stockQty < 0) $stockQty = 0;
 
+        // Debug log
+        error_log("CREATE PRODUCT - SPU received: '" . $spu . "', Name: '" . $name . "', Category: " . $categoryId);
+
         if ($name === '' || $spu === '' || $categoryId <= 0) fail(422, 'Missing required fields');
 
         // upload file lên cloudinary nếu có
@@ -85,12 +88,13 @@ try {
         // Nếu bảng PRODUCT_VARIANTS của bạn có thêm cột NOT NULL khác,
         // bạn cần bổ sung đúng theo schema của bạn.
         $stmtVar = $conn->prepare("
-            INSERT INTO PRODUCT_VARIANTS (product_id, sku_code, attributes)
-            VALUES (:pid, :sku, :attrs)
+            INSERT INTO PRODUCT_VARIANTS (product_id, sku_code, price, attributes)
+            VALUES (:pid, :sku, :price, :attrs)
         ");
         $stmtVar->execute([
             ':pid' => $productId,
             ':sku' => $defaultSku,
+            ':price' => $basePrice,
             ':attrs' => null,
         ]);
 
@@ -110,7 +114,7 @@ try {
 
         $conn->commit();
 
-        echo json_encode(['ok' => true, 'id' => $productId]);
+        echo json_encode(['ok' => true, 'id' => $productId, 'category_id' => $categoryId]);
         exit;
     }
 
@@ -190,6 +194,10 @@ try {
             $vid = (int)($stmtFindVar->fetchColumn() ?: 0);
 
             if ($vid > 0) {
+                // Cập nhật giá của variant để đồng bộ với base_price
+                $stmtUpVarPrice = $conn->prepare("UPDATE PRODUCT_VARIANTS SET price = :price WHERE id = :vid");
+                $stmtUpVarPrice->execute([':price' => $basePrice, ':vid' => $vid]);
+                
                 // nếu đã có inventory thì update, chưa có thì insert
                 $stmtFindInv = $conn->prepare("SELECT id FROM INVENTORY WHERE product_variant_id = :vid LIMIT 1");
                 $stmtFindInv->execute([':vid' => $vid]);

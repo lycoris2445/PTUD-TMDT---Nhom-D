@@ -139,8 +139,19 @@ function wireForms() {
       const mode = addProductForm.dataset.mode || 'create';
       const fd = new FormData(addProductForm);
       fd.append('action', mode);
-      await postForm('product-actions.php', fd);
-      window.location.reload();
+      
+      // Debug log
+      console.log('Submitting product with SPU:', fd.get('spu'));
+      console.log('Category ID:', fd.get('category_id'));
+      
+      const data = await postForm('product-actions.php', fd);
+      
+      // Nếu là create và có category_id, reload về đúng category
+      if (mode === 'create' && data.category_id) {
+        window.location.href = '?category=' + data.category_id;
+      } else {
+        window.location.reload();
+      }
     });
   }
 }
@@ -180,6 +191,32 @@ window.deleteProduct = deleteProduct;
 window.editProduct = editProduct;
 window.viewProduct = viewProduct;
 window.resetFilters = resetFilters;
+
+function resetAddProductForm() {
+  const form = document.getElementById('addProductForm');
+  const modal = document.getElementById('productModalTitle');
+  
+  form.reset();
+  form.dataset.mode = 'create';
+  form.querySelector('[name="id"]').value = '';
+  
+  // Reset tất cả các input
+  form.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], textarea, select').forEach(field => {
+    if (field.name !== 'stock_quantity' && field.name !== 'status') {
+      field.value = '';
+    }
+  });
+  
+  // Set default values
+  form.querySelector('[name="status"]').value = 'draft';
+  form.querySelector('[name="stock_quantity"]').value = '0';
+  
+  if (modal) modal.innerText = 'Add Product';
+  
+  console.log('Form reset for ADD mode');
+}
+
+window.resetAddProductForm = resetAddProductForm;
 
 function addVariant() {
     const tbody = document.querySelector('#variantTable tbody');

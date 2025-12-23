@@ -120,7 +120,7 @@ function money_vnd($val): string {
                         </div>
 
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal"
-                                onclick="document.getElementById('addProductForm').dataset.mode='create'; document.getElementById('productModalTitle').innerText='Add Product'; document.getElementById('addProductForm').reset(); document.querySelector('#addProductForm [name=id]').value='';">
+                                onclick="resetAddProductForm();">
                             <i class="bi bi-plus-lg"></i> Add Product
                         </button>
                     </div>

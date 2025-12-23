@@ -133,17 +133,24 @@ main {
 /* === STYLE CHO DANH MỤC (UPDATED) === */
 .category-grid {
     display: flex;
-    justify-content: space-between;
-    gap: 20px;
+    justify-content: center; /* căn giữa thay vì dàn cách toàn bộ chiều ngang */
+    gap: 32px;              /* tăng khoảng cách để không bị dồn */
     margin-bottom: 60px;
+    flex-wrap: wrap;        /* cho phép xuống hàng nếu màn hẹp */
+}
+
+.category-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
 }
 
 .category-card {
-    width: 32%;
+    flex: 0 1 320px;        /* rộng hơn để tránh dồn, vẫn linh hoạt */
+    max-width: 360px;
     text-align: center;
     cursor: pointer;
-    /* Bỏ viền cũ đi cho thoáng */
-    border: none; 
+    border: none;
 }
 
 /* Khung chứa ảnh: Bo tròn + Ẩn phần thừa */

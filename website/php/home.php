@@ -2,8 +2,23 @@
 $pageTitle = 'Home - Darling Cosmetics';
 $pageCss   = 'home.css'; 
 
-// Kết nối database (giữ nguyên để dùng sau này)
+// Kết nối database
 $pdo = require __DIR__ . '/../../config/db_connect.php';
+
+// Lấy 4 sản phẩm từ database
+try {
+    $stmt = $pdo->query("
+        SELECT p.id, p.name, p.image_url, pv.id as variant_id, pv.price 
+        FROM PRODUCTS p 
+        INNER JOIN PRODUCT_VARIANTS pv ON pv.product_id = p.id 
+        WHERE p.status = 'active' 
+        ORDER BY p.id DESC 
+        LIMIT 4
+    ");
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $products = [];
+}
 
 include '../includes/header.php';
 ?>
@@ -21,26 +36,51 @@ include '../includes/header.php';
     <section class="featured-products container">
         <h2 class="section-title">Featured Products</h2>
         <div class="product-grid">
-            <div class="product-card">
-                <div class="product-image-placeholder">Product Image</div>
-                <h4>Velvet Matte Lipstick</h4>
-                <p>$18.00</p>
-            </div>
-            <div class="product-card">
-                <div class="product-image-placeholder">Product Image</div>
-                <h4>Hydrating Serum</h4>
-                <p>$24.50</p>
-            </div>
-            <div class="product-card">
-                <div class="product-image-placeholder">Product Image</div>
-                <h4>Rose Water Toner</h4>
-                <p>$15.00</p>
-            </div>
-            <div class="product-card">
-                <div class="product-image-placeholder">Product Image</div>
-                <h4>Night Repair Cream</h4>
-                <p>$32.00</p>
-            </div>
+            <?php 
+            if (!empty($products)) {
+                foreach ($products as $product) {
+                    $imgUrl = $product['image_url'] ?? '';
+                    $name = htmlspecialchars($product['name']);
+                    $price = number_format($product['price'], 2);
+                    $variantId = $product['variant_id'];
+                    ?>
+                    <div class="product-card">
+                        <?php if ($imgUrl): ?>
+                            <div class="product-image-placeholder" style="background-image: url('<?= htmlspecialchars($imgUrl) ?>'); background-size: cover; background-position: center;"></div>
+                        <?php else: ?>
+                            <div class="product-image-placeholder">Product Image</div>
+                        <?php endif; ?>
+                        <h4><?= $name ?></h4>
+                        <p>$<?= $price ?></p>
+                    </div>
+                    <?php
+                }
+            } else {
+                // Fallback nếu không có product trong DB
+                ?>
+                <div class="product-card">
+                    <div class="product-image-placeholder">Product Image</div>
+                    <h4>Velvet Matte Lipstick</h4>
+                    <p>$18.00</p>
+                </div>
+                <div class="product-card">
+                    <div class="product-image-placeholder">Product Image</div>
+                    <h4>Hydrating Serum</h4>
+                    <p>$24.50</p>
+                </div>
+                <div class="product-card">
+                    <div class="product-image-placeholder">Product Image</div>
+                    <h4>Rose Water Toner</h4>
+                    <p>$15.00</p>
+                </div>
+                <div class="product-card">
+                    <div class="product-image-placeholder">Product Image</div>
+                    <h4>Night Repair Cream</h4>
+                    <p>$32.00</p>
+                </div>
+                <?php
+            }
+            ?>
         </div>
     </section>
     
@@ -48,26 +88,32 @@ include '../includes/header.php';
         <h2 class="section-title">Shop by Category</h2>
         <div class="category-grid">
             
-            <div class="category-card">
-                <div class="category-image">
-                    <img src="https://c8.alamy.com/comp/2BJC15F/set-of-body-care-products-isolated-on-white-2BJC15F.jpg" alt="Skincare">
+            <a href="store.php" class="category-link">
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="https://c8.alamy.com/comp/2BJC15F/set-of-body-care-products-isolated-on-white-2BJC15F.jpg" alt="Skincare">
+                    </div>
+                    <h3>Skincare</h3>
                 </div>
-                <h3>Skincare</h3>
-            </div>
+            </a>
 
-            <div class="category-card">
-                <div class="category-image">
-                    <img src="https://images.squarespace-cdn.com/content/v1/666fcdf1b40ced5c1847a5bb/66b9cd20-db78-4ebf-a0f8-74d7978774bd/YB+Full+Line+1.jpg?format=1000w" alt="Makeup">
+            <a href="store.php" class="category-link">
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="https://images.squarespace-cdn.com/content/v1/666fcdf1b40ced5c1847a5bb/66b9cd20-db78-4ebf-a0f8-74d7978774bd/YB+Full+Line+1.jpg?format=1000w" alt="Makeup">
+                    </div>
+                    <h3>Makeup</h3>
                 </div>
-                <h3>Makeup</h3>
-            </div>
+            </a>
 
-            <div class="category-card">
-                <div class="category-image">
-                    <img src="https://t4.ftcdn.net/jpg/03/23/31/57/360_F_323315785_tfrtUr3pUWOfUcqHPQ4MMcbZ3eoJb96L.jpg" alt="Body Care">
+            <a href="store.php" class="category-link">
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="https://t4.ftcdn.net/jpg/03/23/31/57/360_F_323315785_tfrtUr3pUWOfUcqHPQ4MMcbZ3eoJb96L.jpg" alt="Body Care">
+                    </div>
+                    <h3>Body Care</h3>
                 </div>
-                <h3>Body Care</h3>
-            </div>
+            </a>
 
         </div>
     </section>
