@@ -1,22 +1,17 @@
--- ==========================================
--- DATABASE SCHEMA
--- ==========================================
--- This file contains the complete database schema
--- Automatically executed by Docker on first startup
--- ==========================================
-
-USE darling_cosmetics;
+-- 1. Tạo Database
+CREATE DATABASE IF NOT EXISTS Darling_cosmetics CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE Darling_cosmetics;
 
 -- ==========================================
 -- MODULE: USER & AUTH
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS ROLES (
+CREATE TABLE ROLES (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS ACCOUNTS (
+CREATE TABLE ACCOUNTS (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(150) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
@@ -28,7 +23,7 @@ CREATE TABLE IF NOT EXISTS ACCOUNTS (
     last_login_at TIMESTAMP NULL
 );
 
-CREATE TABLE IF NOT EXISTS ACCOUNT_ROLES (
+CREATE TABLE ACCOUNT_ROLES (
     account_id BIGINT,
     role_id INT,
     PRIMARY KEY (account_id, role_id),
@@ -36,7 +31,7 @@ CREATE TABLE IF NOT EXISTS ACCOUNT_ROLES (
     FOREIGN KEY (role_id) REFERENCES ROLES(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS ADDRESSES (
+CREATE TABLE ADDRESSES (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     account_id BIGINT NOT NULL,
     recipient_name VARCHAR(100),
@@ -50,104 +45,119 @@ CREATE TABLE IF NOT EXISTS ADDRESSES (
 -- MODULE: PRODUCTS
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS CATEGORIES (
+CREATE TABLE CATEGORIES (
     id INT AUTO_INCREMENT PRIMARY KEY,
     parent_id INT,
     name VARCHAR(100) NOT NULL,
-    description TEXT,
-    FOREIGN KEY (parent_id) REFERENCES CATEGORIES(id) ON DELETE CASCADE
+    slug VARCHAR(100) NOT NULL UNIQUE,
+    FOREIGN KEY (parent_id) REFERENCES CATEGORIES(id) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS BRANDS (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT
-);
-
-CREATE TABLE IF NOT EXISTS PRODUCTS (
+CREATE TABLE PRODUCTS (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    spu VARCHAR(100) NOT NULL UNIQUE,
     category_id INT,
-    brand_id INT,
-    name VARCHAR(150) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     description TEXT,
-    thumbnail VARCHAR(255),
+    base_price DECIMAL(15, 2) NOT NULL,
+    status ENUM('draft', 'active', 'inactive') DEFAULT 'draft',
+    image_url TEXT,
+    FOREIGN KEY (category_id) REFERENCES CATEGORIES(id) ON DELETE SET NULL
+);
+
+CREATE TABLE PRODUCT_VARIANTS (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    product_id BIGINT NOT NULL,
+    sku_code VARCHAR(100) NOT NULL UNIQUE,
+    price DECIMAL(15, 2) NOT NULL,
+    image_url TEXT,
+    attributes JSON,
+    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id) ON DELETE CASCADE
+);
+
+-- ==========================================
+-- MODULE: INVENTORY
+-- ==========================================
+
+CREATE TABLE INVENTORY (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    product_variant_id BIGINT NOT NULL UNIQUE,
+    quantity INT DEFAULT 0,
+    reserved_quantity INT DEFAULT 0 COMMENT 'Hàng đang được giữ trong đơn chưa thanh toán',
+    version BIGINT DEFAULT 0 COMMENT 'Dùng cho Optimistic Locking',
+    FOREIGN KEY (product_variant_id) REFERENCES PRODUCT_VARIANTS(id) ON DELETE CASCADE
+);
+
+CREATE TABLE INVENTORY_LOGS (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    inventory_id BIGINT NOT NULL,
+    change_amount INT NOT NULL,
+    reason ENUM('import', 'export', 'order_placed', 'order_cancelled', 'Return_restock', 'adjustment') NOT NULL,
+    note TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES CATEGORIES(id) ON DELETE SET NULL,
-    FOREIGN KEY (brand_id) REFERENCES BRANDS(id) ON DELETE SET NULL
-);
-
-CREATE TABLE IF NOT EXISTS VARIANTS (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    product_id BIGINT NOT NULL,
-    color VARCHAR(50),
-    size VARCHAR(50),
-    price DECIMAL(10,2) NOT NULL,
-    stock INT DEFAULT 0,
-    sku VARCHAR(100) UNIQUE,
-    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS PRODUCT_IMAGES (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    product_id BIGINT NOT NULL,
-    image_url VARCHAR(255) NOT NULL,
-    display_order INT DEFAULT 0,
-    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id) ON DELETE CASCADE
+    FOREIGN KEY (inventory_id) REFERENCES INVENTORY(id) ON DELETE CASCADE
 );
 
 -- ==========================================
--- MODULE: CART & WISHLIST
+-- MODULE: CART
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS CART_ITEMS (
+CREATE TABLE CARTS (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    account_id BIGINT NOT NULL,
-    variant_id BIGINT NOT NULL,
-    quantity INT DEFAULT 1,
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE,
-    FOREIGN KEY (variant_id) REFERENCES VARIANTS(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS WISHLIST_ITEMS (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    account_id BIGINT NOT NULL,
-    product_id BIGINT NOT NULL,
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id) ON DELETE CASCADE
-);
-
--- ==========================================
--- MODULE: ORDERS
--- ==========================================
-
-CREATE TABLE IF NOT EXISTS ORDERS (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    account_id BIGINT NOT NULL,
-    tracking_number VARCHAR(100) UNIQUE,
-    total_amount DECIMAL(10,2) NOT NULL,
-    shipping_fee DECIMAL(10,2) DEFAULT 0,
-    final_amount DECIMAL(10,2) NOT NULL,
-    status VARCHAR(50) DEFAULT 'new',
-    shipping_address_snapshot TEXT,
+    account_id BIGINT UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    shipping_carrier VARCHAR(50),
     FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS ORDER_ITEMS (
+CREATE TABLE CART_ITEMS (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    order_id BIGINT NOT NULL,
+    cart_id BIGINT NOT NULL,
     product_variant_id BIGINT NOT NULL,
-    quantity INT NOT NULL,
-    price_at_purchase DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_variant_id) REFERENCES VARIANTS(id) ON DELETE CASCADE
+    quantity INT DEFAULT 1,
+    FOREIGN KEY (cart_id) REFERENCES CARTS(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_variant_id) REFERENCES PRODUCT_VARIANTS(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS ORDER_HISTORY (
+-- ==========================================
+-- MODULE: ORDERS & SHIPPING
+-- ==========================================
+
+CREATE TABLE ORDERS (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    account_id BIGINT,
+    tracking_number VARCHAR(100),
+    total_amount DECIMAL(15, 2) NOT NULL,
+    shipping_fee DECIMAL(15, 2) NOT NULL DEFAULT 0,
+    final_amount DECIMAL(15, 2) NOT NULL,
+    status ENUM(
+        'new',              -- Mới tạo, chưa thanh toán/chưa xác nhận
+        'pending',          -- Chờ thanh toán (cho Online Banking)
+        'on_hold',          -- Đã thanh toán, chờ xử lý
+        'processing',       -- Đang đóng gói
+        'awaiting_pickup',  -- Chờ shipper lấy hàng
+        'shipping',         -- Đang giao
+        'shipped',          -- Giao thành công
+        'completed',        -- Hoàn tất (sau khi hết hạn đổi trả)
+        'cancelled',        -- Hủy
+        'declined'          -- Thanh toán thất bại
+    ) DEFAULT 'new',
+    shipping_address_snapshot TEXT COMMENT 'Lưu cứng địa chỉ tại thời điểm đặt, có thể sẽ đổi kiểu DL',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    shipping_carrier VARCHAR(100) COMMENT 'Tên đơn vị vận chuyển',
+    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE SET NULL
+);
+
+CREATE TABLE ORDER_ITEMS (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    product_variant_id BIGINT,
+    quantity INT NOT NULL,
+    price_at_purchase DECIMAL(15, 2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_variant_id) REFERENCES PRODUCT_VARIANTS(id) ON DELETE SET NULL
+);
+
+CREATE TABLE ORDER_HISTORY (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_id BIGINT NOT NULL,
     previous_status VARCHAR(50),
@@ -158,111 +168,76 @@ CREATE TABLE IF NOT EXISTS ORDER_HISTORY (
 );
 
 -- ==========================================
--- MODULE: REVIEWS
+-- MODULE: PAYMENTS & REFUNDS
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS REVIEWS (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    product_id BIGINT NOT NULL,
-    account_id BIGINT NOT NULL,
-    rating INT CHECK (rating BETWEEN 1 AND 5),
-    comment TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id) ON DELETE CASCADE,
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE
-);
-
--- ==========================================
--- MODULE: NOTIFICATIONS
--- ==========================================
-
-CREATE TABLE IF NOT EXISTS NOTIFICATIONS (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    account_id BIGINT NOT NULL,
-    content TEXT NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE
-);
-
--- ==========================================
--- MODULE: PROMOTIONS
--- ==========================================
-
-CREATE TABLE IF NOT EXISTS PROMOTIONS (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id BIGINT,
-    discount_percent DECIMAL(5,2) CHECK (discount_percent BETWEEN 0 AND 100),
-    start_date DATE,
-    end_date DATE,
-    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS COUPONS (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    code VARCHAR(50) UNIQUE NOT NULL,
-    discount_percent DECIMAL(5,2) CHECK (discount_percent BETWEEN 0 AND 100),
-    max_usage INT,
-    used_count INT DEFAULT 0,
-    start_date DATE,
-    end_date DATE
-);
-
--- ==========================================
--- MODULE: PAYMENT
--- ==========================================
-
-CREATE TABLE IF NOT EXISTS PAYMENT (
+CREATE TABLE PAYMENT (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_id BIGINT NOT NULL,
-    stripe_payment_intent_id VARCHAR(255),
-    stripe_charge_id VARCHAR(255),
-    amount DECIMAL(10,2) NOT NULL,
-    final_amount DECIMAL(10,2) NOT NULL,
-    currency VARCHAR(10) DEFAULT 'usd',
-    status VARCHAR(50) DEFAULT 'pending',
-    payment_method VARCHAR(50),
+    method ENUM('COD', 'STRIPE') NOT NULL,
+    transaction_ref VARCHAR(100) COMMENT 'Mã giao dịch từ cổng thanh toán',
+    amount DECIMAL(15, 2) NOT NULL,
+    status ENUM('pending', 'paid', 'failed') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE
+);
+
+-- MỚI: Bảng Refunds (Phương án 2)
+CREATE TABLE REFUND (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    payment_id BIGINT, -- Có thể null nếu hoàn tiền cho đơn COD chưa thanh toán nhưng khách đã cọc (case hiếm) hoặc liên kết trực tiếp Order
+    order_id BIGINT NOT NULL,
+    amount DECIMAL(15, 2) NOT NULL,
+    reason TEXT COMMENT 'Lý do hoàn tiền',
+    status ENUM('pending', 'processing', 'completed', 'failed') DEFAULT 'pending',
+    refund_transaction_ref VARCHAR(100) COMMENT 'Mã hoàn tiền từ cổng thanh toán',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (payment_id) REFERENCES PAYMENT(id) ON DELETE SET NULL,
     FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE
 );
 
 -- ==========================================
--- MODULE: RETURNS & REFUNDS
+-- MODULE: RETURNS (RMA) - MỚI HOÀN TOÀN
 -- ==========================================
 
-CREATE TABLE IF NOT EXISTS RETURNS (
+CREATE TABLE RETURNS (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_id BIGINT NOT NULL,
-    status VARCHAR(50) DEFAULT 'request_return',
-    reason TEXT,
+    account_id BIGINT NOT NULL,
+    reason TEXT NOT NULL,
+    status ENUM(
+        'request_return',    -- Khách yêu cầu trả hàng
+        'accept_return',     -- Shop đồng ý cho trả hàng
+        'decline_return',    -- Shop từ chối yêu cầu trả hàng
+        'receive_return_package',   -- Shop đã nhận hàng trả lại
+        'accept_refund'      -- Hoàn tiền cho khách
+    ) DEFAULT 'request_return',
+    proof_images JSON COMMENT 'Mảng URL ảnh bằng chứng: ["img1.jpg", "img2.jpg"]',
+    refund_amount DECIMAL(15, 2) COMMENT 'Số tiền dự kiến hoàn',
+    admin_note TEXT COMMENT 'Ghi chú nội bộ của shop',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE,
+    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS RETURN_ITEMS (
+CREATE TABLE RETURN_ITEMS (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     return_id BIGINT NOT NULL,
-    order_item_id BIGINT NOT NULL,
-    quantity_returned INT NOT NULL,
+    order_item_id BIGINT NOT NULL COMMENT 'Liên kết với item trong đơn hàng gốc',
+    quantity INT NOT NULL,
     FOREIGN KEY (return_id) REFERENCES RETURNS(id) ON DELETE CASCADE,
     FOREIGN KEY (order_item_id) REFERENCES ORDER_ITEMS(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS REFUND (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    payment_id BIGINT NOT NULL,
-    order_id BIGINT NOT NULL,
-    stripe_refund_id VARCHAR(255),
-    amount DECIMAL(10,2) NOT NULL,
-    reason TEXT,
-    status VARCHAR(50) DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (payment_id) REFERENCES PAYMENT(id) ON DELETE CASCADE,
-    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE
+-- [THÊM MỚI] Lưu lịch sử thay đổi trạng thái account (suspend/activate) + lý do
+CREATE TABLE IF NOT EXISTS account_status_logs (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  account_id BIGINT NOT NULL,
+  action ENUM('suspend','activate') NOT NULL,
+  reason TEXT NULL,
+  changed_by BIGINT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX (account_id),
+  CONSTRAINT fk_asl_account FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
 );
-
--- Database version update
-INSERT INTO _database_version (version) VALUES ('1.0.1-schema') ON DUPLICATE KEY UPDATE applied_at = CURRENT_TIMESTAMP;

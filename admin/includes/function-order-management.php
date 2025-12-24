@@ -73,6 +73,7 @@ function allowed_return_transitions(): array
         'receive_return_package' => ['accept_refund'],
         'decline_return'         => [],
         'accept_refund'          => [],
+        'decline_refund'         => [],
     ];
 }
 
@@ -82,7 +83,9 @@ function allowed_next_return_statuses(string $current): array
         case 'request_return':
             // Cho phép Chấp nhận hoặc Từ chối yêu cầu ban đầu
             return ['accept_return', 'decline_return'];
-
+        case 'accept_return':
+            // mới: đã accept return thì cho chuyển sang đã nhận kiện
+            return ['receive_return_package'];
         case 'receive_return_package':
             // Sau khi đã nhận hàng, admin quyết định hoàn tiền hoặc không
             return ['accept_refund', 'decline_refund'];

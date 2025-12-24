@@ -152,6 +152,8 @@ function log_account_status(PDO $conn, int $accountId, string $action, ?string $
 {
     if (!in_array($action, ['suspend', 'activate'], true)) return false;
 
+    $reason = $reason ?? '';  // <<< thêm dòng này để tránh NULL
+
     $stmt = $conn->prepare("
         INSERT INTO account_status_logs (account_id, action, reason, changed_by)
         VALUES (:account_id, :action, :reason, :changed_by)
@@ -163,6 +165,7 @@ function log_account_status(PDO $conn, int $accountId, string $action, ?string $
         ':changed_by' => $changedBy,
     ]);
 }
+
 
 function suspend_customer_with_reason(PDO $conn, int $id, string $reason, ?int $changedBy = null): bool
 {
@@ -199,7 +202,9 @@ function activate_customer(PDO $conn, int $id, ?int $changedBy = null): bool
         $stmt = $conn->prepare("UPDATE accounts SET status = 'active' WHERE id = :id");
         $ok1 = $stmt->execute([':id' => $id]);
 
-        $ok2 = log_account_status($conn, $id, 'activate', null, $changedBy);
+        // trong activate_customer()
+        $ok2 = log_account_status($conn, $id, 'activate', '', $changedBy);
+
 
         if ($ok1 && $ok2) {
             $conn->commit();

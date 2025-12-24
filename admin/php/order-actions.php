@@ -230,26 +230,27 @@ if ($action === 'return_update') {
         $returnItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         foreach ($returnItems as $item) {
-            // Update product_variants stock
-            $stmt = $conn->prepare("
-                UPDATE product_variants 
-                SET stock_quantity = stock_quantity + ? 
-                WHERE id = ?
-            ");
-            $stmt->execute([$item['quantity'], $item['product_variant_id']]);
-            
-            // Log inventory movement
-            // Sync inventory.quantity theo stock mới (không log)
-            $syncInv = $conn->prepare("
-                INSERT INTO INVENTORY (product_variant_id, quantity)
-                SELECT id, stock_quantity FROM product_variants WHERE id = ?
-                ON DUPLICATE KEY UPDATE quantity = VALUES(quantity)
-            ");
-            $syncInv->execute([$item['product_variant_id']]);
+            $variantId = (int)$item['product_variant_id'];
+            $qty       = (int)$item['quantity'];
 
-        }
-    }
-    
+            // ✅ Restock vào bảng inventory (cột quantity)
+            $restock = $conn->prepare("
+                UPDATE inventory
+                SET quantity = quantity + ?
+                WHERE product_variant_id = ?
+            ");
+            $restock->execute([$qty, $variantId]);
+
+            // Nếu variant chưa có trong inventory thì insert mới
+            if ($restock->rowCount() === 0) {
+                $insertInv = $conn->prepare("
+                    INSERT INTO inventory (product_variant_id, quantity)
+                    VALUES (?, ?)
+                ");
+                $insertInv->execute([$variantId, $qty]);
+            }
+         }
+    }    
     // Update return record
     $data = [
         'status' => $status,

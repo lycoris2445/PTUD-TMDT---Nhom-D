@@ -10,7 +10,7 @@ if (!isset($_SESSION['is_admin']) ||
     exit;
 }
 
-$allowed_roles = ['super_admin', 'operation_staff'];
+$allowed_roles = ['super_admin'];
 if (!in_array($_SESSION['admin_role'], $allowed_roles)) {
     header("Location: admin-login.php");
     exit;

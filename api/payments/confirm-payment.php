@@ -75,7 +75,7 @@ try {
     // Update order status
     $stmt = $pdo->prepare("
         UPDATE ORDERS 
-        SET status = 'on_hold'
+        SET status = 'new'
         WHERE id = ?
     ");
     $stmt->execute([$orderId]);
