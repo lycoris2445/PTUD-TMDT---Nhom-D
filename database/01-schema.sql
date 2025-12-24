@@ -27,8 +27,8 @@ CREATE TABLE ACCOUNT_ROLES (
     account_id BIGINT,
     role_id INT,
     PRIMARY KEY (account_id, role_id),
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES ROLES(id) ON DELETE CASCADE
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
 CREATE TABLE ADDRESSES (
@@ -38,11 +38,11 @@ CREATE TABLE ADDRESSES (
     phone VARCHAR(20),
     detail_address VARCHAR(255),
     is_default BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (account_id) REFERENCES ACCOUNTS(id) ON DELETE CASCADE
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
 );
 
 -- ==========================================
--- MODULE: PRODUCTS
+-- MODULE: products
 -- ==========================================
 
 CREATE TABLE CATEGORIES (
@@ -164,7 +164,7 @@ CREATE TABLE ORDER_HISTORY (
     new_status VARCHAR(50),
     note TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES ORDERS(id) ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
 -- ==========================================

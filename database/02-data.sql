@@ -1,9 +1,9 @@
--- ==========================================
+﻿-- ==========================================
 -- SAMPLE DATA
 -- ==========================================
-USE darling_cosmetics;
+USE ptud;
 
-INSERT INTO ACCOUNTS (`id`, `email`, `password_hash`, `full_name`, `phone_number`, `status`, `created_at`, `updated_at`, `last_login_at`) VALUES
+INSERT INTO accounts (`id`, `email`, `password_hash`, `full_name`, `phone_number`, `status`, `created_at`, `updated_at`, `last_login_at`) VALUES
 (1, 'superadmin01@darling.com', '$2y$10$0DUXo767msjb0ItKy8SF9ORzizlvtli32RUrIn0yzmxk7uIiqEAZ6', 'Sophia Bennett', NULL, 'active', '2023-11-20 02:10:00', '2025-12-22 03:49:13', '2025-12-22 03:49:13'),
 (2, 'superadmin02@darling.com', '$2y$10$3anekhxrnA947GDZRHkk1elpWvi6fb5.m906kZP9AmRt2lN10M9ba', 'Ethan Clarke', NULL, 'active', '2023-11-21 03:15:00', '2025-12-22 03:55:59', '2025-12-14 10:20:00'),
 (3, 'superadmin03@darling.com', '$2y$10$pFlLJ1GDRfCMpFYICBsrouMaY09nmJPDnZogUaTa.ANGB4gzZ4vr.', 'Olivia Hayes', NULL, 'active', '2024-11-22 04:20:00', '2025-12-22 03:58:02', '2025-12-13 07:05:00'),
@@ -26,18 +26,18 @@ INSERT INTO ACCOUNTS (`id`, `email`, `password_hash`, `full_name`, `phone_number
 (20, 'user10@gmail.com', '$2b$10$us10hash', 'Henry Harris', NULL, 'active', '2025-12-01 06:45:00', '2025-12-20 06:57:10', '2025-12-16 12:00:00'),
 (21, 'vyp@gmail.com', '$2y$10$lJmCnncmjU9NR7caf2LeleSRXP3oReL6YG.q9FEbho/pM9eEj.KTC', 'Nguyen Vy', NULL, 'active', '2025-12-20 08:50:47', '2025-12-20 09:07:26', '2025-12-20 09:07:26');
 
-INSERT INTO ROLES (id, name) VALUES
+INSERT INTO roles (id, name) VALUES
 (1, 'super_admin'),
 (2, 'operation_staff'),
 (3, 'user');
 
-INSERT INTO ACCOUNT_ROLES (account_id, role_id) VALUES
+INSERT INTO account_roles (account_id, role_id) VALUES
 (1, 1), (2, 1), (3, 1), (4, 1), (5, 1),
 (6, 2), (7, 2), (8, 2), (9, 2), (10, 2),
 (11, 3), (12, 3), (13, 3), (14, 3), (15, 3),
 (16, 3), (17, 3), (18, 3), (19, 3), (20, 3);
 
-INSERT INTO ORDERS (id, account_id, tracking_number, total_amount, shipping_fee, final_amount, status, shipping_address_snapshot, created_at, shipping_carrier) VALUES
+INSERT INTO orders (id, account_id, tracking_number, total_amount, shipping_fee, final_amount, status, shipping_address_snapshot, created_at, shipping_carrier) VALUES
 (1001, 11, 'DAR-TRK-20241201-1101', 43.50, 4.00, 47.50, 'completed', 'Emma Johnson, 1207 Maple Ave, Arlington, VA 22201', '2024-12-01 10:20:00', 'UPS'),
 (1002, 12, 'DAR-TRK-20241201-1201', 18.40, 3.50, 21.90, 'completed', 'William Anderson, 88 King St, Alexandria, VA 22314', '2024-12-01 14:10:00', 'USPS'),
 (1003, 13, 'DAR-TRK-20241202-1301', 22.90, 3.50, 26.40, 'completed', 'Mia Martinez, 410 River Rd, Fairfax, VA 22030', '2024-12-02 11:25:00', 'USPS'),
@@ -61,7 +61,7 @@ INSERT INTO ORDERS (id, account_id, tracking_number, total_amount, shipping_fee,
 (1021, 16, 'DAR-TRK-20251212-1602', 95.40, 6.00, 101.40, 'completed', 'Daniel Thomas, 77 Lake View, Vienna, VA 22180', '2025-12-12 09:30:00', 'DHL'),
 (1022, 20, 'DAR-TRK-20251216-2002', 34.70, 5.00, 39.70, 'processing', 'Henry Harris, 5 Garden Ct, Manassas, VA 20110', '2025-12-16 18:55:00', 'FedEx');
 
-INSERT INTO CATEGORIES (id, parent_id, name, slug) VALUES
+INSERT INTO categories (id, parent_id, name, slug) VALUES
 (1, NULL, 'Facial Skincare', 'facial-skincare'),
 (2, 1, 'Makeup Remover', 'makeup-remover'),
 (3, 1, 'Facial Cleanser', 'facial-cleanser'),
@@ -90,7 +90,7 @@ INSERT INTO CATEGORIES (id, parent_id, name, slug) VALUES
 (26, 23, 'Deodorant', 'deodorant'),
 (27, 23, 'Body Lotion', 'body-lotion');
 
-INSERT INTO PRODUCTS (id, spu, category_id, name, description, base_price, status, image_url) VALUES
+INSERT INTO products (id, spu, category_id, name, description, base_price, status, image_url) VALUES
 (1, 'SPU0001', 2, 'Gentle Makeup Remover', 'Removes makeup without drying the skin.', 12.90, 'active', 'https://drive.google.com/file/d/1p7LgeKzDx5ft7_DmgPeIeU-xwAPj2K6k/view?usp=sharing'),
 (2, 'SPU0002', 3, 'Foaming Facial Cleanser', 'Daily cleanser for all skin types.', 10.50, 'active', 'https://api.muji.com.vn/media/catalog/product/cache/2e9290695da361a7d6192a4c8c689807/4/5/4549337319349_org.jpg'),
 (3, 'SPU0003', 4, 'Hydrating Toner', 'Helps balance and hydrate skin.', 11.90, 'active', 'https://api.muji.com.vn/media/catalog/product/cache/2e9290695da361a7d6192a4c8c689807/4/5/4550583434991_org.jpg'),
@@ -183,7 +183,7 @@ INSERT INTO PRODUCT_VARIANTS (id, product_id, sku_code, price, image_url, attrib
 (53, 33, 'SKU-SPU0033-01',  9.50, 'https://www.muji.com/public/media/img/item/4550583993283_org.jpg?im=Resize,width=1260', NULL),
 (54, 34, 'SKU-SPU0034-01',  9.50, 'https://api.muji.com.vn/media/catalog/product/cache/2e9290695da361a7d6192a4c8c689807/4/5/4550583435011_org.jpg', NULL),
 (55, 35, 'SKU-SPU0035-01', 12.90, 'https://api.muji.com.vn/media/catalog/product/cache/2e9290695da361a7d6192a4c8c689807/4/5/4550583435080_org.jpg', NULL);
-INSERT INTO ORDER_ITEMS (id, order_id, product_variant_id, quantity, price_at_purchase) VALUES
+INSERT INTO order_items (id, order_id, product_variant_id, quantity, price_at_purchase) VALUES
 (5001, 1001, 6, 2, 18.50),
 (5002, 1001, 29, 1, 6.50),
 (5003, 1002, 25, 2, 9.20),
@@ -223,7 +223,7 @@ INSERT INTO ORDER_ITEMS (id, order_id, product_variant_id, quantity, price_at_pu
 (5120, 1022, 1, 1, 12.90),
 (5121, 1022, 29, 1, 6.90);
 
-INSERT INTO PAYMENT (id, order_id, method, transaction_ref, amount, status) VALUES
+INSERT INTO payment (id, order_id, method, transaction_ref, amount, status) VALUES
 (8001, 1001, 'STRIPE', 'pi_1001_241201', 47.50, 'paid'),
 (8002, 1002, 'COD', 'COD-1002', 21.90, 'paid'),
 (8003, 1003, 'STRIPE', 'pi_1003_241202', 26.40, 'paid'),
@@ -303,7 +303,7 @@ INSERT INTO INVENTORY (id, product_variant_id, quantity, reserved_quantity, vers
 (53, 53, 220,  0, 1),
 (54, 54, 210,  0, 1),
 (55, 55, 180,  0, 1);
--- Khoan hẳn bỏ inventory logs vào 
+-- Khoan háº³n bá» inventory logs vÃ o 
 -- INSERT INTO INVENTORY_LOGS (id, product_variant_id, change_quantity, reason, reference_id, created_at) VALUES
 -- (9001, 6,  -2, 'order_placed', 1001, '2024-01-12 10:35:00'),
 -- (9002, 29, -1, 'order_placed', 1001, '2024-01-12 10:35:00'),
@@ -341,7 +341,7 @@ INSERT INTO INVENTORY (id, product_variant_id, quantity, reserved_quantity, vers
 -- (9028, 34,  10,'Return_restock', 1019, '2025-12-21 21:25:00'),
 -- (9030, 20,  1, 'Return_restock', 1020, '2025-12-23 23:40:00');
 
-INSERT INTO ORDER_HISTORY (id, order_id, previous_status, new_status, note, created_at) VALUES
+INSERT INTO order_history (id, order_id, previous_status, new_status, note, created_at) VALUES
 (7001, 1001, NULL, 'new', 'Customer placed order', '2024-12-01 10:20:00'),
 (7002, 1001, 'new', 'processing', 'OS started processing (deduct inventory)', '2024-12-01 10:35:00'),
 (7003, 1001, 'processing', 'shipped', 'Handed to carrier', '2024-12-03 10:35:00'),
@@ -373,7 +373,7 @@ INSERT INTO ORDER_HISTORY (id, order_id, previous_status, new_status, note, crea
 (7024, 1006, 'shipped', 'completed', 'Auto-complete after delivery window', '2024-12-13 19:20:00'),
 
 (7025, 1007, NULL, 'new', 'Customer placed order', '2024-12-12 20:05:00'),
-(7026, 1007, 'new', 'declined', 'Payment failed / declined', '2024-12-12 20:35:00'),
+(7026, 1007, 'new', 'declined', 'payment failed / declined', '2024-12-12 20:35:00'),
 
 (7027, 1009, NULL, 'new', 'Customer placed order', '2024-12-14 09:10:00'),
 (7028, 1009, 'new', 'cancelled', 'Customer cancelled before processing', '2024-12-14 09:40:00'),
@@ -450,7 +450,7 @@ INSERT INTO ORDER_HISTORY (id, order_id, previous_status, new_status, note, crea
 (7085, 1022, NULL, 'new', 'Customer placed order', '2025-12-16 18:55:00'),
 (7086, 1022, 'new', 'processing', 'Order is currently processing', '2025-12-16 19:10:00');
 
-INSERT INTO RETURNS (id, order_id, account_id, reason, status, admin_note, proof_images, created_at, updated_at) VALUES
+INSERT INTO returns (id, order_id, account_id, reason, status, admin_note, proof_images, created_at, updated_at) VALUES
 (6001,1008,12,'Product defective upon arrival','receive_return_package',
  'Item received, pending refund approval',NULL,
  '2024-12-23 18:45:00','2025-01-04 21:45:00'),
@@ -475,7 +475,7 @@ INSERT INTO CARTS (id, account_id) VALUES
 (3009, 19),
 (3010, 20);
 
-INSERT INTO CART_ITEMS (id, cart_id, product_variant_id, quantity) VALUES
+INSERT INTO cart_items (id, cart_id, product_variant_id, quantity) VALUES
 (4001, 3001, 6,  1),
 (4002, 3001, 29, 2),
 (4003, 3002, 25, 1),
@@ -495,7 +495,7 @@ INSERT INTO CART_ITEMS (id, cart_id, product_variant_id, quantity) VALUES
 (4017, 3010, 5,  1),
 (4018, 3010, 29, 1);
 
-INSERT INTO ADDRESSES (id, account_id, recipient_name, phone, detail_address, is_default) VALUES
+INSERT INTO addresses (id, account_id, recipient_name, phone, detail_address, is_default) VALUES
 (2001, 11, 'Emma Johnson',     '703-555-1101', '1207 Maple Ave, Arlington, VA 22201', TRUE),
 (2002, 11, 'Emma Johnson',     '703-555-1102', '55 Wilson Blvd, Arlington, VA 22203', FALSE),
 (2003, 12, 'William Anderson', '703-555-1201', '88 King St, Alexandria, VA 22314', TRUE),

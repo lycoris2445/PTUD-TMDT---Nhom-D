@@ -94,6 +94,7 @@ try {
    
     // Check if return request already exists
     $stmt = $pdo->prepare("SELECT id FROM returns WHERE order_id = ? LIMIT 1");
+    $stmt = $pdo->prepare("SELECT id FROM returns WHERE order_id = ? LIMIT 1");
     $stmt->execute([$orderId]);
     if ($stmt->fetch()) {
         throw new Exception('A return request already exists for this order');
@@ -180,6 +181,7 @@ try {
     // Insert return record
     $stmt = $pdo->prepare("
         INSERT INTO returns (
+        INSERT INTO returns (
             order_id,
             account_id,
             reason,
@@ -203,6 +205,7 @@ try {
     // Insert return items
     $stmt = $pdo->prepare("
         INSERT INTO return_items (return_id, order_item_id, quantity)
+        INSERT INTO return_items (return_id, order_item_id, quantity)
         VALUES (?, ?, ?)
     ");
    
@@ -217,6 +220,7 @@ try {
     // Update order status to indicate return requested
     // We don't change the main status, but could add a flag or note
     $stmt = $pdo->prepare("
+        INSERT INTO order_history (order_id, previous_status, new_status, note, created_at)
         INSERT INTO order_history (order_id, previous_status, new_status, note, created_at)
         VALUES (?, ?, ?, ?, NOW())
     ");

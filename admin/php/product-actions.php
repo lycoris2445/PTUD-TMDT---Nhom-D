@@ -2,6 +2,9 @@
 declare(strict_types=1);
 
 session_start();
+ob_clean();
+header('Content-Type: application/json; charset=utf-8');
+
 
 // 1. Kiểm tra quyền admin - CHỈ operation_staff
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true || 
@@ -11,7 +14,6 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true ||
     exit;
 }
 
-header('Content-Type: application/json; charset=utf-8');
 
 try {
     $conn = require __DIR__ . '/../../config/db_connect.php'; // PDO
